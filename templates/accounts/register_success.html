@@ -1,0 +1,42 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Registro Realizado - LATECME{% endblock %}
+
+{% block content %}
+<!-- begin #page-container -->
+<div id="page-container" class="fade">
+    <!-- begin login -->
+    <div class="login bg-black animated fadeInDown">
+        <!-- begin brand -->
+        <div class="login-header">
+            <div class="brand">
+                <span class="logo"></span> LATECME
+                <small>Sistema de Controle de Manufatura</small>
+            </div>
+            <div class="icon">
+                <i class="fa fa-check-circle text-success"></i>
+            </div>
+        </div>
+        <!-- end brand -->
+        <div class="login-content">
+            <div class="alert alert-success">
+                <h4><i class="fa fa-check"></i> Registro Realizado com Sucesso!</h4>
+                <p>
+                    Sua conta foi criada e está aguardando aprovação do administrador. 
+                    Você receberá uma notificação quando sua conta for aprovada e você 
+                    poderá acessar o sistema.
+                </p>
+            </div>
+            
+            <div class="text-center m-t-20">
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
+                    <i class="fa fa-sign-in"></i> Voltar ao Login
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- end login -->
+</div>
+<!-- end page container -->
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Materiais - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
+<li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block page_title %}Materiais{% endblock %}
+{% block page_subtitle %}Dashboard e Estatísticas{% endblock %}
+
+{% block content_body %}
+<!-- begin row -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-blue">
+            <div class="stats-icon"><i class="fa fa-cubes"></i></div>
+            <div class="stats-info">
+                <h4>MATERIAIS</h4>
+                <p>{{ total_materials }}</p>	
+            </div>
+            <div class="stats-link">
+                <a href="{% url 'materials:list' %}">Ver Materiais <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-info">
+            <div class="stats-icon"><i class="fa fa-truck"></i></div>
+            <div class="stats-info">
+                <h4>FORNECEDORES</h4>
+                <p>{{ total_suppliers }}</p>	
+            </div>
+            <div class="stats-link">
+                <a href="{% url 'materials:supplier_list' %}">Ver Fornecedores <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-orange">
+            <div class="stats-icon"><i class="fa fa-tags"></i></div>
+            <div class="stats-info">
+                <h4>CATEGORIAS</h4>
+                <p>{{ total_categories }}</p>	
+            </div>
+            <div class="stats-link">
+                <a href="javascript:;">Ver Categorias <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-red">
+            <div class="stats-icon"><i class="fa fa-exclamation-triangle"></i></div>
+            <div class="stats-info">
+                <h4>SEM FORNECEDOR</h4>
+                <p>{{ materials_no_suppliers }}</p>	
+            </div>
+            <div class="stats-link">
+                <a href="{% url 'materials:list' %}">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end row -->
+
+<!-- begin row -->
+<div class="row">
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Materiais por Tipo</h4>
+            </div>
+            <div class="panel-body">
+                {% if materials_by_type %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Material</th>
+                                    <th class="text-center">Quantidade</th>
+                                    <th class="text-center">Percentual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in materials_by_type %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.material_type }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-primary">{{ item.count }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% widthratio item.count total_materials 100 %}%
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fa fa-cube fa-3x"></i>
+                        <p class="m-t-10">Nenhum material cadastrado ainda.</p>
+                        <a href="{% url 'materials:create' %}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus"></i> Cadastrar Primeiro Material
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Principais Fornecedores</h4>
+            </div>
+            <div class="panel-body">
+                {% if top_suppliers %}
+                    <div class="list-group">
+                        {% for supplier in top_suppliers %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ supplier.name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ supplier.code }}</small>
+                            </div>
+                            <span class="badge badge-primary badge-pill">
+                                {{ supplier.material_count }} material{{ supplier.material_count|pluralize:"is" }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fa fa-truck fa-2x"></i>
+                        <p class="m-t-10">Nenhum fornecedor cadastrado.</p>
+                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus"></i> Cadastrar Fornecedor
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ações Rápidas</h4>
+            </div>
+            <div class="panel-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'materials:create' %}" class="btn btn-primary btn-block">
+                        <i class="fa fa-plus"></i> Novo Material
+                    </a>
+                    <a href="{% url 'materials:supplier_create' %}" class="btn btn-info btn-block">
+                        <i class="fa fa-truck"></i> Novo Fornecedor
+                    </a>
+                    <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
+                        <i class="fa fa-list"></i> Lista Completa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end row -->
+{% endblock %}

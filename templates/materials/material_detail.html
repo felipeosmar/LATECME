@@ -1,0 +1,251 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}{{ material.code }} - Detalhes - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
+<li class="breadcrumb-item"><a href="{% url 'materials:list' %}">Lista</a></li>
+<li class="breadcrumb-item active">{{ material.code }}</li>
+{% endblock %}
+
+{% block page_title %}Material {{ material.code }}{% endblock %}
+{% block page_subtitle %}{{ material.name }}{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <!-- begin material info -->
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-sm">
+                        <i class="fa fa-edit"></i> Editar
+                    </a>
+                </div>
+                <h4 class="panel-title">Informações do Material</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Código:</dt>
+                            <dd class="col-sm-8">
+                                <strong>{{ material.code }}</strong>
+                                {% if material.requires_certificate %}
+                                    <span class="badge badge-warning ml-2">
+                                        <i class="fa fa-certificate"></i> Certificado Requerido
+                                    </span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Nome:</dt>
+                            <dd class="col-sm-8">{{ material.name }}</dd>
+                            
+                            <dt class="col-sm-4">Tipo:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge badge-info">
+                                    {{ material.get_material_type_display }}
+                                </span>
+                            </dd>
+                            
+                            <dt class="col-sm-4">Categoria:</dt>
+                            <dd class="col-sm-8">
+                                {% if material.category %}
+                                    <span class="badge" style="background-color: {{ material.category.color }};">
+                                        {{ material.category.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">Não definida</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Densidade:</dt>
+                            <dd class="col-sm-7">{{ material.density }} g/cm³</dd>
+                            
+                            {% if material.melting_point %}
+                                <dt class="col-sm-5">Ponto de Fusão:</dt>
+                                <dd class="col-sm-7">{{ material.melting_point }}°C</dd>
+                            {% endif %}
+                            
+                            <dt class="col-sm-5">Criado em:</dt>
+                            <dd class="col-sm-7">{{ material.created_at|date:"d/m/Y H:i" }}</dd>
+                            
+                            {% if material.created_by %}
+                                <dt class="col-sm-5">Criado por:</dt>
+                                <dd class="col-sm-7">{{ material.created_by.get_full_name|default:material.created_by.username }}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+                
+                <!-- begin composition -->
+                {% if material.composition %}
+                    <h5 class="mt-4">Composição Química</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th>Percentual (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for element, percentage in material.composition.items %}
+                                <tr>
+                                    <td><strong>{{ element }}</strong></td>
+                                    <td>{{ percentage }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+                <!-- end composition -->
+                
+                <!-- begin specifications -->
+                {% if material.specifications %}
+                    <h5 class="mt-4">Especificações Técnicas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Propriedade</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for property, value in material.specifications.items %}
+                                <tr>
+                                    <td><strong>{{ property|title }}</strong></td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+                <!-- end specifications -->
+                
+                <!-- begin storage and safety -->
+                {% if material.storage_requirements or material.safety_notes %}
+                    <div class="row mt-4">
+                        {% if material.storage_requirements %}
+                            <div class="col-md-6">
+                                <h6><i class="fa fa-warehouse text-info"></i> Requisitos de Armazenamento</h6>
+                                <div class="alert alert-info">
+                                    {{ material.storage_requirements }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        {% if material.safety_notes %}
+                            <div class="col-md-6">
+                                <h6><i class="fa fa-exclamation-triangle text-warning"></i> Notas de Segurança</h6>
+                                <div class="alert alert-warning">
+                                    {{ material.safety_notes }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <!-- end storage and safety -->
+            </div>
+        </div>
+    </div>
+    <!-- end material info -->
+    
+    <!-- begin suppliers -->
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Fornecedores 
+                    <small class="text-muted">({{ suppliers.count }})</small>
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if suppliers %}
+                    {% for supplier_rel in suppliers %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    {{ supplier_rel.supplier.name }}
+                                    {% if not supplier_rel.available %}
+                                        <span class="badge badge-danger">Indisponível</span>
+                                    {% endif %}
+                                </h6>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">Código Fornecedor:</small><br>
+                                        <strong>{{ supplier_rel.supplier_code }}</strong>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">Preço:</small><br>
+                                        <strong class="text-success">R$ {{ supplier_rel.price_per_kg|floatformat:2 }}/kg</strong>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">Pedido Mínimo:</small><br>
+                                        {{ supplier_rel.minimum_order }} kg
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">Prazo:</small><br>
+                                        {{ supplier_rel.lead_time_days }} dias
+                                    </div>
+                                </div>
+                                {% if supplier_rel.notes %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Observações:</small><br>
+                                        <small>{{ supplier_rel.notes }}</small>
+                                    </div>
+                                {% endif %}
+                                <div class="mt-2">
+                                    <a href="{% url 'materials:supplier_detail' supplier_rel.supplier.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver Fornecedor
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fa fa-truck fa-2x"></i>
+                        <p class="mt-2">Nenhum fornecedor cadastrado para este material.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- begin quick actions -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ações Rápidas</h4>
+            </div>
+            <div class="panel-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-block">
+                        <i class="fa fa-edit"></i> Editar Material
+                    </a>
+                    <a href="javascript:;" class="btn btn-info btn-block">
+                        <i class="fa fa-plus"></i> Adicionar Fornecedor
+                    </a>
+                    <a href="javascript:;" class="btn btn-success btn-block">
+                        <i class="fa fa-shopping-cart"></i> Novo Pedido
+                    </a>
+                    <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
+                        <i class="fa fa-arrow-left"></i> Voltar à Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- end quick actions -->
+    </div>
+    <!-- end suppliers -->
+</div>
+{% endblock %}

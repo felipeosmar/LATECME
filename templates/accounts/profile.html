@@ -1,0 +1,125 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Meu Perfil - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Perfil</li>
+{% endblock %}
+
+{% block page_title %}Meu Perfil{% endblock %}
+{% block page_subtitle %}{{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Informações do Usuário</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Nome de usuário:</dt>
+                            <dd class="col-sm-8">{{ user.username }}</dd>
+                            
+                            <dt class="col-sm-4">Nome completo:</dt>
+                            <dd class="col-sm-8">{{ user.get_full_name|default:"Não informado" }}</dd>
+                            
+                            <dt class="col-sm-4">Email:</dt>
+                            <dd class="col-sm-8">{{ user.email }}</dd>
+                            
+                            <dt class="col-sm-4">Telefone:</dt>
+                            <dd class="col-sm-8">{{ user.phone|default:"Não informado" }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Função:</dt>
+                            <dd class="col-sm-8">
+                                {% if user.role %}
+                                    <span class="badge badge-primary">{{ user.role.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">Não atribuída</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Status:</dt>
+                            <dd class="col-sm-8">
+                                {% if user.status == 'approved' %}
+                                    <span class="badge badge-success">{{ user.get_status_display }}</span>
+                                {% elif user.status == 'pending' %}
+                                    <span class="badge badge-warning">{{ user.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge badge-danger">{{ user.get_status_display }}</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Departamento:</dt>
+                            <dd class="col-sm-8">{{ user.department|default:"Não informado" }}</dd>
+                            
+                            <dt class="col-sm-4">Membro desde:</dt>
+                            <dd class="col-sm-8">{{ user.registration_date|date:"d/m/Y" }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                {% if user.role and user.role.permissions %}
+                <h5 class="mt-4">Permissões</h5>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% for permission in user.role.permissions %}
+                            <span class="badge badge-secondary mr-1 mb-1">{{ permission }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ações</h4>
+            </div>
+            <div class="panel-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block">
+                        <i class="fa fa-edit"></i> Editar Perfil
+                    </a>
+                    <a href="{% url 'accounts:change_password' %}" class="btn btn-warning btn-block">
+                        <i class="fa fa-key"></i> Alterar Senha
+                    </a>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-secondary btn-block">
+                        <i class="fa fa-dashboard"></i> Voltar ao Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Segurança</h4>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-check text-success"></i> Conta ativa</li>
+                    <li><i class="fa fa-check text-success"></i> Email verificado</li>
+                    {% if user.role %}
+                        <li><i class="fa fa-check text-success"></i> Função atribuída</li>
+                    {% else %}
+                        <li><i class="fa fa-times text-danger"></i> Função não atribuída</li>
+                    {% endif %}
+                    {% if user.status == 'approved' %}
+                        <li><i class="fa fa-check text-success"></i> Conta aprovada</li>
+                    {% else %}
+                        <li><i class="fa fa-clock text-warning"></i> Aguardando aprovação</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

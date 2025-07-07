@@ -1,0 +1,330 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Inventário - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Inventário</li>
+{% endblock %}
+
+{% block page_title %}Dashboard de Inventário{% endblock %}
+{% block page_subtitle %}Visão Geral do Estoque{% endblock %}
+
+{% block content_body %}
+<!-- begin statistics -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-blue text-white">
+            <div class="stats-icon"><i class="fa fa-warehouse"></i></div>
+            <div class="stats-info">
+                <h4>ARMAZÉNS</h4>
+                <p>{{ total_warehouses }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-green text-white">
+            <div class="stats-icon"><i class="fa fa-cubes"></i></div>
+            <div class="stats-info">
+                <h4>MATERIAIS</h4>
+                <p>{{ total_materials }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-orange text-white">
+            <div class="stats-icon"><i class="fa fa-dollar-sign"></i></div>
+            <div class="stats-info">
+                <h4>VALOR TOTAL</h4>
+                <p>R$ {{ total_stock_value|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-red text-white">
+            <div class="stats-icon"><i class="fa fa-exclamation-triangle"></i></div>
+            <div class="stats-info">
+                <h4>ESTOQUE BAIXO</h4>
+                <p>{{ low_stock_items|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end statistics -->
+
+<div class="row">
+    <!-- begin estoque baixo -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-exclamation-triangle text-warning"></i>
+                    Estoque Baixo
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if low_stock_items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Armazém</th>
+                                    <th>Atual</th>
+                                    <th>Mínimo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stock in low_stock_items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ stock.material.code }}</strong>
+                                        <br><small class="text-muted">{{ stock.material.name|truncatechars:30 }}</small>
+                                    </td>
+                                    <td>{{ stock.warehouse.code }}</td>
+                                    <td>
+                                        <span class="badge badge-warning">{{ stock.current_quantity }} kg</span>
+                                    </td>
+                                    <td>{{ stock.minimum_stock }} kg</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:stock_list' %}?stock_status=low" class="btn btn-warning btn-sm">
+                            <i class="fa fa-eye"></i> Ver Todos
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-3">
+                        <i class="fa fa-check-circle fa-2x text-success"></i>
+                        <p class="mt-2">Nenhum material com estoque baixo</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end estoque baixo -->
+
+    <!-- begin sem estoque -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-times-circle text-danger"></i>
+                    Sem Estoque
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if out_of_stock_items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Armazém</th>
+                                    <th>Última Movimentação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stock in out_of_stock_items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ stock.material.code }}</strong>
+                                        <br><small class="text-muted">{{ stock.material.name|truncatechars:30 }}</small>
+                                    </td>
+                                    <td>{{ stock.warehouse.code }}</td>
+                                    <td>
+                                        {% if stock.last_movement_date %}
+                                            <small>{{ stock.last_movement_date|date:"d/m/Y" }}</small>
+                                        {% else %}
+                                            <small class="text-muted">Nunca</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:stock_list' %}?stock_status=out" class="btn btn-danger btn-sm">
+                            <i class="fa fa-eye"></i> Ver Todos
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-3">
+                        <i class="fa fa-check-circle fa-2x text-success"></i>
+                        <p class="mt-2">Nenhum material sem estoque</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end sem estoque -->
+</div>
+
+<div class="row">
+    <!-- begin movimentações recentes -->
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-exchange-alt"></i>
+                    Movimentações Recentes
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if recent_movements %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Material</th>
+                                    <th>Armazém</th>
+                                    <th>Quantidade</th>
+                                    <th>Usuário</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movement in recent_movements %}
+                                <tr>
+                                    <td>
+                                        <small>{{ movement.created_at|date:"d/m/Y H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if movement.movement_type == 'IN' %}
+                                            <span class="badge badge-success">{{ movement.get_movement_type_display }}</span>
+                                        {% elif movement.movement_type == 'OUT' %}
+                                            <span class="badge badge-danger">{{ movement.get_movement_type_display }}</span>
+                                        {% else %}
+                                            <span class="badge badge-info">{{ movement.get_movement_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ movement.material.code }}</strong>
+                                    </td>
+                                    <td>{{ movement.warehouse.code }}</td>
+                                    <td>{{ movement.quantity }} kg</td>
+                                    <td>
+                                        <small>{{ movement.user.get_full_name|default:movement.user.username }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:movements_list' %}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-eye"></i> Ver Todas
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-3">
+                        <i class="fa fa-exchange-alt fa-2x"></i>
+                        <p class="mt-2">Nenhuma movimentação recente</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end movimentações recentes -->
+
+    <!-- begin reservas ativas -->
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-lock"></i>
+                    Reservas Ativas
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if active_reservations %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Qtd</th>
+                                    <th>Expira</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in active_reservations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ reservation.material.code }}</strong>
+                                        <br><small class="text-muted">{{ reservation.warehouse.code }}</small>
+                                    </td>
+                                    <td>{{ reservation.quantity }} kg</td>
+                                    <td>
+                                        <small>{{ reservation.expiry_date|date:"d/m/Y" }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:reservations_list' %}" class="btn btn-info btn-sm">
+                            <i class="fa fa-eye"></i> Ver Todas
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-3">
+                        <i class="fa fa-lock fa-2x"></i>
+                        <p class="mt-2">Nenhuma reserva ativa</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end reservas ativas -->
+</div>
+
+<!-- begin actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-cog"></i>
+                    Ações Rápidas
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:stock_list' %}" class="btn btn-primary btn-block">
+                            <i class="fa fa-cubes"></i><br>
+                            Consultar Estoque
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:movements_list' %}" class="btn btn-success btn-block">
+                            <i class="fa fa-exchange-alt"></i><br>
+                            Nova Movimentação
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-info btn-block">
+                            <i class="fa fa-warehouse"></i><br>
+                            Gerenciar Armazéns
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'inventory:reports' %}" class="btn btn-warning btn-block">
+                            <i class="fa fa-chart-bar"></i><br>
+                            Relatórios
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end actions -->
+{% endblock %}

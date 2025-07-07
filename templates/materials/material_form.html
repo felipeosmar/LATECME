@@ -1,0 +1,222 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
+<li class="breadcrumb-item"><a href="{% url 'materials:list' %}">Lista</a></li>
+<li class="breadcrumb-item active">{{ title }}</li>
+{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}{% if material %}{{ material.code }}{% else %}Novo Material{% endif %}{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">{{ title }}</h4>
+            </div>
+            <div class="panel-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- begin basic info -->
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.code.label }} <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            {{ form.code }}
+                            {% if form.code.errors %}
+                                <div class="text-danger">{{ form.code.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.code.help_text }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.name.label }} <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.material_type.label }} <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            {{ form.material_type }}
+                            {% if form.material_type.errors %}
+                                <div class="text-danger">{{ form.material_type.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.category.label }}</label>
+                        <div class="col-md-9">
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger">{{ form.category.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- end basic info -->
+                    
+                    <!-- begin physical properties -->
+                    <h5 class="mt-4 mb-3">Propriedades Físicas</h5>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.density.label }} <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                {{ form.density }}
+                                <div class="input-group-append">
+                                    <span class="input-group-text">g/cm³</span>
+                                </div>
+                            </div>
+                            {% if form.density.errors %}
+                                <div class="text-danger">{{ form.density.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.density.help_text }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.melting_point.label }}</label>
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                {{ form.melting_point }}
+                                <div class="input-group-append">
+                                    <span class="input-group-text">°C</span>
+                                </div>
+                            </div>
+                            {% if form.melting_point.errors %}
+                                <div class="text-danger">{{ form.melting_point.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- end physical properties -->
+                    
+                    <!-- begin composition -->
+                    <h5 class="mt-4 mb-3">Composição e Especificações</h5>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.composition_text.label }}</label>
+                        <div class="col-md-9">
+                            {{ form.composition_text }}
+                            {% if form.composition_text.errors %}
+                                <div class="text-danger">{{ form.composition_text.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.composition_text.help_text }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.specifications_text.label }}</label>
+                        <div class="col-md-9">
+                            {{ form.specifications_text }}
+                            {% if form.specifications_text.errors %}
+                                <div class="text-danger">{{ form.specifications_text.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.specifications_text.help_text }}</small>
+                        </div>
+                    </div>
+                    <!-- end composition -->
+                    
+                    <!-- begin requirements -->
+                    <h5 class="mt-4 mb-3">Requisitos</h5>
+                    
+                    <div class="form-group row">
+                        <div class="col-md-9 offset-md-3">
+                            <div class="form-check">
+                                {{ form.requires_certificate }}
+                                <label class="form-check-label">
+                                    {{ form.requires_certificate.label }}
+                                </label>
+                            </div>
+                            {% if form.requires_certificate.errors %}
+                                <div class="text-danger">{{ form.requires_certificate.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.storage_requirements.label }}</label>
+                        <div class="col-md-9">
+                            {{ form.storage_requirements }}
+                            {% if form.storage_requirements.errors %}
+                                <div class="text-danger">{{ form.storage_requirements.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{ form.safety_notes.label }}</label>
+                        <div class="col-md-9">
+                            {{ form.safety_notes }}
+                            {% if form.safety_notes.errors %}
+                                <div class="text-danger">{{ form.safety_notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- end requirements -->
+                    
+                    <!-- begin form actions -->
+                    <div class="form-group row">
+                        <div class="col-md-9 offset-md-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> {{ action }}
+                            </button>
+                            <a href="{% if material %}{% url 'materials:detail' material.id %}{% else %}{% url 'materials:list' %}{% endif %}" 
+                               class="btn btn-default ml-2">
+                                <i class="fa fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                    <!-- end form actions -->
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- begin help sidebar -->
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ajuda</h4>
+            </div>
+            <div class="panel-body">
+                <h6><i class="fa fa-info-circle text-info"></i> Dicas de Preenchimento</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Código:</strong> Use o padrão TIPO + identificador (ex: AL7075, TI6AL4V)</li>
+                    <li><strong>Composição:</strong> Use formato JSON com elementos e percentuais</li>
+                    <li><strong>Especificações:</strong> Propriedades mecânicas em JSON</li>
+                    <li><strong>Densidade:</strong> Valor em g/cm³</li>
+                </ul>
+                
+                <h6 class="mt-3"><i class="fa fa-code text-warning"></i> Exemplo de Composição</h6>
+                <pre class="bg-light p-2 small">
+{
+  "Al": 90.5,
+  "Zn": 5.5,
+  "Mg": 2.5,
+  "Cu": 1.5
+}</pre>
+                
+                <h6 class="mt-3"><i class="fa fa-cogs text-success"></i> Exemplo de Especificações</h6>
+                <pre class="bg-light p-2 small">
+{
+  "resistencia_tracao": "572 MPa",
+  "limite_escoamento": "503 MPa",
+  "alongamento": "11%"
+}</pre>
+            </div>
+        </div>
+    </div>
+    <!-- end help sidebar -->
+</div>
+{% endblock %}
