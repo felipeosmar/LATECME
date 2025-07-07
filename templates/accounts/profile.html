@@ -19,7 +19,18 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-3 text-center">
+                        <div class="profile-photo-container mb-3">
+                            {% if user.profile_photo %}
+                                <img src="{{ user.profile_photo.url }}" alt="Foto do Perfil" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                    <i class="fa fa-user fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <dl class="row">
                             <dt class="col-sm-4">Nome de usuário:</dt>
                             <dd class="col-sm-8">{{ user.username }}</dd>
@@ -34,7 +45,7 @@
                             <dd class="col-sm-8">{{ user.phone|default:"Não informado" }}</dd>
                         </dl>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <dl class="row">
                             <dt class="col-sm-4">Função:</dt>
                             <dd class="col-sm-8">

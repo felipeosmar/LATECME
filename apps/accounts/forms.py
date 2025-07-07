@@ -130,7 +130,7 @@ class UserProfileForm(forms.ModelForm):
     
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'phone', 'department']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'department', 'profile_photo']
         widgets = {
             'first_name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -152,6 +152,10 @@ class UserProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Departamento'
             }),
+            'profile_photo': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
         }
         labels = {
             'first_name': 'Nome',
@@ -159,6 +163,7 @@ class UserProfileForm(forms.ModelForm):
             'email': 'Email',
             'phone': 'Telefone',
             'department': 'Departamento',
+            'profile_photo': 'Foto do Perfil',
         }
     
     def __init__(self, *args, **kwargs):
