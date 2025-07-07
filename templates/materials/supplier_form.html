@@ -1,0 +1,105 @@
+{% extends "base/internal.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">{{ title }}</h4>
+            </div>
+            <div class="panel-body">
+                <form method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    {% for field in form %}
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                    <span class="text-danger">*</span>
+                                {% endif %}
+                            </label>
+                            <div class="col-lg-9">
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="form-group row">
+                        <div class="col-lg-9 offset-lg-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save"></i> {{ action }}
+                            </button>
+                            <a href="{% url 'materials:supplier_list' %}" class="btn btn-default">
+                                <i class="fa fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ajuda</h4>
+            </div>
+            <div class="panel-body">
+                <h5>Dicas para cadastro de fornecedor</h5>
+                <ul class="mb-3">
+                    <li>O código interno deve ser único e fácil de identificar</li>
+                    <li>Use códigos como FOR001, FOR002, etc.</li>
+                    <li>O CNPJ será validado automaticamente</li>
+                    <li>Preencha todos os dados de contato disponíveis</li>
+                </ul>
+                
+                <h5>Campos obrigatórios</h5>
+                <ul>
+                    <li>Código interno</li>
+                    <li>Nome da empresa</li>
+                    <li>CNPJ</li>
+                    <li>E-mail de contato</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Adiciona máscara ao campo CNPJ se existir plugin de máscara
+    if ($.fn.mask) {
+        $('#id_cnpj').mask('00.000.000/0000-00', {
+            placeholder: '__.___.___/____-__'
+        });
+    }
+    
+    // Adiciona máscara ao telefone se existir plugin de máscara
+    if ($.fn.mask) {
+        $('#id_contact_phone').mask('(00) 00000-0000', {
+            placeholder: '(__) _____-____'
+        });
+    }
+});
+</script>
+{% endblock %}
