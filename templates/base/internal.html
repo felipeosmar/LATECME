@@ -23,7 +23,11 @@
         <ul class="navbar-nav navbar-right">
             <li class="dropdown">
                 <a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
-                    <i class="fa fa-user"></i>
+                    {% if user.profile_photo %}
+                        <img src="{{ user.profile_photo.url }}" alt="{{ user.get_full_name|default:user.username }}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover; margin-right: 5px;">
+                    {% else %}
+                        <i class="fa fa-user"></i>
+                    {% endif %}
                     <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span> 
                     <b class="caret"></b>
                 </a>
@@ -49,7 +53,11 @@
                     <a href="javascript:;" data-toggle="nav-profile">
                         <div class="cover with-shadow"></div>
                         <div class="image">
-                            <img src="{% static 'img/user-13.jpg' %}" alt="" />
+                            {% if user.profile_photo %}
+                                <img src="{{ user.profile_photo.url }}" alt="{{ user.get_full_name|default:user.username }}" />
+                            {% else %}
+                                <img src="{% static 'img/user-13.jpg' %}" alt="" />
+                            {% endif %}
                         </div>
                         <div class="info">
                             <b class="caret pull-right"></b>
