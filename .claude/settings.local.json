@@ -13,7 +13,9 @@
       "Bash(true)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(poetry add:*)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }

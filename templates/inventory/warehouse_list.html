@@ -1,0 +1,314 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Lista de Armazéns - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
+<li class="breadcrumb-item active">Armazéns</li>
+{% endblock %}
+
+{% block page_title %}Lista de Armazéns{% endblock %}
+{% block page_subtitle %}Gestão de Armazéns e Depósitos{% endblock %}
+
+{% block content_body %}
+<!-- begin search -->
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <i class="fa fa-search"></i> Buscar Armazéns
+        </h4>
+    </div>
+    <div class="panel-body">
+        <form method="get" class="form-inline">
+            <div class="form-group mr-3">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por código, nome ou localização..." value="{{ search }}">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-search"></i> Buscar
+            </button>
+            <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-secondary ml-2">
+                <i class="fa fa-times"></i> Limpar
+            </a>
+        </form>
+    </div>
+</div>
+<!-- end search -->
+
+<!-- begin results -->
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#warehouseModal">
+                <i class="fa fa-plus"></i> Novo Armazém
+            </button>
+        </div>
+        <h4 class="panel-title">
+            Armazéns 
+            <small class="text-muted">({{ warehouses.paginator.count }} encontrado{{ warehouses.paginator.count|pluralize:"s" }})</small>
+        </h4>
+    </div>
+    <div class="panel-body">
+        {% if warehouses %}
+            <div class="row">
+                {% for warehouse in warehouses %}
+                <div class="col-xl-6 col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">
+                                        <i class="fa fa-warehouse text-primary"></i>
+                                        {{ warehouse.code }} - {{ warehouse.name }}
+                                        {% if not warehouse.is_active %}
+                                            <span class="badge badge-secondary">Inativo</span>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        <i class="fa fa-map-marker-alt"></i> {{ warehouse.location }}
+                                    </p>
+                                    
+                                    {% if warehouse.manager %}
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fa fa-user"></i> 
+                                                Responsável: {{ warehouse.manager.get_full_name|default:warehouse.manager.username }}
+                                            </small>
+                                        </p>
+                                    {% endif %}
+                                    
+                                    {% if warehouse.description %}
+                                        <p class="card-text">
+                                            <small>{{ warehouse.description|truncatechars:80 }}</small>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-3">
+                                    <a href="{% url 'inventory:warehouse_detail' warehouse.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fa fa-eye"></i> Ver
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Statistics -->
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h6 class="text-primary mb-1">{{ warehouse.total_materials|default:0 }}</h6>
+                                        <small class="text-muted">Material{{ warehouse.total_materials|pluralize:"is" }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h6 class="text-success mb-1">{{ warehouse.total_stock_quantity|default:0|floatformat:1 }} kg</h6>
+                                        <small class="text-muted">Estoque Total</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick actions -->
+                            <div class="mt-3">
+                                <div class="btn-group btn-block" role="group">
+                                    <a href="{% url 'inventory:warehouse_detail' warehouse.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa fa-eye"></i> Detalhes
+                                    </a>
+                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="editWarehouse('{{ warehouse.id }}')">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                    <a href="{% url 'inventory:stock_list' %}?warehouse={{ warehouse.id }}" class="btn btn-outline-info btn-sm">
+                                        <i class="fa fa-cubes"></i> Estoques
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if warehouses.has_other_pages %}
+                <nav aria-label="Paginação">
+                    <ul class="pagination justify-content-center">
+                        {% if warehouses.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}page={{ warehouses.previous_page_number }}">Anterior</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in warehouses.paginator.page_range %}
+                            {% if warehouses.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > warehouses.number|add:'-3' and num < warehouses.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if warehouses.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}page={{ warehouses.next_page_number }}">Próximo</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center text-muted p-5">
+                <i class="fa fa-warehouse fa-3x"></i>
+                <h4 class="mt-3">Nenhum armazém encontrado</h4>
+                <p>{% if search %}Não há armazéns que correspondam à sua busca.{% else %}Nenhum armazém foi cadastrado ainda.{% endif %}</p>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#warehouseModal">
+                    <i class="fa fa-plus"></i> Cadastrar Primeiro Armazém
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- end results -->
+
+<!-- Warehouse Modal -->
+<div class="modal fade" id="warehouseModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="warehouseModalTitle">Novo Armazém</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="warehouseForm">
+                {% csrf_token %}
+                <input type="hidden" name="warehouse_id" id="warehouseId">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Código <span class="text-danger">*</span></label>
+                                <input type="text" name="code" class="form-control" required maxlength="20" 
+                                       placeholder="Ex: ARM01, DEP02">
+                                <small class="form-text text-muted">Código único para identificação</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nome <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" required maxlength="100" 
+                                       placeholder="Ex: Armazém Principal">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Localização <span class="text-danger">*</span></label>
+                        <input type="text" name="location" class="form-control" required maxlength="200" 
+                               placeholder="Ex: Galpão A - Rua das Indústrias, 123">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Responsável</label>
+                        <select name="manager_id" class="form-control">
+                            <option value="">Selecione um responsável...</option>
+                            <!-- Users will be loaded via AJAX or server-side -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="description" class="form-control" rows="3" 
+                                  placeholder="Descrição detalhada do armazém, seus propósitos, características especiais, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" name="is_active" class="form-check-input" id="isActive" checked>
+                            <label class="form-check-label" for="isActive">
+                                Armazém ativo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-save"></i> <span id="submitText">Salvar Armazém</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Reset modal when opening for new warehouse
+    $('#warehouseModal').on('show.bs.modal', function(e) {
+        if (!$(e.relatedTarget).data('edit')) {
+            $('#warehouseModalTitle').text('Novo Armazém');
+            $('#submitText').text('Salvar Armazém');
+            $('#warehouseForm')[0].reset();
+            $('#warehouseId').val('');
+            $('#isActive').prop('checked', true);
+        }
+    });
+    
+    // Handle form submission
+    $('#warehouseForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const warehouseId = $('#warehouseId').val();
+        const url = warehouseId ? `/inventory/warehouses/${warehouseId}/update/` : '/inventory/warehouses/create/';
+        const method = warehouseId ? 'PUT' : 'POST';
+        
+        $.ajax({
+            url: url,
+            type: method,
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    alert(warehouseId ? 'Armazém atualizado com sucesso!' : 'Armazém criado com sucesso!');
+                    $('#warehouseModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert('Erro: ' + (response.message || 'Erro desconhecido'));
+                }
+            },
+            error: function(xhr) {
+                let message = 'Erro ao salvar armazém.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        });
+    });
+});
+
+// Function to edit warehouse
+function editWarehouse(warehouseId) {
+    $.ajax({
+        url: `/inventory/warehouses/${warehouseId}/`,
+        type: 'GET',
+        success: function(warehouse) {
+            $('#warehouseModalTitle').text('Editar Armazém');
+            $('#submitText').text('Atualizar Armazém');
+            $('#warehouseId').val(warehouse.id);
+            $('input[name="code"]').val(warehouse.code);
+            $('input[name="name"]').val(warehouse.name);
+            $('input[name="location"]').val(warehouse.location);
+            $('select[name="manager_id"]').val(warehouse.manager_id || '');
+            $('textarea[name="description"]').val(warehouse.description || '');
+            $('#isActive').prop('checked', warehouse.is_active);
+            
+            $('#warehouseModal').modal('show');
+        },
+        error: function() {
+            alert('Erro ao carregar dados do armazém.');
+        }
+    });
+}
+</script>
+{% endblock %}

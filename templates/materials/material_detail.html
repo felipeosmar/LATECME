@@ -228,19 +228,31 @@
                 <h4 class="panel-title">Ações Rápidas</h4>
             </div>
             <div class="panel-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-block">
-                        <i class="fa fa-edit"></i> Editar Material
-                    </a>
-                    <a href="javascript:;" class="btn btn-info btn-block">
-                        <i class="fa fa-plus"></i> Adicionar Fornecedor
-                    </a>
-                    <a href="javascript:;" class="btn btn-success btn-block">
-                        <i class="fa fa-shopping-cart"></i> Novo Pedido
-                    </a>
-                    <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
-                        <i class="fa fa-arrow-left"></i> Voltar à Lista
-                    </a>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-block">
+                            <i class="fa fa-edit"></i><br>
+                            Editar Material
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="javascript:;" class="btn btn-info btn-block">
+                            <i class="fa fa-plus"></i><br>
+                            Adicionar Fornecedor
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="javascript:;" class="btn btn-success btn-block">
+                            <i class="fa fa-shopping-cart"></i><br>
+                            Novo Pedido
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
+                            <i class="fa fa-arrow-left"></i><br>
+                            Voltar à Lista
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

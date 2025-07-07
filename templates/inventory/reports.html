@@ -1,0 +1,464 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Relatórios de Inventário - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
+<li class="breadcrumb-item active">Relatórios</li>
+{% endblock %}
+
+{% block page_title %}Relatórios de Inventário{% endblock %}
+{% block page_subtitle %}Análise e Estatísticas de Movimentações{% endblock %}
+
+{% block content_body %}
+<!-- begin period filter -->
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <i class="fa fa-calendar"></i> Período de Análise
+        </h4>
+    </div>
+    <div class="panel-body">
+        <form method="get" class="form-inline">
+            <div class="form-group mr-3">
+                <label class="mr-2">De:</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from|date:'Y-m-d' }}">
+            </div>
+            <div class="form-group mr-3">
+                <label class="mr-2">Até:</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to|date:'Y-m-d' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-chart-bar"></i> Gerar Relatório
+            </button>
+            <a href="{% url 'inventory:reports' %}" class="btn btn-secondary ml-2">
+                <i class="fa fa-refresh"></i> Último Mês
+            </a>
+        </form>
+        
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fa fa-info-circle"></i>
+                Período selecionado: {{ date_from|date:"d/m/Y" }} a {{ date_to|date:"d/m/Y" }}
+                ({{ date_from|timesince:date_to|cut:" ago" }})
+            </small>
+        </div>
+    </div>
+</div>
+<!-- end period filter -->
+
+<!-- begin summary cards -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-blue text-white">
+            <div class="stats-icon"><i class="fa fa-exchange-alt"></i></div>
+            <div class="stats-info">
+                <h4>MOVIMENTAÇÕES</h4>
+                <p>{{ movements_by_type|length }}</p>
+            </div>
+            <div class="stats-link">
+                <a href="{% url 'inventory:movements_list' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="text-white">
+                    Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-green text-white">
+            <div class="stats-icon"><i class="fa fa-arrow-up"></i></div>
+            <div class="stats-info">
+                <h4>ENTRADAS</h4>
+                <p>
+                    {% for item in movements_by_type %}
+                        {% if item.movement_type == 'IN' %}{{ item.count }}{% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-red text-white">
+            <div class="stats-icon"><i class="fa fa-arrow-down"></i></div>
+            <div class="stats-info">
+                <h4>SAÍDAS</h4>
+                <p>
+                    {% for item in movements_by_type %}
+                        {% if item.movement_type == 'OUT' %}{{ item.count }}{% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="widget widget-stats bg-gradient-orange text-white">
+            <div class="stats-icon"><i class="fa fa-exchange-alt"></i></div>
+            <div class="stats-info">
+                <h4>TRANSFERÊNCIAS</h4>
+                <p>
+                    {% for item in movements_by_type %}
+                        {% if item.movement_type == 'TRANSFER' %}{{ item.count }}{% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end summary cards -->
+
+<div class="row">
+    <!-- begin movements by type -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-pie-chart"></i> Movimentações por Tipo
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if movements_by_type %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th class="text-center">Quantidade de Movim.</th>
+                                    <th class="text-center">Total Movimentado (kg)</th>
+                                    <th class="text-center">Percentual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in movements_by_type %}
+                                <tr>
+                                    <td>
+                                        {% if item.movement_type == 'IN' %}
+                                            <span class="badge badge-success">Entrada</span>
+                                        {% elif item.movement_type == 'OUT' %}
+                                            <span class="badge badge-danger">Saída</span>
+                                        {% elif item.movement_type == 'TRANSFER' %}
+                                            <span class="badge badge-info">Transferência</span>
+                                        {% else %}
+                                            <span class="badge badge-warning">Ajuste</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ item.count }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ item.total_quantity|floatformat:1 }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        {% widthratio item.count movements_by_type|length 100 %}%
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-4">
+                        <i class="fa fa-chart-pie fa-2x"></i>
+                        <p class="mt-2">Nenhuma movimentação no período selecionado.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end movements by type -->
+    
+    <!-- begin top materials -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-cubes"></i> Materiais Mais Movimentados
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if top_materials %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th class="text-center">Movimentações</th>
+                                    <th class="text-center">Quantidade (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in top_materials %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ material.material__code }}</strong>
+                                        <br><small class="text-muted">{{ material.material__name|truncatechars:30 }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-primary">{{ material.total_movements }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ material.total_quantity|floatformat:1 }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:movements_list' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-eye"></i> Ver Todas as Movimentações
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-4">
+                        <i class="fa fa-cubes fa-2x"></i>
+                        <p class="mt-2">Nenhum material movimentado no período.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end top materials -->
+</div>
+
+<div class="row">
+    <!-- begin top warehouses -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-warehouse"></i> Armazéns Mais Ativos
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if top_warehouses %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Armazém</th>
+                                    <th class="text-center">Movimentações</th>
+                                    <th class="text-center">Quantidade (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for warehouse in top_warehouses %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ warehouse.warehouse__code }}</strong>
+                                        <br><small class="text-muted">{{ warehouse.warehouse__name|truncatechars:30 }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-info">{{ warehouse.total_movements }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ warehouse.total_quantity|floatformat:1 }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-primary btn-sm">
+                            <i class="fa fa-warehouse"></i> Ver Todos os Armazéns
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-4">
+                        <i class="fa fa-warehouse fa-2x"></i>
+                        <p class="mt-2">Nenhum armazém teve movimentações no período.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- end top warehouses -->
+    
+    <!-- begin export options -->
+    <div class="col-xl-6">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-download"></i> Exportar Relatórios
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <a href="{% url 'inventory:movements_list' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}&export=csv" 
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                <i class="fa fa-file-csv text-success"></i> Movimentações (CSV)
+                            </h6>
+                            <small>{{ movements_by_type|length }} registros</small>
+                        </div>
+                        <p class="mb-1">Exportar todas as movimentações do período em formato CSV</p>
+                    </a>
+                    
+                    <a href="{% url 'inventory:stock_list' %}?export=pdf" 
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                <i class="fa fa-file-pdf text-danger"></i> Posição de Estoque (PDF)
+                            </h6>
+                            <small>Atual</small>
+                        </div>
+                        <p class="mb-1">Relatório completo da posição atual de estoque</p>
+                    </a>
+                    
+                    <a href="javascript:;" onclick="generateCustomReport()" 
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                <i class="fa fa-cog text-info"></i> Relatório Personalizado
+                            </h6>
+                            <small>Configurável</small>
+                        </div>
+                        <p class="mb-1">Criar relatório com filtros e campos personalizados</p>
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Ações Rápidas</h6>
+                    <div class="btn-group d-block" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="printReport()">
+                            <i class="fa fa-print"></i> Imprimir Relatório
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="emailReport()">
+                            <i class="fa fa-envelope"></i> Enviar por Email
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="scheduleReport()">
+                            <i class="fa fa-clock"></i> Agendar Relatório
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end export options -->
+</div>
+
+<!-- begin detailed analysis -->
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <i class="fa fa-chart-line"></i> Análise Detalhada do Período
+        </h4>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card border-left-primary">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Volume Total Movimentado
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {% for item in movements_by_type %}{{ item.total_quantity|add:0 }}{% if not forloop.last %} + {% endif %}{% endfor %} kg
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-left-success">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Média Diária de Movimentações
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {% for item in movements_by_type %}{{ item.count|add:0 }}{% if not forloop.last %} + {% endif %}{% endfor %} / dia
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-left-info">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Materiais Diferentes Movimentados
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ top_materials|length }} tipos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6>Insights do Período</h6>
+                <div class="alert alert-info">
+                    <ul class="mb-0">
+                        {% if top_materials %}
+                            <li>O material mais movimentado foi <strong>{{ top_materials.0.material__code }}</strong> com {{ top_materials.0.total_movements }} movimentações.</li>
+                        {% endif %}
+                        {% if top_warehouses %}
+                            <li>O armazém mais ativo foi <strong>{{ top_warehouses.0.warehouse__code }}</strong> com {{ top_warehouses.0.total_movements }} movimentações.</li>
+                        {% endif %}
+                        {% for item in movements_by_type %}
+                            {% if item.movement_type == 'IN' %}
+                                <li>Foram registradas <strong>{{ item.count }}</strong> entradas totalizando <strong>{{ item.total_quantity|floatformat:1 }} kg</strong>.</li>
+                            {% elif item.movement_type == 'OUT' %}
+                                <li>Foram registradas <strong>{{ item.count }}</strong> saídas totalizando <strong>{{ item.total_quantity|floatformat:1 }} kg</strong>.</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end detailed analysis -->
+
+<script>
+function printReport() {
+    window.print();
+}
+
+function emailReport() {
+    alert('Funcionalidade de envio por email será implementada em breve.');
+}
+
+function scheduleReport() {
+    alert('Funcionalidade de agendamento de relatórios será implementada em breve.');
+}
+
+function generateCustomReport() {
+    alert('Gerador de relatórios personalizados será implementado em breve.');
+}
+
+// Auto-refresh option
+$(document).ready(function() {
+    // Add refresh button functionality
+    $('.btn-refresh').on('click', function() {
+        location.reload();
+    });
+    
+    // Print styles
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            @media print {
+                .panel-heading-btn,
+                .btn,
+                .form-inline,
+                .breadcrumb,
+                .navbar,
+                .sidebar {
+                    display: none !important;
+                }
+                .panel {
+                    border: 1px solid #ddd !important;
+                    margin-bottom: 20px !important;
+                }
+                .widget {
+                    background: #f8f9fa !important;
+                    color: #000 !important;
+                }
+            }
+        `)
+        .appendTo('head');
+});
+</script>
+{% endblock %}

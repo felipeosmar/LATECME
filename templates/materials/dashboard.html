@@ -156,16 +156,25 @@
                 <h4 class="panel-title">Ações Rápidas</h4>
             </div>
             <div class="panel-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'materials:create' %}" class="btn btn-primary btn-block">
-                        <i class="fa fa-plus"></i> Novo Material
-                    </a>
-                    <a href="{% url 'materials:supplier_create' %}" class="btn btn-info btn-block">
-                        <i class="fa fa-truck"></i> Novo Fornecedor
-                    </a>
-                    <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
-                        <i class="fa fa-list"></i> Lista Completa
-                    </a>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'materials:create' %}" class="btn btn-primary btn-block">
+                            <i class="fa fa-plus"></i><br>
+                            Novo Material
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-info btn-block">
+                            <i class="fa fa-truck"></i><br>
+                            Novo Fornecedor
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
+                            <i class="fa fa-list"></i><br>
+                            Lista Completa
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
