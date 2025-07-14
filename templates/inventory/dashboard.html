@@ -14,16 +14,16 @@
 <!-- begin statistics -->
 <div class="row">
     <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-gradient-blue text-white">
-            <div class="stats-icon"><i class="fa fa-warehouse"></i></div>
+        <div class="widget widget-stats bg-blue text-white">
+            <div class="stats-icon"><i class="fa fa-building"></i></div>
             <div class="stats-info">
-                <h4>ARMAZÉNS</h4>
+                <h4><i class="fa fa-building"></i> ARMAZÉNS</h4>
                 <p>{{ total_warehouses }}</p>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-gradient-green text-white">
+        <div class="widget widget-stats bg-info text-white">
             <div class="stats-icon"><i class="fa fa-cubes"></i></div>
             <div class="stats-info">
                 <h4>MATERIAIS</h4>
@@ -32,16 +32,16 @@
         </div>
     </div>
     <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-gradient-orange text-white">
-            <div class="stats-icon"><i class="fa fa-dollar-sign"></i></div>
+        <div class="widget widget-stats bg-orange text-white">
+            <div class="stats-icon"><i class="fa fa-money"></i></div>
             <div class="stats-info">
-                <h4>VALOR TOTAL</h4>
+                <h4><i class="fa fa-money"></i> VALOR TOTAL</h4>
                 <p>R$ {{ total_stock_value|floatformat:2 }}</p>
             </div>
         </div>
     </div>
     <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-gradient-red text-white">
+        <div class="widget widget-stats bg-red text-white">
             <div class="stats-icon"><i class="fa fa-exclamation-triangle"></i></div>
             <div class="stats-info">
                 <h4>ESTOQUE BAIXO</h4>
@@ -305,19 +305,19 @@
                     </div>
                     <div class="col-md-3">
                         <a href="{% url 'inventory:movements_list' %}" class="btn btn-success btn-block">
-                            <i class="fa fa-exchange-alt"></i><br>
+                            <i class="fa fa-exchange"></i><br>
                             Nova Movimentação
                         </a>
                     </div>
                     <div class="col-md-3">
                         <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-info btn-block">
-                            <i class="fa fa-warehouse"></i><br>
+                            <i class="fa fa-building"></i><br>
                             Gerenciar Armazéns
                         </a>
                     </div>
                     <div class="col-md-3">
                         <a href="{% url 'inventory:reports' %}" class="btn btn-warning btn-block">
-                            <i class="fa fa-chart-bar"></i><br>
+                            <i class="fa fa-bar-chart"></i><br>
                             Relatórios
                         </a>
                     </div>

@@ -64,17 +64,17 @@
         {% if page_obj %}
             <!-- begin table -->
             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
                         <tr>
-                            <th>Código</th>
-                            <th>Nome</th>
-                            <th>Tipo</th>
-                            <th>Categoria</th>
-                            <th>Densidade</th>
-                            <th>Fornecedores</th>
-                            <th>Melhor Preço</th>
-                            <th>Ações</th>
+                            <th width="12%">Código</th>
+                            <th width="25%">Nome</th>
+                            <th width="12%">Tipo</th>
+                            <th width="15%">Categoria</th>
+                            <th width="8%" class="text-center">Densidade</th>
+                            <th width="8%" class="text-center">Fornecedores</th>
+                            <th width="12%" class="text-center">Melhor Preço</th>
+                            <th width="8%" class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,7 +102,7 @@
                                     <span class="text-muted">-</span>
                                 {% endif %}
                             </td>
-                            <td>{{ material.density }} g/cm³</td>
+                            <td class="text-center">{{ material.density }} g/cm³</td>
                             <td class="text-center">
                                 {% with supplier_count=material.suppliers.count %}
                                     {% if supplier_count > 0 %}
@@ -112,23 +112,23 @@
                                     {% endif %}
                                 {% endwith %}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {% with best_price=material.get_best_price %}
                                     {% if best_price %}
-                                        <strong>R$ {{ best_price|floatformat:2 }}/kg</strong>
+                                        <strong class="text-success">R$ {{ best_price|floatformat:2 }}/kg</strong>
                                     {% else %}
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                 {% endwith %}
                             </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
                                     <a href="{% url 'materials:detail' material.id %}" 
-                                       class="btn btn-primary" title="Ver Detalhes">
+                                       class="btn btn-primary btn-xs" title="Ver Detalhes">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                     <a href="{% url 'materials:edit' material.id %}" 
-                                       class="btn btn-warning" title="Editar">
+                                       class="btn btn-warning btn-xs" title="Editar">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                 </div>

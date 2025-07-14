@@ -199,6 +199,30 @@ def supplier_create(request):
 
 
 @login_required
+def supplier_edit(request, supplier_id):
+    """Editar fornecedor"""
+    supplier = get_object_or_404(Supplier, id=supplier_id, is_active=True)
+    
+    if request.method == 'POST':
+        form = SupplierForm(request.POST, instance=supplier)
+        if form.is_valid():
+            supplier = form.save(commit=False)
+            supplier.updated_by = request.user
+            supplier.save()
+            messages.success(request, f'Fornecedor {supplier.name} atualizado com sucesso!')
+            return redirect('materials:supplier_detail', supplier_id=supplier.id)
+    else:
+        form = SupplierForm(instance=supplier)
+    
+    return render(request, 'materials/supplier_form.html', {
+        'form': form,
+        'supplier': supplier,
+        'title': 'Editar Fornecedor',
+        'action': 'Salvar'
+    })
+
+
+@login_required
 def dashboard_materials(request):
     """Dashboard do módulo de materiais"""
     # Estatísticas

@@ -1,19 +1,55 @@
 services:
+  # Django Application
+  django:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_DB_ENGINE=django.db.backends.postgresql
+      - DJANGO_DB_HOST=postgres
+      - DJANGO_DB_USER=${DJANGO_DB_USER}
+      - DJANGO_DB_PASSWORD=${DJANGO_DB_PASSWORD}
+      - DJANGO_DB_NAME=${DJANGO_DB_NAME}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# Redis Cache
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - app-network
+
   postgres:
-    image: docker.io/postgres:latest
+    image: postgres:latest
     environment:
       POSTGRES_USER: ${DJANGO_DB_USER}
       POSTGRES_PASSWORD: ${DJANGO_DB_PASSWORD}
       POSTGRES_DB: ${DJANGO_DB_NAME}
     ports:
       - 5432:5432
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U ${DJANGO_DB_USER}"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    restart: unless-stopped
     volumes:
-      - ./docker-data/postgress:/var/lib/postgresql/data
+      - ./docker-data/postgres:/var/lib/postgresql/data
     networks:
-      - postgres-network
+      - app-network
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -21,9 +57,32 @@ services:
       - 8081:80
     depends_on:
       - postgres
+    restart: unless-stopped
     networks:
-      - postgres-network
+      - app-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+    networks:
+      - app-network
+    restart: unless-stopped
 
 networks:
-  postgres-network:
+  app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  django_data:
+  nginx_data:
+  pgadmin_data:

@@ -96,16 +96,25 @@
                 <h4 class="panel-title">Ações</h4>
             </div>
             <div class="panel-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block">
-                        <i class="fa fa-edit"></i> Editar Perfil
-                    </a>
-                    <a href="{% url 'accounts:change_password' %}" class="btn btn-warning btn-block">
-                        <i class="fa fa-key"></i> Alterar Senha
-                    </a>
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-secondary btn-block">
-                        <i class="fa fa-dashboard"></i> Voltar ao Dashboard
-                    </a>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block">
+                            <i class="fa fa-edit"></i><br>
+                            Editar Perfil
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'accounts:change_password' %}" class="btn btn-warning btn-block">
+                            <i class="fa fa-key"></i><br>
+                            Alterar Senha
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary btn-block" style="border: 1px solid rgba(0,0,0,0.2);">
+                            <i class="fa fa-dashboard"></i><br>
+                            Voltar ao Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -17,17 +17,6 @@ Sistema Django para controle de manufatura aditiva de materiais metálicos, com 
 sudo apt update
 sudo apt install python3.10 python3.10-venv python3-pip postgresql postgresql-contrib
 
-# CentOS/RHEL
-sudo yum install python3.10 python3-pip postgresql postgresql-server
-
-# macOS (com Homebrew)
-brew install python@3.10 postgresql
-
-# Windows
-# Instale Python 3.10+ do site oficial
-# Instale PostgreSQL do site oficial
-```
-
 ## Instalação
 
 ### 1. Clonagem do Projeto
@@ -38,7 +27,7 @@ cd LATECME
 
 ### 2. Configuração do Ambiente Python
 
-#### Opção A: Usando Poetry (Recomendado)
+#### Usando Poetry
 ```bash
 # Instalar Poetry
 curl -sSL https://install.python-poetry.org | python3 -
@@ -50,21 +39,6 @@ poetry install
 poetry shell
 ```
 
-#### Opção B: Usando venv + pip
-```bash
-# Criar ambiente virtual
-python3 -m venv venv
-
-# Ativar ambiente virtual
-# Linux/macOS:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
-
-# Instalar dependências
-pip install django>=5.2.4
-```
-
 ### 3. Configuração do Banco de Dados
 
 #### Opção A: PostgreSQL com Docker (Recomendado)
@@ -72,39 +46,12 @@ pip install django>=5.2.4
 # Criar arquivo .env na raiz do projeto
 touch .env
 
-# Adicionar as seguintes variáveis ao arquivo .env:
-echo "DJANGO_DB_USER=latecme_user" >> .env
-echo "DJANGO_DB_PASSWORD=latecme_password" >> .env
-echo "DJANGO_DB_NAME=latecme_db" >> .env
-echo "PGADMIN_DEFAULT_EMAIL=admin@latecme.com" >> .env
-echo "PGADMIN_DEFAULT_PASSWORD=admin123" >> .env
-
 # Iniciar serviços PostgreSQL
 docker-compose -f docker-compose-dev.yml up -d
 
 # Verificar se os serviços estão rodando
 docker-compose -f docker-compose-dev.yml ps
 ```
-
-#### Opção B: PostgreSQL Local
-```bash
-# Criar usuário e banco
-sudo -u postgres psql
-CREATE USER latecme_user WITH PASSWORD 'latecme_password';
-CREATE DATABASE latecme_db OWNER latecme_user;
-GRANT ALL PRIVILEGES ON DATABASE latecme_db TO latecme_user;
-\q
-
-# Atualizar config/settings.py com as credenciais
-# (Ou usar variáveis de ambiente)
-```
-
-#### Opção C: SQLite (Desenvolvimento apenas)
-```bash
-# O projeto já está configurado para usar SQLite por padrão
-# Arquivo será criado automaticamente: db.sqlite3
-```
-
 ### 4. Configuração do Django
 
 ```bash

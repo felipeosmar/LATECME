@@ -17,6 +17,7 @@ urlpatterns = [
     path('suppliers/', views.supplier_list, name='supplier_list'),
     path('suppliers/detail/<uuid:supplier_id>/', views.supplier_detail, name='supplier_detail'),
     path('suppliers/create/', views.supplier_create, name='supplier_create'),
+    path('suppliers/edit/<uuid:supplier_id>/', views.supplier_edit, name='supplier_edit'),
     
     # API
     path('api/search/', views.material_search_api, name='search_api'),

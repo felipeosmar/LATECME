@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from prettyconf import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,13 +80,33 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": config("DJANGO_DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": config("DJANGO_DB_NAME"),
+        "USER": config("DJANGO_DB_USER"),
+        "PASSWORD": config("DJANGO_DB_PASSWORD"),
+        "HOST": config("DJANGO_DB_HOST"),
+        "PORT": config("DJANGO_DB_PORT"),
+        "TIME_ZONE": config("DJANGO_DB_TIME_ZONE"),
+        "CONN_MAX_AGE": 300,
     }
 }
 
+# Configuração do Connection Pool
+DATABASE_POOL_ARGS = {
+    'MAX_CONNS': 20,
+    'MIN_CONNS': 5,
+    'MAX_LIFETIME': 300,
+    'MAX_IDLE_TIME': 30,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

@@ -1,0 +1,264 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}{{ supplier.name }} - Fornecedor - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
+<li class="breadcrumb-item"><a href="{% url 'materials:supplier_list' %}">Fornecedores</a></li>
+<li class="breadcrumb-item active">{{ supplier.name }}</li>
+{% endblock %}
+
+{% block page_title %}Fornecedor{% endblock %}
+{% block page_subtitle %}{{ supplier.name }} ({{ supplier.code }}){% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-xl-8">
+        <!-- begin supplier info -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-building"></i> Informações do Fornecedor
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Código:</dt>
+                            <dd class="col-sm-8"><strong>{{ supplier.code }}</strong></dd>
+                            
+                            <dt class="col-sm-4">Nome:</dt>
+                            <dd class="col-sm-8">{{ supplier.name }}</dd>
+                            
+                            <dt class="col-sm-4">CNPJ:</dt>
+                            <dd class="col-sm-8">{{ supplier.cnpj }}</dd>
+                            
+                            <dt class="col-sm-4">E-mail:</dt>
+                            <dd class="col-sm-8">
+                                {% if supplier.contact_email %}
+                                    <a href="mailto:{{ supplier.contact_email }}">{{ supplier.contact_email }}</a>
+                                {% else %}
+                                    <span class="text-muted">Não informado</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Telefone:</dt>
+                            <dd class="col-sm-8">
+                                {% if supplier.contact_phone %}
+                                    <a href="tel:{{ supplier.contact_phone }}">{{ supplier.contact_phone }}</a>
+                                {% else %}
+                                    <span class="text-muted">Não informado</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Endereço:</dt>
+                            <dd class="col-sm-8">
+                                {% if supplier.address %}
+                                    {{ supplier.address }}
+                                {% else %}
+                                    <span class="text-muted">Não informado</span>
+                                {% endif %}
+                            </dd>
+                            
+                            <dt class="col-sm-4">Criado em:</dt>
+                            <dd class="col-sm-8">{{ supplier.created_at|date:"d/m/Y H:i" }}</dd>
+                            
+                            <dt class="col-sm-4">Criado por:</dt>
+                            <dd class="col-sm-8">{{ supplier.created_by.get_full_name|default:supplier.created_by.username }}</dd>
+                        </dl>
+                    </div>
+                </div>
+                
+                {% if supplier.notes %}
+                <div class="mt-3">
+                    <h6><i class="fa fa-sticky-note"></i> Observações</h6>
+                    <div class="alert alert-info">
+                        {{ supplier.notes|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- end supplier info -->
+        
+        <!-- begin materials supplied -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-cubes"></i> Materiais Fornecidos
+                    <span class="badge badge-primary ml-2">{{ materials.count }}</span>
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% if materials %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Material</th>
+                                    <th>Preço/kg</th>
+                                    <th>Pedido Mín.</th>
+                                    <th>Prazo</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material_supplier in materials %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'materials:detail' material_supplier.material.id %}">
+                                                <strong>{{ material_supplier.material.code }}</strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ material_supplier.material.name }}
+                                            {% if material_supplier.material.category %}
+                                                <span class="badge badge-sm" style="background-color: {{ material_supplier.material.category.color }}">
+                                                    {{ material_supplier.material.category.name }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if material_supplier.price_per_kg %}
+                                                <strong>R$ {{ material_supplier.price_per_kg|floatformat:2 }}</strong>
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if material_supplier.minimum_order_kg %}
+                                                {{ material_supplier.minimum_order_kg }} kg
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if material_supplier.lead_time_days %}
+                                                {{ material_supplier.lead_time_days }} dias
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if material_supplier.is_available %}
+                                                <span class="badge badge-success">Disponível</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Indisponível</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'materials:detail' material_supplier.material.id %}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> 
+                        Este fornecedor ainda não tem materiais cadastrados.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- end materials supplied -->
+    </div>
+    
+    <!-- begin actions sidebar -->
+    <div class="col-xl-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Ações</h4>
+            </div>
+            <div class="panel-body">
+                <div class="mb-2">
+                    <a href="{% url 'materials:supplier_edit' supplier.id %}" 
+                       class="btn btn-warning btn-sm">
+                        <i class="fa fa-edit"></i> Editar Fornecedor
+                    </a>
+                    
+                    <a href="{% url 'materials:supplier_list' %}" 
+                       class="btn btn-default btn-sm ml-1">
+                        <i class="fa fa-list"></i> Voltar à Lista
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <div>
+                    <a href="{% url 'materials:create' %}" 
+                       class="btn btn-success btn-sm">
+                        <i class="fa fa-plus"></i> Novo Material
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- begin supplier stats -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Estatísticas</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="widget-stat">
+                            <h3 class="text-primary">{{ materials.count }}</h3>
+                            <p class="text-muted">Materiais</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="widget-stat">
+                            <h3 class="text-success">{{ materials|length }}</h3>
+                            <p class="text-muted">Ativos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if materials %}
+                <div class="mt-3">
+                    <h6>Resumo de Preços</h6>
+                    <small class="text-muted">
+                        {% with materials|first as first_material %}
+                            {% if first_material.price_per_kg %}
+                                A partir de R$ {{ first_material.price_per_kg|floatformat:2 }}/kg
+                            {% endif %}
+                        {% endwith %}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- end supplier stats -->
+    </div>
+    <!-- end actions sidebar -->
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.widget-stat {
+    text-align: center;
+}
+.widget-stat h3 {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.widget-stat p {
+    margin-bottom: 0;
+    font-size: 12px;
+}
+</style>
+{% endblock %}
