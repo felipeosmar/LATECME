@@ -263,9 +263,15 @@ $(document).ready(function() {
         const url = warehouseId ? `/inventory/warehouses/${warehouseId}/update/` : '/inventory/warehouses/create/';
         const method = warehouseId ? 'PUT' : 'POST';
         
+        // Get CSRF token
+        const csrftoken = $('[name=csrfmiddlewaretoken]').val();
+        
         $.ajax({
             url: url,
             type: method,
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
             data: $(this).serialize(),
             success: function(response) {
                 if (response.success) {
@@ -292,6 +298,9 @@ function editWarehouse(warehouseId) {
     $.ajax({
         url: `/inventory/warehouses/${warehouseId}/`,
         type: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
         success: function(warehouse) {
             $('#warehouseModalTitle').text('Editar Armazém');
             $('#submitText').text('Atualizar Armazém');
