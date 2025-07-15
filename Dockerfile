@@ -1,44 +1,87 @@
-# Use Python 3.10 slim image
-FROM python:3.10-slim
+FROM python:3.12
+# set work directory
+WORKDIR /usr/src/app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# install system dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    --no-install-recommends \
+    gcc \
+    libreadline-dev \
+    libffi-dev \
+    libncurses5-dev \
+    zlib1g \
+    zlib1g-dev \
+    lzma \
+    liblzma-dev \
+    libbz2-dev \
+    libssl-dev \
     build-essential \
     libpq-dev \
     netcat-traditional \
-    && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+RUN rm -rf /var/lib/apt/lists/*
 
-# Copy project
-COPY . /app/
+RUN pip install --upgrade pip
 
-# Create entrypoint script
-RUN echo '#!/bin/sh\n\
-echo "Waiting for postgres..."\n\
-while ! nc -z $DJANGO_DB_HOST 5432; do\n\
-  sleep 0.1\n\
-done\n\
-echo "PostgreSQL started"\n\
-\n\
-# Run migrations\n\
-python manage.py migrate\n\
-\n\
-# Collect static files\n\
-python manage.py collectstatic --noinput\n\
-\n\
-# Start server\n\
-exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
-# Run the entrypoint script
-ENTRYPOINT ["/entrypoint.sh"]
+# install poetry
+RUN pip install poetry
+
+#copy poetry files
+COPY ./poetry.lock .
+COPY ./pyproject.toml .
+
+#export poetry to requirements.txt
+RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+
+
+#install dependencies
+# RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+RUN pip install -r requirements.txt
+
+
+# create directory for the app user
+RUN mkdir -p /home/app
+
+# create the app user
+RUN addgroup --system app && adduser --system --group app
+
+# create the appropriate directories
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/mediafiles
+WORKDIR $APP_HOME
+
+# install dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends netcat
+# COPY --from=builder /usr/src/app/wheels /wheels
+# COPY --from=builder /usr/src/app/requirements.txt .
+# RUN pip install --upgrade pip
+# RUN pip install --no-cache /wheels/*
+
+# copy entrypoint.prod.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh
+RUN chmod +x  $APP_HOME/entrypoint.sh
+
+# copy project
+COPY ./app/ $APP_HOME
+
+# chown all the files to the app user
+RUN chown -R app:app $APP_HOME
+
+# change to the app user
+# USER app
+
+# run entrypoint.prod.sh
+ENTRYPOINT ["/home/app/web/entrypoint.sh"]

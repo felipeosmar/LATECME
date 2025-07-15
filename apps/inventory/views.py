@@ -6,11 +6,14 @@ from django.db.models import Q, Sum, Count, F
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+import json
 from .models import (
     Warehouse, MaterialStock, StockMovement, 
     StockReservation, InventoryCount, InventoryCountItem
 )
 from apps.materials.models import Material
+from apps.accounts.models import CustomUser
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -254,6 +257,18 @@ def warehouse_detail(request, warehouse_id):
     """Detalhes de um armazém"""
     warehouse = get_object_or_404(Warehouse, id=warehouse_id)
     
+    # Se for uma requisição AJAX, retornar JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'id': str(warehouse.id),
+            'code': warehouse.code,
+            'name': warehouse.name,
+            'location': warehouse.location,
+            'manager_id': str(warehouse.manager.id) if warehouse.manager else None,
+            'description': warehouse.description or '',
+            'is_active': warehouse.is_active
+        })
+    
     # Estoques do armazém
     stocks = MaterialStock.objects.filter(
         warehouse=warehouse
@@ -445,3 +460,128 @@ def reports(request):
     }
     
     return render(request, 'inventory/reports.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def warehouse_create(request):
+    """Criar novo armazém via AJAX"""
+    try:
+        code = request.POST.get('code', '').strip()
+        name = request.POST.get('name', '').strip()
+        location = request.POST.get('location', '').strip()
+        manager_id = request.POST.get('manager_id', '')
+        description = request.POST.get('description', '').strip()
+        is_active = request.POST.get('is_active') == 'on'
+        
+        # Validações
+        if not all([code, name, location]):
+            return JsonResponse({
+                'success': False,
+                'message': 'Código, nome e localização são obrigatórios.'
+            })
+        
+        # Verificar se código já existe
+        if Warehouse.objects.filter(code=code).exists():
+            return JsonResponse({
+                'success': False,
+                'message': f'Já existe um armazém com o código {code}.'
+            })
+        
+        # Obter manager se fornecido
+        manager = None
+        if manager_id:
+            try:
+                manager = CustomUser.objects.get(id=manager_id)
+            except CustomUser.DoesNotExist:
+                pass
+        
+        # Criar armazém
+        warehouse = Warehouse.objects.create(
+            code=code,
+            name=name,
+            location=location,
+            manager=manager,
+            description=description,
+            is_active=is_active,
+            created_by=request.user,
+            updated_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Armazém criado com sucesso.',
+            'warehouse_id': str(warehouse.id)
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao criar armazém: {str(e)}'
+        })
+
+
+@login_required
+@require_http_methods(["PUT"])
+def warehouse_update(request, warehouse_id):
+    """Atualizar armazém via AJAX"""
+    try:
+        warehouse = get_object_or_404(Warehouse, id=warehouse_id)
+        
+        # Parse PUT data
+        put_data = request.body.decode('utf-8')
+        data = {}
+        for param in put_data.split('&'):
+            if '=' in param:
+                key, value = param.split('=', 1)
+                data[key] = value
+        
+        code = data.get('code', '').strip()
+        name = data.get('name', '').strip()
+        location = data.get('location', '').strip()
+        manager_id = data.get('manager_id', '')
+        description = data.get('description', '').strip()
+        is_active = data.get('is_active') == 'on'
+        
+        # Validações
+        if not all([code, name, location]):
+            return JsonResponse({
+                'success': False,
+                'message': 'Código, nome e localização são obrigatórios.'
+            })
+        
+        # Verificar se código já existe (exceto para o próprio armazém)
+        if Warehouse.objects.filter(code=code).exclude(id=warehouse_id).exists():
+            return JsonResponse({
+                'success': False,
+                'message': f'Já existe outro armazém com o código {code}.'
+            })
+        
+        # Obter manager se fornecido
+        manager = None
+        if manager_id:
+            try:
+                manager = CustomUser.objects.get(id=manager_id)
+            except CustomUser.DoesNotExist:
+                pass
+        
+        # Atualizar armazém
+        warehouse.code = code
+        warehouse.name = name
+        warehouse.location = location
+        warehouse.manager = manager
+        warehouse.description = description
+        warehouse.is_active = is_active
+        warehouse.updated_by = request.user
+        warehouse.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Armazém atualizado com sucesso.'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao atualizar armazém: {str(e)}'
+        })

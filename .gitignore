@@ -162,6 +162,7 @@ cython_debug/
 data_persist/
 docker-data/
 docker_data/
+venv/
 .claude/
 CLAUDE.md
 
@@ -171,3 +172,5 @@ CLAUDE.md
 *.env*
 client_secret_697526231854-m7u5jbsc0qtbk0dl9mc72v1u6tm9fgnb.apps.googleusercontent.com.json
 google.txt
+apps/inventory/__pycache__/views.cpython-310.pyc
+apps/inventory/__pycache__/urls.cpython-310.pyc
