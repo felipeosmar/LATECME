@@ -5,6 +5,34 @@ from apps.core.models import BaseModel
 import re
 
 
+class ChemicalElement(BaseModel):
+    """Elementos químicos para composição de materiais"""
+    symbol = models.CharField(
+        max_length=3, 
+        unique=True, 
+        verbose_name="Símbolo",
+        help_text="Símbolo do elemento (ex: Al, Ti, V)"
+    )
+    name = models.CharField(max_length=50, verbose_name="Nome")
+    atomic_number = models.IntegerField(
+        unique=True,
+        verbose_name="Número Atômico"
+    )
+    atomic_weight = models.DecimalField(
+        max_digits=8,
+        decimal_places=4,
+        verbose_name="Peso Atômico"
+    )
+    
+    class Meta:
+        verbose_name = "Elemento Químico"
+        verbose_name_plural = "Elementos Químicos"
+        ordering = ['atomic_number']
+    
+    def __str__(self):
+        return f"{self.symbol} - {self.name}"
+
+
 class Supplier(BaseModel):
     """Fornecedores de materiais"""
     name = models.CharField(max_length=200, verbose_name="Nome")
@@ -56,11 +84,7 @@ class Material(BaseModel):
         choices=MATERIAL_TYPES,
         verbose_name="Tipo de Material"
     )
-    composition = models.JSONField(
-        default=dict,
-        verbose_name="Composição Química",
-        help_text="Composição química em percentual {elemento: percentual}"
-    )
+    # Removido campo composition JSONField - agora usa relação MaterialComposition
     density = models.DecimalField(
         max_digits=5, 
         decimal_places=3,
@@ -226,3 +250,56 @@ Material.add_to_class(
         verbose_name="Categoria"
     )
 )
+
+
+class MaterialComposition(BaseModel):
+    """Composição química dos materiais"""
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.CASCADE,
+        related_name='compositions',
+        verbose_name="Material"
+    )
+    element = models.ForeignKey(
+        ChemicalElement,
+        on_delete=models.PROTECT,
+        verbose_name="Elemento Químico"
+    )
+    percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0.01), MaxValueValidator(100.00)],
+        verbose_name="Percentual (%)",
+        help_text="Percentual do elemento na composição (0.01-100.00)"
+    )
+    is_max = models.BooleanField(
+        default=False,
+        verbose_name="Valor Máximo",
+        help_text="Indica se este é um valor máximo permitido"
+    )
+    
+    class Meta:
+        unique_together = ['material', 'element']
+        verbose_name = "Composição do Material"
+        verbose_name_plural = "Composições dos Materiais"
+        ordering = ['-percentage']
+    
+    def __str__(self):
+        max_indicator = " (máx)" if self.is_max else ""
+        return f"{self.element.symbol}: {self.percentage}%{max_indicator}"
+    
+    def clean(self):
+        # Validar que a soma dos percentuais não exceda 100%
+        if self.material_id and self.element_id:
+            total = MaterialComposition.objects.filter(
+                material=self.material
+            ).exclude(
+                element=self.element
+            ).aggregate(
+                total=models.Sum('percentage')
+            )['total'] or 0
+            
+            if total + float(self.percentage) > 100:
+                raise ValidationError({
+                    'percentage': f'A soma dos percentuais não pode exceder 100%. Total atual: {total}%'
+                })

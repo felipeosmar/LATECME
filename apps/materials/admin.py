@@ -1,7 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.db.models import Count, Min
-from .models import Material, Supplier, MaterialSupplier, MaterialCategory
+from .models import Material, Supplier, MaterialSupplier, MaterialCategory, ChemicalElement, MaterialComposition
+
+
+@admin.register(ChemicalElement)
+class ChemicalElementAdmin(admin.ModelAdmin):
+    list_display = ['symbol', 'name', 'atomic_number', 'atomic_weight']
+    search_fields = ['symbol', 'name']
+    ordering = ['atomic_number']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.updated_by = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(MaterialCategory)
@@ -75,6 +89,13 @@ class MaterialSupplierInline(admin.TabularInline):
     ]
 
 
+class MaterialCompositionInline(admin.TabularInline):
+    model = MaterialComposition
+    extra = 1
+    fields = ['element', 'percentage', 'is_max']
+    autocomplete_fields = ['element']
+
+
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
     list_display = [
@@ -87,14 +108,14 @@ class MaterialAdmin(admin.ModelAdmin):
     ]
     search_fields = ['code', 'name']
     readonly_fields = ['created_at', 'updated_at', 'created_by', 'updated_by']
-    inlines = [MaterialSupplierInline]
+    inlines = [MaterialCompositionInline, MaterialSupplierInline]
     
     fieldsets = (
         ('Identificação', {
             'fields': ('code', 'name', 'material_type', 'category')
         }),
         ('Propriedades Físicas', {
-            'fields': ('density', 'melting_point', 'composition')
+            'fields': ('density', 'melting_point')
         }),
         ('Especificações', {
             'fields': ('specifications', 'requires_certificate')

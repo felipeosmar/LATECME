@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.db.models import Q, Count, Min, Avg
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from .models import Material, Supplier, MaterialSupplier, MaterialCategory
-from .forms import MaterialForm, SupplierForm
+from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition
+from .forms import MaterialForm, SupplierForm, MaterialCompositionFormSet
 
 
 @login_required
@@ -81,18 +81,27 @@ def material_create(request):
     """Criar novo material"""
     if request.method == 'POST':
         form = MaterialForm(request.POST)
-        if form.is_valid():
+        formset = MaterialCompositionFormSet(request.POST, prefix='compositions')
+        
+        if form.is_valid() and formset.is_valid():
             material = form.save(commit=False)
             material.created_by = request.user
             material.updated_by = request.user
             material.save()
+            
+            # Salvar composições
+            formset.instance = material
+            formset.save()
+            
             messages.success(request, f'Material {material.code} criado com sucesso!')
             return redirect('materials:detail', material_id=material.id)
     else:
         form = MaterialForm()
+        formset = MaterialCompositionFormSet(prefix='compositions')
     
     return render(request, 'materials/material_form.html', {
         'form': form,
+        'formset': formset,
         'title': 'Novo Material',
         'action': 'Criar'
     })
@@ -105,17 +114,25 @@ def material_edit(request, material_id):
     
     if request.method == 'POST':
         form = MaterialForm(request.POST, instance=material)
-        if form.is_valid():
+        formset = MaterialCompositionFormSet(request.POST, instance=material, prefix='compositions')
+        
+        if form.is_valid() and formset.is_valid():
             material = form.save(commit=False)
             material.updated_by = request.user
             material.save()
+            
+            # Salvar composições
+            formset.save()
+            
             messages.success(request, f'Material {material.code} atualizado com sucesso!')
             return redirect('materials:detail', material_id=material.id)
     else:
         form = MaterialForm(instance=material)
+        formset = MaterialCompositionFormSet(instance=material, prefix='compositions')
     
     return render(request, 'materials/material_form.html', {
         'form': form,
+        'formset': formset,
         'material': material,
         'title': f'Editar Material {material.code}',
         'action': 'Salvar'

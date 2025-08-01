@@ -87,13 +87,13 @@ def create_materials():
             'category': al_category,
             'density': Decimal('2.810'),
             'melting_point': Decimal('635.0'),
-            'composition': {
-                'Al': 90.0,
-                'Zn': 5.6,
-                'Mg': 2.5,
-                'Cu': 1.6,
-                'Cr': 0.23
-            },
+            # 'composition': {
+            #     'Al': 90.0,
+            #     'Zn': 5.6,
+            #     'Mg': 2.5,
+            #     'Cu': 1.6,
+            #     'Cr': 0.23
+            # },
             'specifications': {
                 'resistencia_tracao': '572 MPa',
                 'limite_escoamento': '503 MPa',
@@ -110,13 +110,13 @@ def create_materials():
             'category': ti_category,
             'density': Decimal('4.430'),
             'melting_point': Decimal('1660.0'),
-            'composition': {
-                'Ti': 89.0,
-                'Al': 6.0,
-                'V': 4.0,
-                'Fe': 0.25,
-                'O': 0.2
-            },
+            # 'composition': {
+            #     'Ti': 89.0,
+            #     'Al': 6.0,
+            #     'V': 4.0,
+            #     'Fe': 0.25,
+            #     'O': 0.2
+            # },
             'specifications': {
                 'resistencia_tracao': '1170 MPa',
                 'limite_escoamento': '1100 MPa',
@@ -133,15 +133,15 @@ def create_materials():
             'category': ss_category,
             'density': Decimal('8.000'),
             'melting_point': Decimal('1400.0'),
-            'composition': {
-                'Fe': 65.0,
-                'Cr': 17.0,
-                'Ni': 12.0,
-                'Mo': 2.5,
-                'Mn': 2.0,
-                'Si': 1.0,
-                'C': 0.03
-            },
+            # 'composition': {
+            #     'Fe': 65.0,
+            #     'Cr': 17.0,
+            #     'Ni': 12.0,
+            #     'Mo': 2.5,
+            #     'Mn': 2.0,
+            #     'Si': 1.0,
+            #     'C': 0.03
+            # },
             'specifications': {
                 'resistencia_tracao': '620 MPa',
                 'limite_escoamento': '310 MPa',
@@ -158,15 +158,15 @@ def create_materials():
             'category': ss_category,  # Usando categoria de aço por enquanto
             'density': Decimal('8.220'),
             'melting_point': Decimal('1336.0'),
-            'composition': {
-                'Ni': 52.5,
-                'Cr': 19.0,
-                'Fe': 18.5,
-                'Nb': 5.1,
-                'Mo': 3.0,
-                'Ti': 0.9,
-                'Al': 0.5
-            },
+            # 'composition': {
+            #     'Ni': 52.5,
+            #     'Cr': 19.0,
+            #     'Fe': 18.5,
+            #     'Nb': 5.1,
+            #     'Mo': 3.0,
+            #     'Ti': 0.9,
+            #     'Al': 0.5
+            # },
             'specifications': {
                 'resistencia_tracao': '1275 MPa',
                 'limite_escoamento': '1034 MPa',

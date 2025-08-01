@@ -1,22 +1,12 @@
 from django import forms
+from django.forms import inlineformset_factory
 from django.core.exceptions import ValidationError
-from .models import Material, Supplier, MaterialSupplier, MaterialCategory
+from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition, ChemicalElement
 import json
 
 
 class MaterialForm(forms.ModelForm):
     """Formulário para criação/edição de materiais"""
-    
-    composition_text = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'class': 'form-control',
-            'placeholder': 'Ex: {"Al": 90.5, "Zn": 5.5, "Mg": 2.5, "Cu": 1.5}'
-        }),
-        required=False,
-        help_text='Composição química em formato JSON',
-        label='Composição Química'
-    )
     
     specifications_text = forms.CharField(
         widget=forms.Textarea(attrs={
@@ -33,7 +23,7 @@ class MaterialForm(forms.ModelForm):
         model = Material
         fields = [
             'code', 'name', 'material_type', 'category', 'density', 
-            'melting_point', 'composition_text', 'specifications_text',
+            'melting_point', 'specifications_text',
             'requires_certificate', 'storage_requirements', 'safety_notes'
         ]
         widgets = {
@@ -79,35 +69,11 @@ class MaterialForm(forms.ModelForm):
         
         # Preencher campos de texto com dados JSON existentes
         if self.instance and self.instance.pk:
-            if self.instance.composition:
-                self.fields['composition_text'].initial = json.dumps(
-                    self.instance.composition, indent=2, ensure_ascii=False
-                )
             if self.instance.specifications:
                 self.fields['specifications_text'].initial = json.dumps(
                     self.instance.specifications, indent=2, ensure_ascii=False
                 )
     
-    def clean_composition_text(self):
-        composition_text = self.cleaned_data.get('composition_text', '')
-        if not composition_text.strip():
-            return {}
-        
-        try:
-            composition = json.loads(composition_text)
-            if not isinstance(composition, dict):
-                raise ValidationError('Composição deve ser um objeto JSON válido.')
-            
-            # Validar que os valores são numéricos
-            for element, percentage in composition.items():
-                if not isinstance(percentage, (int, float)):
-                    raise ValidationError(f'Percentual para {element} deve ser numérico.')
-                if percentage < 0 or percentage > 100:
-                    raise ValidationError(f'Percentual para {element} deve estar entre 0 e 100.')
-            
-            return composition
-        except json.JSONDecodeError:
-            raise ValidationError('Formato JSON inválido para composição.')
     
     def clean_specifications_text(self):
         specifications_text = self.cleaned_data.get('specifications_text', '')
@@ -124,7 +90,6 @@ class MaterialForm(forms.ModelForm):
     
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.composition = self.cleaned_data['composition_text']
         instance.specifications = self.cleaned_data['specifications_text']
         
         if commit:
@@ -243,3 +208,47 @@ class MaterialCategoryForm(forms.ModelForm):
                 'type': 'color'
             }),
         }
+
+
+class MaterialCompositionForm(forms.ModelForm):
+    """Formulário para composição de materiais"""
+    element = forms.ModelChoiceField(
+        queryset=ChemicalElement.objects.all().order_by('symbol'),
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        }),
+        label='Elemento Químico'
+    )
+    
+    class Meta:
+        model = MaterialComposition
+        fields = ['element', 'percentage', 'is_max']
+        widgets = {
+            'percentage': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0.01',
+                'max': '100.00',
+                'placeholder': '0.00'
+            }),
+            'is_max': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+        labels = {
+            'percentage': 'Percentual (%)',
+            'is_max': 'Valor Máximo'
+        }
+
+
+# Formset para composições
+MaterialCompositionFormSet = inlineformset_factory(
+    Material,
+    MaterialComposition,
+    form=MaterialCompositionForm,
+    extra=3,
+    can_delete=True,
+    min_num=0,
+    validate_min=False,
+    fields=['element', 'percentage', 'is_max']
+)

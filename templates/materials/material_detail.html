@@ -15,7 +15,7 @@
 {% block content_body %}
 <div class="row">
     <!-- begin material info -->
-    <div class="col-xl-8">
+    <div class="col-lg-8">
         <div class="panel panel-inverse">
             <div class="panel-heading">
                 <div class="panel-heading-btn">
@@ -83,7 +83,7 @@
                 </div>
                 
                 <!-- begin composition -->
-                {% if material.composition %}
+                {% if material.compositions.exists %}
                     <h5 class="mt-4">Composição Química</h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered">
@@ -94,10 +94,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for element, percentage in material.composition.items %}
+                                {% for composition in material.compositions.all %}
                                 <tr>
-                                    <td><strong>{{ element }}</strong></td>
-                                    <td>{{ percentage }}%</td>
+                                    <td>
+                                        <strong>{{ composition.element.symbol }}</strong>
+                                        <small class="text-muted">{{ composition.element.name }}</small>
+                                    </td>
+                                    <td>
+                                        {{ composition.percentage }}%
+                                        {% if composition.is_max %}
+                                            <span class="badge badge-info">máx</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -159,7 +167,7 @@
     <!-- end material info -->
     
     <!-- begin suppliers -->
-    <div class="col-xl-4">
+    <div class="col-lg-4">
         <div class="panel panel-inverse">
             <div class="panel-heading">
                 <h4 class="panel-title">
@@ -228,31 +236,19 @@
                 <h4 class="panel-title">Ações Rápidas</h4>
             </div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-block">
-                            <i class="fa fa-edit"></i><br>
-                            Editar Material
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <a href="javascript:;" class="btn btn-info btn-block">
-                            <i class="fa fa-plus"></i><br>
-                            Adicionar Fornecedor
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <a href="javascript:;" class="btn btn-success btn-block">
-                            <i class="fa fa-shopping-cart"></i><br>
-                            Novo Pedido
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block">
-                            <i class="fa fa-arrow-left"></i><br>
-                            Voltar à Lista
-                        </a>
-                    </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning">
+                        <i class="fa fa-edit"></i> Editar Material
+                    </a>
+                    <a href="javascript:;" class="btn btn-info">
+                        <i class="fa fa-plus"></i> Adicionar Fornecedor
+                    </a>
+                    <a href="javascript:;" class="btn btn-success">
+                        <i class="fa fa-shopping-cart"></i> Novo Pedido
+                    </a>
+                    <a href="{% url 'materials:list' %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Voltar à Lista
+                    </a>
                 </div>
             </div>
         </div>

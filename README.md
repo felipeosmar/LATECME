@@ -32,11 +32,14 @@ cd LATECME
 # Instalar Poetry
 curl -sSL https://install.python-poetry.org | python3 -
 
+# Configurar o Poetry para criar o venv dentro da pasta do projeto
+poetry config virtualenvs.in-project true
+
 # Instalar dependências
 poetry install
 
 # Ativar ambiente virtual
-poetry shell
+poetry env activate
 ```
 
 ### 3. Configuração do Banco de Dados
