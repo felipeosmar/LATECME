@@ -68,6 +68,10 @@ class EPLGenerator:
         # Finalização
         commands.append("P1")  # Imprimir 1 cópia
 
+        # Adicionar linha em branco ao final
+        # Algumas impressoras precisam disso para processar corretamente
+        commands.append("")
+
         return '\n'.join(commands)
 
     def _generate_text_command(self, element):

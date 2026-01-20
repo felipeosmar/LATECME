@@ -61,7 +61,8 @@ class PrinterClient:
 
             # Aguardar um pouco para garantir que a impressora processe
             # Algumas impressoras precisam de tempo entre receber e processar
-            time.sleep(0.5)  # 500ms de delay
+            # Aumentado para 2 segundos após testes
+            time.sleep(2.0)  # 2000ms de delay (testado: 500ms não foi suficiente)
 
             return (True, '')
 
