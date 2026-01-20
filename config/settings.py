@@ -26,7 +26,13 @@ SECRET_KEY = "django-insecure-gwvq^!u3b$7&^1&@qltt1kvw26z!-^zmp=1jdd)=ea3r-tk!dr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+
+# CSRF trusted origins (necessário para Django 4.0+)
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 
 # Application definition
@@ -80,25 +86,25 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 # DATABASES = {
 #     "default": {
-#         "ENGINE": config("DJANGO_DB_ENGINE", default="django.db.backends.postgresql"),
-#         "NAME": config("DJANGO_DB_NAME"),
-#         "USER": config("DJANGO_DB_USER"),
-#         "PASSWORD": config("DJANGO_DB_PASSWORD"),
-#         "HOST": config("DJANGO_DB_HOST"),
-#         "PORT": config("DJANGO_DB_PORT"),
-#         "TIME_ZONE": config("DJANGO_DB_TIME_ZONE"),
-#         "CONN_MAX_AGE": 300,
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": config("DJANGO_DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": config("DJANGO_DB_NAME"),
+        "USER": config("DJANGO_DB_USER"),
+        "PASSWORD": config("DJANGO_DB_PASSWORD"),
+        "HOST": config("DJANGO_DB_HOST"),
+        "PORT": config("DJANGO_DB_PORT"),
+        "TIME_ZONE": config("DJANGO_DB_TIME_ZONE"),
+        "CONN_MAX_AGE": 300,
+    }
+}
 
 # Configuração do Connection Pool
 DATABASE_POOL_ARGS = {

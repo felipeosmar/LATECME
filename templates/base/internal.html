@@ -109,8 +109,20 @@
                         <li><a href="{% url 'inventory:stock_list' %}">Consultar Estoque</a></li>
                         <li><a href="{% url 'inventory:movements_list' %}">Movimentações</a></li>
                         <li><a href="{% url 'inventory:warehouse_list' %}">Armazéns</a></li>
+                        <li><a href="{% url 'inventory:bin_list' %}">Contentores</a></li>
                         <li><a href="{% url 'inventory:reservations_list' %}">Reservas</a></li>
                         <li><a href="{% url 'inventory:reports' %}">Relatórios</a></li>
+                    </ul>
+                </li>
+                <li class="has-sub">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <i class="fa fa-industry"></i>
+                        <span>Produção</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'inventory:production_order_list' %}">Ordens de Produção</a></li>
+                        <li><a href="{% url 'inventory:batch_list' %}">Bateladas</a></li>
                     </ul>
                 </li>
                 <li><a href="javascript:;"><i class="fa fa-shopping-cart"></i> <span>Compras</span></a></li>
