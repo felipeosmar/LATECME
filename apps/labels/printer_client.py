@@ -2,6 +2,7 @@
 Módulo para comunicação TCP/IP com impressoras EPL
 """
 import socket
+import time
 from django.utils import timezone
 
 
@@ -52,6 +53,16 @@ class PrinterClient:
 
             sock.sendall(encoded_data)
 
+            # Garantir que todos os dados foram enviados (flush do buffer TCP)
+            try:
+                sock.shutdown(socket.SHUT_WR)  # Fechar envio (mas ainda pode receber)
+            except:
+                pass  # Algumas impressoras fecham a conexão imediatamente
+
+            # Aguardar um pouco para garantir que a impressora processe
+            # Algumas impressoras precisam de tempo entre receber e processar
+            time.sleep(0.5)  # 500ms de delay
+
             return (True, '')
 
         except socket.timeout:
@@ -67,7 +78,7 @@ class PrinterClient:
             return (False, error_msg)
 
         finally:
-            # Sempre fechar socket
+            # Sempre fechar socket completamente
             if sock:
                 try:
                     sock.close()
