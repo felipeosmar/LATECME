@@ -23,17 +23,36 @@ class EPLGenerator:
         self.bin = bin_obj
         self.dpi = template.printer_dpi
 
-    def generate(self):
+    def generate(self, enhanced_mode=True):
         """
         Gera comandos EPL completos
+
+        Args:
+            enhanced_mode: Se True, adiciona comandos extras de inicialização
 
         Returns:
             str: Comandos EPL
         """
         commands = []
 
-        # Inicialização
+        # Inicialização básica
         commands.append("N")  # Nova etiqueta
+
+        # Comandos adicionais de inicialização (se enhanced_mode)
+        if enhanced_mode:
+            # Densidade de impressão (1-15, padrão 10)
+            commands.append("D10")  # Densidade média-alta
+
+            # Velocidade de impressão (1-5, padrão 3)
+            # commands.append("S3")  # Velocidade média (comentado - usar padrão)
+
+            # Definir origem (0,0)
+            commands.append("R0,0")  # Referência em 0,0
+
+            # Limpar buffer de imagem
+            commands.append("N")  # Segunda vez para garantir limpeza
+
+        # Dimensões da etiqueta
         commands.append(f"Q{self.template.width_dots},0")  # Largura da etiqueta
         commands.append(f"q{self.template.width_dots}")  # Largura do formulário
 
