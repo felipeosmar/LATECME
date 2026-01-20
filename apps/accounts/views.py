@@ -13,11 +13,22 @@ class CustomLoginView(LoginView):
     """View personalizada para login"""
     template_name = 'accounts/login.html'
     form_class = CustomLoginForm
-    redirect_authenticated_user = True
-    
+    redirect_authenticated_user = False  # Desabilitado para evitar loops
+
+    def dispatch(self, request, *args, **kwargs):
+        # Se usuário está autenticado E pode acessar o sistema, redirecionar
+        if request.user.is_authenticated:
+            if hasattr(request.user, 'can_access_system') and request.user.can_access_system():
+                return redirect(self.get_success_url())
+            # Se está autenticado mas não pode acessar, fazer logout silencioso
+            # para permitir novo login
+            logout(request)
+
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         user = form.get_user()
-        
+
         # Verificar se o usuário pode acessar o sistema
         if not user.can_access_system():
             if user.status == 'pending':
@@ -28,11 +39,11 @@ class CustomLoginView(LoginView):
                 messages.error(self.request, 'Sua conta foi suspensa. Entre em contato com o administrador.')
             elif not user.role:
                 messages.error(self.request, 'Nenhuma função foi atribuída à sua conta.')
-            
+
             return self.form_invalid(form)
-        
+
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         return reverse_lazy('core:dashboard')
 
