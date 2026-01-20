@@ -39,8 +39,18 @@ class PrinterClient:
             # Conectar à impressora
             sock.connect((self.ip, self.port))
 
-            # Enviar comandos EPL (codificados em ASCII)
-            sock.sendall(epl_content.encode('ascii'))
+            # Enviar comandos EPL
+            # Usar cp850 (Code Page 850) que é padrão em impressoras térmicas
+            # e suporta caracteres portugueses (é, ã, ç, etc.)
+            # Se falhar, usa latin-1 como fallback
+            # errors='replace' substitui caracteres não suportados por '?'
+            try:
+                encoded_data = epl_content.encode('cp850', errors='replace')
+            except (UnicodeEncodeError, LookupError):
+                # Fallback para latin-1 se cp850 não estiver disponível
+                encoded_data = epl_content.encode('latin-1', errors='replace')
+
+            sock.sendall(encoded_data)
 
             return (True, '')
 
