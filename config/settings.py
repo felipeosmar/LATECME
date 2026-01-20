@@ -44,12 +44,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
+
     # Local apps
     "apps.core",
     "apps.accounts",
     "apps.materials",
     "apps.inventory",
+    "apps.labels",
 ]
 
 MIDDLEWARE = [

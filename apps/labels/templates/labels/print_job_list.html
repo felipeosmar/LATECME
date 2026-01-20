@@ -1,0 +1,83 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Histórico de Impressão - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Etiquetas</li>
+<li class="breadcrumb-item active">Histórico</li>
+{% endblock %}
+
+{% block page_title %}Histórico de Trabalhos de Impressão{% endblock %}
+{% block page_subtitle %}Últimos 100 trabalhos{% endblock %}
+
+{% block content_body %}
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <i class="fa fa-history"></i> Histórico de Impressões
+        </h4>
+    </div>
+    <div class="panel-body">
+        {% if jobs %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Contentor</th>
+                        <th>Template</th>
+                        <th>Impressora</th>
+                        <th>Status</th>
+                        <th>Usuário</th>
+                        <th>Erro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.created_at|date:"d/m/Y H:i:s" }}</td>
+                        <td>
+                            <a href="{% url 'inventory:bin_detail' job.bin.id %}">
+                                {{ job.bin.code }}
+                            </a>
+                        </td>
+                        <td>{{ job.template.name }}</td>
+                        <td>{{ job.printer.name }}</td>
+                        <td>
+                            {% if job.status == 'SUCCESS' %}
+                            <span class="badge badge-success">Sucesso</span>
+                            {% elif job.status == 'FAILED' %}
+                            <span class="badge badge-danger">Falhou</span>
+                            {% elif job.status == 'PROCESSING' %}
+                            <span class="badge badge-warning">Processando</span>
+                            {% elif job.status == 'PENDING' %}
+                            <span class="badge badge-secondary">Pendente</span>
+                            {% else %}
+                            <span class="badge badge-dark">Cancelado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ job.created_by.get_full_name|default:job.created_by.username }}</td>
+                        <td>
+                            {% if job.error_message %}
+                            <small class="text-danger" title="{{ job.error_message }}">
+                                {{ job.error_message|truncatewords:8 }}
+                            </small>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            Nenhum trabalho de impressão registrado.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

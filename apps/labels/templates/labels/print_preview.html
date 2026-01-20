@@ -1,0 +1,93 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Preview da Etiqueta - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'inventory:bin_list' %}">Contentores</a></li>
+<li class="breadcrumb-item"><a href="{% url 'inventory:bin_detail' bin.id %}">{{ bin.code }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'labels:print_form' bin.id %}">Imprimir Etiqueta</a></li>
+<li class="breadcrumb-item active">Preview</li>
+{% endblock %}
+
+{% block page_title %}Preview da Etiqueta{% endblock %}
+{% block page_subtitle %}{{ bin.code }} - {{ template.name }}{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-file-code-o"></i> Comandos EPL Gerados
+                </h4>
+            </div>
+            <div class="panel-body">
+                <p><strong>Template:</strong> {{ template.name }} ({{ template.width_mm }}x{{ template.height_mm }}mm, {{ template.printer_dpi }} DPI)</p>
+
+                <pre style="background: #f5f5f5; padding: 15px; border: 1px solid #ddd; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 12px;">{{ epl_content }}</pre>
+
+                <div class="mt-3">
+                    <a href="{% url 'labels:print_form' bin.id %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-info-circle"></i> Dados da Etiqueta
+                </h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Código do Bin:</th>
+                        <td>{{ bin.code }}</td>
+                    </tr>
+                    <tr>
+                        <th>Armazém:</th>
+                        <td>{{ bin.warehouse.code }}</td>
+                    </tr>
+                    <tr>
+                        <th>Localização:</th>
+                        <td>{{ bin.location_code|default:"—" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Capacidade:</th>
+                        <td>{{ bin.capacity|default:"—" }} kg</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>{{ bin.get_status_display }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-info-circle"></i> Sobre EPL
+                </h4>
+            </div>
+            <div class="panel-body">
+                <p class="text-sm">
+                    <strong>EPL (Eltron Programming Language)</strong> é a linguagem de comandos usada por impressoras de etiquetas.
+                </p>
+                <ul class="text-sm">
+                    <li><code>N</code> - Nova etiqueta</li>
+                    <li><code>Q</code> - Largura da etiqueta</li>
+                    <li><code>A</code> - Comando de texto</li>
+                    <li><code>B</code> - Código de barras</li>
+                    <li><code>P</code> - Imprimir</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Designer de Etiquetas - LATECME{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'labels/css/designer.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'labels:template_list' %}">Etiquetas</a></li>
+<li class="breadcrumb-item active">{% if template %}Editar Template{% else %}Novo Template{% endif %}</li>
+{% endblock %}
+
+{% block page_title %}{% if template %}Editar Template{% else %}Novo Template{% endif %}{% endblock %}
+{% block page_subtitle %}Designer Visual de Etiquetas EPL{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <!-- Coluna Principal - Canvas -->
+    <div class="col-md-8">
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-tag"></i> Preview da Etiqueta
+                </h4>
+            </div>
+            <div class="panel-body text-center">
+                <canvas id="labelCanvas" width="600" height="300" style="border: 2px solid #333; background: white; cursor: crosshair;"></canvas>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        Clique e arraste para mover elementos • Clique para selecionar • Del para remover
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbox -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-wrench"></i> Ferramentas
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary" id="addTextBtn">
+                        <i class="fa fa-font"></i> Adicionar Texto
+                    </button>
+                    <button type="button" class="btn btn-primary" id="addBarcodeBtn">
+                        <i class="fa fa-barcode"></i> Adicionar Código de Barras
+                    </button>
+                    <button type="button" class="btn btn-danger" id="deleteElementBtn" disabled>
+                        <i class="fa fa-trash"></i> Deletar Selecionado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coluna Lateral - Propriedades -->
+    <div class="col-md-4">
+        <!-- Configurações do Template -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-cog"></i> Configurações do Template
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label>Nome do Template</label>
+                    <input type="text" class="form-control" id="templateName"
+                           value="{% if template %}{{ template.name }}{% endif %}"
+                           placeholder="Ex: Etiqueta Padrão Bin">
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control" id="templateDescription" rows="2"
+                              placeholder="Descrição opcional">{% if template %}{{ template.description }}{% endif %}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>Largura (mm)</label>
+                            <input type="number" class="form-control" id="labelWidth"
+                                   value="{% if template %}{{ template.width_mm }}{% else %}100{% endif %}"
+                                   min="10" max="500" step="0.1">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>Altura (mm)</label>
+                            <input type="number" class="form-control" id="labelHeight"
+                                   value="{% if template %}{{ template.height_mm }}{% else %}50{% endif %}"
+                                   min="10" max="500" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Resolução da Impressora</label>
+                    <select class="form-control" id="printerDPI">
+                        <option value="203" {% if template and template.printer_dpi == 203 %}selected{% endif %}>203 DPI</option>
+                        <option value="300" {% if template and template.printer_dpi == 300 %}selected{% endif %}>300 DPI</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isDefault"
+                           {% if template and template.is_default %}checked{% endif %}>
+                    <label class="form-check-label" for="isDefault">
+                        Template Padrão
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Propriedades do Elemento Selecionado -->
+        <div class="panel panel-inverse" id="elementPropertiesPanel" style="display: none;">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <i class="fa fa-edit"></i> Propriedades do Elemento
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div id="elementProperties">
+                    <!-- Preenchido dinamicamente via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="panel panel-inverse">
+            <div class="panel-body">
+                <button type="button" class="btn btn-success btn-block" id="saveTemplateBtn">
+                    <i class="fa fa-save"></i> Salvar Template
+                </button>
+                <a href="{% url 'labels:template_list' %}" class="btn btn-secondary btn-block">
+                    <i class="fa fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template ID (hidden) -->
+<input type="hidden" id="templateId" value="{% if template %}{{ template.id }}{% endif %}">
+<input type="hidden" id="initialTemplateJson" value="{{ template_json|escapejs }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'labels/js/label_designer.js' %}"></script>
+<script>
+    // Inicializar designer quando página carregar
+    document.addEventListener('DOMContentLoaded', function() {
+        const initialJson = document.getElementById('initialTemplateJson').value;
+        const templateData = initialJson ? JSON.parse(initialJson) : null;
+
+        window.labelDesigner = new LabelDesigner('labelCanvas', templateData);
+    });
+</script>
+{% endblock %}
