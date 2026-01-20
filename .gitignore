@@ -159,19 +159,39 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Project specific
+.claude/
 data_persist/
 docker-data/
 docker_data/
 venv/
-.claude/
-CLAUDE.md
+.venv/
 
-*__pycache__*
+# IDE and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Django specific
+staticfiles/
+media/
 *.sqlite*
-*.pyc
-*.env*
-client_secret_697526231854-m7u5jbsc0qtbk0dl9mc72v1u6tm9fgnb.apps.googleusercontent.com.json
-google.txt
-apps/inventory/__pycache__/views.cpython-310.pyc
-apps/inventory/__pycache__/urls.cpython-310.pyc
+*.log
+db.sqlite3*
+
+# Environment files
 .env
+.env.local
+.env.*.local
+*.env*
+
+# Google OAuth
+client_secret_*.json
+google.txt
+
+# Python cache (additional)
+*__pycache__*
+*.pyc
