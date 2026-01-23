@@ -1,0 +1,39 @@
+# Ignore Color Admin template files (frontend assets)
+color-admin/
+staticfiles/
+
+# Ignore Auto-Claude directories
+.auto-claude/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore database
+db.sqlite3
+*.sqlite3
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+.venv/
+venv/
+
+# Ignore Docker data
+docker-data/
+docker_data/
+data_persist/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore media and static
+media/
+staticfiles/

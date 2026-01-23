@@ -1,0 +1,15 @@
+{
+  "name": "latecme",
+  "version": "1.0.0",
+  "description": "LATECME - Manufacturing control system for additive manufacturing materials",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "python manage.py runserver",
+    "migrate": "python manage.py migrate",
+    "makemigrations": "python manage.py makemigrations"
+  },
+  "keywords": ["django", "manufacturing", "inventory"],
+  "author": "",
+  "license": "UNLICENSED"
+}
