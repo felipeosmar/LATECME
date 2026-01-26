@@ -21,18 +21,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gwvq^!u3b$7&^1&@qltt1kvw26z!-^zmp=1jdd)=ea3r-tk!dr"
+SECRET_KEY = config(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-gwvq^!u3b$7&^1&@qltt1kvw26z!-^zmp=1jdd)=ea3r-tk!dr"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DJANGO_DEBUG", default=True, cast=config.boolean)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = config(
+    "DJANGO_ALLOWED_HOSTS",
+    default="localhost,127.0.0.1,0.0.0.0",
+    cast=config.list
+)
 
 # CSRF trusted origins (necessário para Django 4.0+)
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost:8000,http://127.0.0.1:8000",
+    cast=config.list
+)
 
 
 # Application definition
@@ -50,6 +58,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.materials",
     "apps.inventory",
+    "apps.production",
     "apps.labels",
 ]
 
@@ -172,3 +181,22 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Production Security Settings
+# Only applied when DEBUG is False
+if not DEBUG:
+    # HTTPS/SSL settings
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=config.boolean)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # HSTS settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Other security settings
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'

@@ -5,8 +5,8 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:bin_list' %}">Contentores</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:bin_detail' bin.id %}">{{ bin.code }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:bin_list' %}">Contentores</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:bin_detail' bin.id %}">{{ bin.code }}</a></li>
 <li class="breadcrumb-item active">Histórico</li>
 {% endblock %}
 
@@ -83,7 +83,7 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-search"></i> Filtrar
             </button>
-            <a href="{% url 'inventory:bin_history' bin.id %}" class="btn btn-secondary ml-2">
+            <a href="{% url 'production:bin_history' bin.id %}" class="btn btn-secondary ml-2">
                 <i class="fa fa-times"></i> Limpar
             </a>
         </form>
@@ -95,7 +95,7 @@
 <div class="panel panel-inverse">
     <div class="panel-heading">
         <div class="panel-heading-btn">
-            <a href="{% url 'inventory:bin_detail' bin.id %}" class="btn btn-primary btn-sm">
+            <a href="{% url 'production:bin_detail' bin.id %}" class="btn btn-primary btn-sm">
                 <i class="fa fa-arrow-left"></i> Voltar ao Contentor
             </a>
         </div>
@@ -186,7 +186,7 @@
                             </td>
                             <td>
                                 {% if item.batch %}
-                                    <a href="{% url 'inventory:batch_detail' item.batch.id %}" class="badge badge-warning">
+                                    <a href="{% url 'production:batch_detail' item.batch.id %}" class="badge badge-warning">
                                         {{ item.batch.batch_number }}
                                     </a>
                                 {% else %}

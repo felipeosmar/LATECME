@@ -30,6 +30,7 @@ urlpatterns = [
     path("dashboard/", include('apps.core.urls')),
     path("materials/", include('apps.materials.urls')),
     path("inventory/", include('apps.inventory.urls')),
+    path("production/", include('apps.production.urls')),
     path("labels/", include('apps.labels.urls')),
     path("", redirect_to_login),
 ]

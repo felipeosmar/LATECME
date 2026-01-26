@@ -45,7 +45,7 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-search"></i> Buscar
             </button>
-            <a href="{% url 'inventory:batch_list' %}" class="btn btn-secondary ml-2">
+            <a href="{% url 'production:batch_list' %}" class="btn btn-secondary ml-2">
                 <i class="fa fa-times"></i> Limpar
             </a>
         </form>
@@ -88,12 +88,12 @@
                         {% for batch in batches %}
                         <tr>
                             <td>
-                                <a href="{% url 'inventory:batch_detail' batch.id %}">
+                                <a href="{% url 'production:batch_detail' batch.id %}">
                                     <strong>{{ batch.batch_number }}</strong>
                                 </a>
                             </td>
                             <td>
-                                <a href="{% url 'inventory:production_order_detail' batch.production_order.id %}">
+                                <a href="{% url 'production:order_detail' batch.production_order.id %}">
                                     {{ batch.production_order.order_number }}
                                 </a>
                             </td>
@@ -141,7 +141,7 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{% url 'inventory:batch_detail' batch.id %}" class="btn btn-primary btn-xs">
+                                    <a href="{% url 'production:batch_detail' batch.id %}" class="btn btn-primary btn-xs">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                     {% if batch.status == 'PREPARATION' %}
@@ -294,7 +294,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:batch_create' %}",
+            url: "{% url 'production:batch_create' %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {

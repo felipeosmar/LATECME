@@ -5,7 +5,7 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:batch_list' %}">Bateladas</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:batch_list' %}">Bateladas</a></li>
 <li class="breadcrumb-item active">{{ batch.batch_number }}</li>
 {% endblock %}
 
@@ -47,7 +47,7 @@
 
                             <dt class="col-sm-5">Ordem de Produção:</dt>
                             <dd class="col-sm-7">
-                                <a href="{% url 'inventory:production_order_detail' batch.production_order.id %}">
+                                <a href="{% url 'production:order_detail' batch.production_order.id %}">
                                     {{ batch.production_order.order_number }}
                                 </a>
                             </dd>
@@ -216,7 +216,7 @@
                                 <tr>
                                     <td>
                                         {% if item.bin %}
-                                            <a href="{% url 'inventory:bin_detail' item.bin.id %}">
+                                            <a href="{% url 'production:bin_detail' item.bin.id %}">
                                                 <strong>{{ item.bin.code }}</strong>
                                             </a>
                                         {% else %}
@@ -317,13 +317,13 @@
                     </div>
                     {% endif %}
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:production_order_detail' batch.production_order.id %}" class="btn btn-info btn-block">
+                        <a href="{% url 'production:order_detail' batch.production_order.id %}" class="btn btn-info btn-block">
                             <i class="fa fa-clipboard-list"></i><br>
                             Ver Ordem
                         </a>
                     </div>
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:batch_list' %}" class="btn btn-secondary btn-block">
+                        <a href="{% url 'production:batch_list' %}" class="btn btn-secondary btn-block">
                             <i class="fa fa-list"></i><br>
                             Voltar à Lista
                         </a>
@@ -397,7 +397,7 @@
                 <dl class="row">
                     <dt class="col-sm-5">Número:</dt>
                     <dd class="col-sm-7">
-                        <a href="{% url 'inventory:production_order_detail' batch.production_order.id %}">
+                        <a href="{% url 'production:order_detail' batch.production_order.id %}">
                             {{ batch.production_order.order_number }}
                         </a>
                     </dd>
@@ -510,7 +510,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:batch_add_bin' batch.id %}",
+            url: "{% url 'production:batch_add_bin' batch.id %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -536,7 +536,7 @@ $(document).ready(function() {
 function markReady() {
     if (confirm('Confirma que a batelada está pronta para produção?')) {
         $.ajax({
-            url: "{% url 'inventory:batch_mark_ready' batch.id %}",
+            url: "{% url 'production:batch_mark_ready' batch.id %}",
             type: 'POST',
             headers: {
                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
@@ -559,7 +559,7 @@ function markReady() {
 function startProduction() {
     if (confirm('Confirma o início da produção desta batelada?')) {
         $.ajax({
-            url: "{% url 'inventory:batch_start_production' batch.id %}",
+            url: "{% url 'production:batch_start_production' batch.id %}",
             type: 'POST',
             headers: {
                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
@@ -582,7 +582,7 @@ function startProduction() {
 function completeBatch() {
     if (confirm('Confirma a conclusão desta batelada?')) {
         $.ajax({
-            url: "{% url 'inventory:batch_complete' batch.id %}",
+            url: "{% url 'production:batch_complete' batch.id %}",
             type: 'POST',
             headers: {
                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()

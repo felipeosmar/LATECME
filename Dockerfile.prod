@@ -1,0 +1,67 @@
+# Build stage
+FROM python:3.12-slim as builder
+
+WORKDIR /usr/src/app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install poetry
+RUN pip install --upgrade pip && pip install poetry
+
+# Copy poetry files
+COPY poetry.lock pyproject.toml ./
+
+# Export requirements and build wheels
+RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+
+# Production stage
+FROM python:3.12-slim
+
+# Create app user for security
+RUN addgroup --system app && adduser --system --group app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+
+# Create directories
+RUN mkdir -p $APP_HOME/staticfiles $APP_HOME/mediafiles $APP_HOME/logs
+WORKDIR $APP_HOME
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from wheels
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache /wheels/*
+
+# Copy entrypoint
+COPY entrypoint.prod.sh $APP_HOME/entrypoint.sh
+RUN sed -i 's/\r$//' $APP_HOME/entrypoint.sh && chmod +x $APP_HOME/entrypoint.sh
+
+# Copy project files
+COPY --chown=app:app . $APP_HOME
+
+# Set ownership
+RUN chown -R app:app $APP_HOME
+
+# Switch to non-root user
+USER app
+
+ENTRYPOINT ["/home/app/web/entrypoint.sh"]

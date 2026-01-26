@@ -5,7 +5,7 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:bin_list' %}">Contentores</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:bin_list' %}">Contentores</a></li>
 <li class="breadcrumb-item active">{{ bin.code }}</li>
 {% endblock %}
 
@@ -182,7 +182,7 @@
         <div class="panel panel-inverse">
             <div class="panel-heading">
                 <div class="panel-heading-btn">
-                    <a href="{% url 'inventory:bin_history' bin.id %}" class="btn btn-primary btn-sm">
+                    <a href="{% url 'production:bin_history' bin.id %}" class="btn btn-primary btn-sm">
                         <i class="fa fa-eye"></i> Ver Histórico Completo
                     </a>
                 </div>
@@ -281,13 +281,13 @@
                     </div>
                     {% endif %}
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:bin_history' bin.id %}" class="btn btn-info btn-block">
+                        <a href="{% url 'production:bin_history' bin.id %}" class="btn btn-info btn-block">
                             <i class="fa fa-history"></i><br>
                             Histórico Completo
                         </a>
                     </div>
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:bin_list' %}" class="btn btn-secondary btn-block">
+                        <a href="{% url 'production:bin_list' %}" class="btn btn-secondary btn-block">
                             <i class="fa fa-list"></i><br>
                             Voltar à Lista
                         </a>
@@ -479,7 +479,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:bin_load' bin.id %}",
+            url: "{% url 'production:bin_load' bin.id %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -506,7 +506,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:bin_empty' bin.id %}",
+            url: "{% url 'production:bin_empty' bin.id %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {

@@ -5,7 +5,7 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:production_order_list' %}">Ordens de Produção</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:order_list' %}">Ordens de Produção</a></li>
 <li class="breadcrumb-item active">{{ order.order_number }}</li>
 {% endblock %}
 
@@ -207,7 +207,7 @@
                                 {% for batch in batches %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'inventory:batch_detail' batch.id %}">
+                                        <a href="{% url 'production:batch_detail' batch.id %}">
                                             <strong>{{ batch.batch_number }}</strong>
                                         </a>
                                     </td>
@@ -252,7 +252,7 @@
                                         <small>{{ batch.created_at|date:"d/m/Y H:i" }}</small>
                                     </td>
                                     <td>
-                                        <a href="{% url 'inventory:batch_detail' batch.id %}" class="btn btn-primary btn-xs">
+                                        <a href="{% url 'production:batch_detail' batch.id %}" class="btn btn-primary btn-xs">
                                             <i class="fa fa-eye"></i>
                                         </a>
                                     </td>
@@ -319,13 +319,13 @@
                     </div>
                     {% endif %}
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:batch_list' %}?order={{ order.id }}" class="btn btn-info btn-block">
+                        <a href="{% url 'production:batch_list' %}?order={{ order.id }}" class="btn btn-info btn-block">
                             <i class="fa fa-layer-group"></i><br>
                             Ver Bateladas
                         </a>
                     </div>
                     <div class="col-md-6 mb-2">
-                        <a href="{% url 'inventory:production_order_list' %}" class="btn btn-secondary btn-block">
+                        <a href="{% url 'production:order_list' %}" class="btn btn-secondary btn-block">
                             <i class="fa fa-list"></i><br>
                             Voltar à Lista
                         </a>
@@ -464,7 +464,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:batch_create' %}",
+            url: "{% url 'production:batch_create' %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {
@@ -494,7 +494,7 @@ $(document).ready(function() {
 function startOrder() {
     if (confirm('Confirma o início desta ordem de produção?')) {
         $.ajax({
-            url: "{% url 'inventory:production_order_start' order.id %}",
+            url: "{% url 'production:order_start' order.id %}",
             type: 'POST',
             headers: {
                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
@@ -517,7 +517,7 @@ function startOrder() {
 function completeOrder() {
     if (confirm('Confirma a conclusão desta ordem de produção?')) {
         $.ajax({
-            url: "{% url 'inventory:production_order_complete' order.id %}",
+            url: "{% url 'production:order_complete' order.id %}",
             type: 'POST',
             headers: {
                 'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()

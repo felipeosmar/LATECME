@@ -3,8 +3,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from .models import (
     Warehouse, MaterialStock, StockMovement,
-    StockReservation, InventoryCount,
-    ProductionOrder, Bin, Batch
+    StockReservation, InventoryCount
 )
 from apps.materials.models import Material
 from apps.accounts.models import CustomUser
@@ -13,7 +12,7 @@ from decimal import Decimal
 
 class WarehouseForm(forms.ModelForm):
     """Formulário para armazéns"""
-    
+
     class Meta:
         model = Warehouse
         fields = ['code', 'name', 'description', 'location', 'manager', 'is_active']
@@ -42,7 +41,7 @@ class WarehouseForm(forms.ModelForm):
                 'class': 'form-check-input'
             })
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Filtrar apenas usuários ativos
@@ -54,11 +53,11 @@ class WarehouseForm(forms.ModelForm):
 
 class MaterialStockForm(forms.ModelForm):
     """Formulário para estoque de materiais"""
-    
+
     class Meta:
         model = MaterialStock
         fields = [
-            'material', 'warehouse', 'current_quantity', 
+            'material', 'warehouse', 'current_quantity',
             'minimum_stock', 'maximum_stock', 'location_code'
         ]
         widgets = {
@@ -88,7 +87,7 @@ class MaterialStockForm(forms.ModelForm):
                 'placeholder': 'Ex: A1-B2'
             })
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['material'].queryset = Material.objects.filter(
@@ -97,24 +96,24 @@ class MaterialStockForm(forms.ModelForm):
         self.fields['warehouse'].queryset = Warehouse.objects.filter(
             is_active=True
         ).order_by('code')
-    
+
     def clean(self):
         cleaned_data = super().clean()
         minimum_stock = cleaned_data.get('minimum_stock')
         maximum_stock = cleaned_data.get('maximum_stock')
-        
+
         if minimum_stock and maximum_stock:
             if minimum_stock > maximum_stock:
                 raise ValidationError(
                     'O estoque mínimo não pode ser maior que o estoque máximo.'
                 )
-        
+
         return cleaned_data
 
 
 class StockMovementForm(forms.ModelForm):
     """Formulário para movimentações de estoque"""
-    
+
     class Meta:
         model = StockMovement
         fields = [
@@ -171,7 +170,7 @@ class StockMovementForm(forms.ModelForm):
                 'class': 'form-control'
             })
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['material'].queryset = Material.objects.filter(
@@ -184,7 +183,7 @@ class StockMovementForm(forms.ModelForm):
             is_active=True
         ).order_by('code')
         self.fields['destination_warehouse'].empty_label = "Selecione (apenas para transferências)"
-    
+
     def clean(self):
         cleaned_data = super().clean()
         movement_type = cleaned_data.get('movement_type')
@@ -192,7 +191,7 @@ class StockMovementForm(forms.ModelForm):
         warehouse = cleaned_data.get('warehouse')
         material = cleaned_data.get('material')
         quantity = cleaned_data.get('quantity')
-        
+
         # Validar transferência
         if movement_type == 'TRANSFER':
             if not destination_warehouse:
@@ -203,7 +202,7 @@ class StockMovementForm(forms.ModelForm):
                 raise ValidationError(
                     'Armazém de destino deve ser diferente do armazém de origem.'
                 )
-        
+
         # Validar estoque suficiente para saídas
         if movement_type in ['OUT', 'TRANSFER'] and material and warehouse and quantity:
             try:
@@ -219,13 +218,13 @@ class StockMovementForm(forms.ModelForm):
                 raise ValidationError(
                     'Material não encontrado no estoque do armazém selecionado.'
                 )
-        
+
         return cleaned_data
 
 
 class StockReservationForm(forms.ModelForm):
     """Formulário para reservas de estoque"""
-    
+
     class Meta:
         model = StockReservation
         fields = [
@@ -262,7 +261,7 @@ class StockReservationForm(forms.ModelForm):
                 'placeholder': 'Observações'
             })
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['material'].queryset = Material.objects.filter(
@@ -271,20 +270,20 @@ class StockReservationForm(forms.ModelForm):
         self.fields['warehouse'].queryset = Warehouse.objects.filter(
             is_active=True
         ).order_by('code')
-    
+
     def clean(self):
         cleaned_data = super().clean()
         material = cleaned_data.get('material')
         warehouse = cleaned_data.get('warehouse')
         quantity = cleaned_data.get('quantity')
         expiry_date = cleaned_data.get('expiry_date')
-        
+
         # Validar data de expiração
         if expiry_date and expiry_date <= timezone.now():
             raise ValidationError(
                 'A data de expiração deve ser futura.'
             )
-        
+
         # Validar estoque disponível
         if material and warehouse and quantity:
             try:
@@ -300,13 +299,13 @@ class StockReservationForm(forms.ModelForm):
                 raise ValidationError(
                     'Material não encontrado no estoque do armazém selecionado.'
                 )
-        
+
         return cleaned_data
 
 
 class InventoryCountForm(forms.ModelForm):
     """Formulário para contagem de inventário"""
-    
+
     class Meta:
         model = InventoryCount
         fields = [
@@ -332,7 +331,7 @@ class InventoryCountForm(forms.ModelForm):
                 'placeholder': 'Observações sobre a contagem'
             })
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['warehouse'].queryset = Warehouse.objects.filter(
@@ -346,17 +345,17 @@ class InventoryCountForm(forms.ModelForm):
         ).order_by('first_name', 'last_name')
         self.fields['counter'].empty_label = "Selecione o contador"
         self.fields['supervisor'].empty_label = "Selecione o supervisor"
-    
+
     def clean(self):
         cleaned_data = super().clean()
         counter = cleaned_data.get('counter')
         supervisor = cleaned_data.get('supervisor')
-        
+
         if counter and supervisor and counter == supervisor:
             raise ValidationError(
                 'O contador e o supervisor devem ser pessoas diferentes.'
             )
-        
+
         return cleaned_data
 
 
@@ -396,180 +395,4 @@ class StockSearchForm(forms.Form):
         widget=forms.Select(attrs={
             'class': 'form-control'
         })
-    )
-
-
-# =====================================================
-# FORMULÁRIOS PARA PRODUÇÃO, CONTENTORES E BATELADAS
-# =====================================================
-
-class ProductionOrderForm(forms.ModelForm):
-    """Formulário para ordens de produção"""
-
-    class Meta:
-        model = ProductionOrder
-        fields = [
-            'material', 'planned_quantity', 'planned_start_date',
-            'planned_end_date', 'responsible', 'notes'
-        ]
-        widgets = {
-            'material': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'planned_quantity': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.001',
-                'min': '0.001'
-            }),
-            'planned_start_date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'planned_end_date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'responsible': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'notes': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3
-            })
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['material'].queryset = Material.objects.filter(is_active=True)
-        self.fields['responsible'].queryset = CustomUser.objects.filter(is_active=True)
-        self.fields['responsible'].empty_label = "Selecione um responsável"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get('planned_start_date')
-        end_date = cleaned_data.get('planned_end_date')
-
-        if start_date and end_date and start_date > end_date:
-            raise ValidationError(
-                'Data de início não pode ser posterior à data de fim.'
-            )
-
-        return cleaned_data
-
-
-class BinForm(forms.ModelForm):
-    """Formulário para contentores"""
-
-    class Meta:
-        model = Bin
-        fields = ['code', 'warehouse', 'capacity', 'location_code', 'notes']
-        widgets = {
-            'code': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ex: CONT001, BIN-A01'
-            }),
-            'warehouse': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'capacity': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.001',
-                'min': '0'
-            }),
-            'location_code': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ex: A1-B2-P3'
-            }),
-            'notes': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3
-            })
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['warehouse'].queryset = Warehouse.objects.filter(is_active=True)
-
-
-class BinLoadForm(forms.Form):
-    """Formulário para carregar material em contentor"""
-    material = forms.ModelChoiceField(
-        queryset=Material.objects.filter(is_active=True),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Material"
-    )
-    quantity = forms.DecimalField(
-        max_digits=10,
-        decimal_places=3,
-        min_value=Decimal('0.001'),
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'step': '0.001'
-        }),
-        label="Quantidade (kg)"
-    )
-    supplier_batch = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Lote do fornecedor'
-        }),
-        label="Lote do Fornecedor"
-    )
-    certificate = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Número do certificado'
-        }),
-        label="Certificado"
-    )
-
-
-class BatchForm(forms.ModelForm):
-    """Formulário para bateladas"""
-
-    class Meta:
-        model = Batch
-        fields = ['production_order', 'target_quantity', 'notes']
-        widgets = {
-            'production_order': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'target_quantity': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.001',
-                'min': '0.001'
-            }),
-            'notes': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3
-            })
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Apenas ordens ativas (não concluídas/canceladas)
-        self.fields['production_order'].queryset = ProductionOrder.objects.filter(
-            status__in=['DRAFT', 'PLANNED', 'IN_PROGRESS'],
-            is_active=True
-        )
-
-
-class BatchAddBinForm(forms.Form):
-    """Formulário para adicionar contentor à batelada"""
-    bin_id = forms.UUIDField(
-        widget=forms.HiddenInput()
-    )
-    quantity = forms.DecimalField(
-        max_digits=10,
-        decimal_places=3,
-        min_value=Decimal('0.001'),
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'step': '0.001'
-        }),
-        label="Quantidade (kg)"
     )

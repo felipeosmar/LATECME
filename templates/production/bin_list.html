@@ -44,7 +44,7 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-search"></i> Buscar
             </button>
-            <a href="{% url 'inventory:bin_list' %}" class="btn btn-secondary ml-2">
+            <a href="{% url 'production:bin_list' %}" class="btn btn-secondary ml-2">
                 <i class="fa fa-times"></i> Limpar
             </a>
         </form>
@@ -133,7 +133,7 @@
                             <!-- Quick actions -->
                             <div class="mt-3">
                                 <div class="btn-group btn-block" role="group">
-                                    <a href="{% url 'inventory:bin_detail' bin.id %}" class="btn btn-outline-primary btn-sm">
+                                    <a href="{% url 'production:bin_detail' bin.id %}" class="btn btn-outline-primary btn-sm">
                                         <i class="fa fa-eye"></i> Detalhes
                                     </a>
                                     {% if bin.status == 'EMPTY' %}
@@ -145,7 +145,7 @@
                                         <i class="fa fa-arrow-up"></i> Esvaziar
                                     </button>
                                     {% endif %}
-                                    <a href="{% url 'inventory:bin_history' bin.id %}" class="btn btn-outline-info btn-sm">
+                                    <a href="{% url 'production:bin_history' bin.id %}" class="btn btn-outline-info btn-sm">
                                         <i class="fa fa-history"></i> Histórico
                                     </a>
                                 </div>
@@ -379,7 +379,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{% url 'inventory:bin_create' %}",
+            url: "{% url 'production:bin_create' %}",
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {

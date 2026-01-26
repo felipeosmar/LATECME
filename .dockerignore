@@ -1,0 +1,83 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.eggs/
+*.egg-info/
+*.egg
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Virtual environments
+.venv
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.docker/
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Local development
+.env
+.env.*
+!.env.production.example
+*.sqlite3
+db.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Static files collected (will be generated in container)
+staticfiles/
+
+# Media files (should be mounted as volume)
+media/
+
+# Nginx config (mounted separately)
+nginx/
+
+# Cache
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude/AI
+.auto-claude/
+CLAUDE.md

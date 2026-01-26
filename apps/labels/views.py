@@ -7,7 +7,7 @@ from django.contrib import messages
 import json
 
 from .models import LabelTemplate, PrinterConfiguration, PrintJob
-from apps.inventory.models import Bin
+from apps.production.models import Bin
 from .epl_generator import EPLGenerator
 from .printer_client import PrinterClient
 
