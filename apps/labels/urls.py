@@ -12,6 +12,7 @@ urlpatterns = [
     path('templates/delete/<uuid:template_id>/', views.template_delete, name='template_delete'),
 
     # Impressão
+    path('print/', views.quick_print, name='quick_print'),
     path('print/form/<uuid:bin_id>/', views.print_form, name='print_form'),
     path('print/preview/<uuid:bin_id>/<uuid:template_id>/', views.print_preview, name='print_preview'),
     path('print/execute/', views.print_label, name='print_label'),

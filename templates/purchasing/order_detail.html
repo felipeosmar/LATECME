@@ -1,0 +1,484 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Pedido {{ order.reference_number }} - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'purchasing:dashboard' %}">Compras</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchasing:order_list' %}">Pedidos</a></li>
+<li class="breadcrumb-item active" aria-current="page">{{ order.reference_number }}</li>
+{% endblock %}
+
+{% block page_title %}Pedido {{ order.reference_number }}{% endblock %}
+{% block page_subtitle %}
+<div class="page-subtitle">
+    {% if order.status == 'DRAFT' %}
+    <span class="badge bg-secondary">Rascunho</span>
+    {% elif order.status == 'SENT' %}
+    <span class="badge bg-yellow">Enviado</span>
+    {% elif order.status == 'CONFIRMED' %}
+    <span class="badge bg-cyan">Confirmado</span>
+    {% elif order.status == 'PARTIAL' %}
+    <span class="badge bg-orange">Recebido Parcial</span>
+    {% elif order.status == 'RECEIVED' %}
+    <span class="badge bg-green">Recebido</span>
+    {% elif order.status == 'CANCELLED' %}
+    <span class="badge bg-dark">Cancelado</span>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block page_actions %}
+{% if order.status == 'DRAFT' %}
+<form method="post" action="{% url 'purchasing:order_send' order.id %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary" {% if order.items.count == 0 %}disabled{% endif %}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-send"></use>
+        </svg>
+        Enviar ao Fornecedor
+    </button>
+</form>
+{% elif order.status == 'SENT' %}
+<form method="post" action="{% url 'purchasing:order_confirm' order.id %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+        </svg>
+        Confirmar Recebimento
+    </button>
+</form>
+{% elif order.status == 'CONFIRMED' %}
+<a href="{% url 'purchasing:receiving_create' %}?order={{ order.id }}" class="btn btn-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+    </svg>
+    Registrar Recebimento
+</a>
+{% endif %}
+{% endblock %}
+
+{% block content_body %}
+<div x-data="orderDetail()">
+    <div class="row">
+        <!-- Main Info -->
+        <div class="col-lg-8">
+            <!-- Order Info Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                        </svg>
+                        Informacoes do Pedido
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-5">Fornecedor:</dt>
+                                <dd class="col-7">{{ order.supplier.name }}</dd>
+
+                                <dt class="col-5">Data Emissao:</dt>
+                                <dd class="col-7">{{ order.order_date|date:"d/m/Y" }}</dd>
+
+                                <dt class="col-5">Previsao Entrega:</dt>
+                                <dd class="col-7">{{ order.expected_delivery_date|date:"d/m/Y"|default:"-" }}</dd>
+
+                                {% if order.purchase_request %}
+                                <dt class="col-5">Solicitacao:</dt>
+                                <dd class="col-7">
+                                    <a href="{% url 'purchasing:request_detail' order.purchase_request.id %}">
+                                        {{ order.purchase_request.reference_number }}
+                                    </a>
+                                </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-5">Pagamento:</dt>
+                                <dd class="col-7">{{ order.payment_terms|default:"-" }}</dd>
+
+                                <dt class="col-5">Armazem:</dt>
+                                <dd class="col-7">{{ order.warehouse.code }} - {{ order.warehouse.name }}</dd>
+
+                                <dt class="col-5">Total:</dt>
+                                <dd class="col-7"><strong class="text-primary">R$ {{ order.total_value|floatformat:2 }}</strong></dd>
+
+                                <dt class="col-5">Criado por:</dt>
+                                <dd class="col-7">{{ order.created_by.get_full_name|default:order.created_by.username }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    {% if order.shipping_address %}
+                    <hr>
+                    <div>
+                        <strong>Endereco de Entrega:</strong>
+                        <p class="mb-0">{{ order.shipping_address }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if order.notes %}
+                    <hr>
+                    <div>
+                        <strong>Observacoes:</strong>
+                        <p class="mb-0">{{ order.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Items Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list"></use>
+                        </svg>
+                        Itens do Pedido
+                        <span class="badge bg-secondary ms-2">{{ order.items.count }}</span>
+                    </h3>
+                    {% if order.status == 'DRAFT' %}
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-primary btn-sm" @click="$dispatch('open-modal', {id: 'add-item'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            Adicionar Item
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if order.items.exists %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Quantidade</th>
+                                <th>Unidade</th>
+                                <th>Preco Unit.</th>
+                                <th>Subtotal</th>
+                                <th>Recebido</th>
+                                {% if order.status == 'DRAFT' %}
+                                <th class="w-1"></th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>
+                                    <div>{{ item.material.code }}</div>
+                                    <small class="text-muted">{{ item.material.name }}</small>
+                                </td>
+                                <td>{{ item.quantity|floatformat:2 }}</td>
+                                <td>{{ item.material.unit_of_measure }}</td>
+                                <td>R$ {{ item.unit_price|floatformat:2 }}</td>
+                                <td><strong>R$ {{ item.total_price|floatformat:2 }}</strong></td>
+                                <td>
+                                    {% if item.received_quantity > 0 %}
+                                    <span class="badge {% if item.received_quantity >= item.quantity %}bg-green{% else %}bg-yellow{% endif %}">
+                                        {{ item.received_quantity|floatformat:2 }} / {{ item.quantity|floatformat:2 }}
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">0</span>
+                                    {% endif %}
+                                </td>
+                                {% if order.status == 'DRAFT' %}
+                                <td>
+                                    <form method="post" action="{% url 'purchasing:order_item_remove' order.id item.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-icon btn-ghost-danger btn-sm"
+                                                onclick="return confirm('Remover este item?')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-trash"></use>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-primary-lt">
+                                <th colspan="4" class="text-end">Total:</th>
+                                <th colspan="{% if order.status == 'DRAFT' %}2{% else %}1{% endif %}">
+                                    <strong>R$ {{ order.total_value|floatformat:2 }}</strong>
+                                </th>
+                                {% if order.status == 'DRAFT' %}<th></th>{% endif %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <p class="empty-title">Nenhum item adicionado</p>
+                        {% if order.status == 'DRAFT' %}
+                        <div class="empty-action">
+                            <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'add-item'})">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                                </svg>
+                                Adicionar Item
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Supplier Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-store"></use>
+                        </svg>
+                        Fornecedor
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <h4>{{ order.supplier.name }}</h4>
+                    {% if order.supplier.cnpj %}
+                    <p class="text-muted mb-2">CNPJ: {{ order.supplier.cnpj }}</p>
+                    {% endif %}
+                    {% if order.supplier.contact_name %}
+                    <p class="mb-1"><strong>Contato:</strong> {{ order.supplier.contact_name }}</p>
+                    {% endif %}
+                    {% if order.supplier.email %}
+                    <p class="mb-1"><strong>Email:</strong> {{ order.supplier.email }}</p>
+                    {% endif %}
+                    {% if order.supplier.phone %}
+                    <p class="mb-0"><strong>Tel:</strong> {{ order.supplier.phone }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                        </svg>
+                        Historico
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-secondary me-2">1</span>
+                            <div>
+                                <div>Criado</div>
+                                <small class="text-muted">{{ order.created_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% if order.sent_at %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-yellow me-2">2</span>
+                            <div>
+                                <div>Enviado</div>
+                                <small class="text-muted">{{ order.sent_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if order.confirmed_at %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-cyan me-2">3</span>
+                            <div>
+                                <div>Confirmado</div>
+                                <small class="text-muted">{{ order.confirmed_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if order.received_at %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-green me-2">4</span>
+                            <div>
+                                <div>Recebido</div>
+                                <small class="text-muted">{{ order.received_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Receivings Card -->
+            {% if order.receivings.exists %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                        </svg>
+                        Recebimentos
+                    </h3>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for receiving in order.receivings.all %}
+                    <a href="{% url 'purchasing:receiving_detail' receiving.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong>{{ receiving.receiving_number }}</strong>
+                            <span class="badge {% if receiving.status == 'APPROVED' %}bg-green{% elif receiving.status == 'PENDING' %}bg-yellow{% else %}bg-secondary{% endif %}">
+                                {{ receiving.get_status_display }}
+                            </span>
+                        </div>
+                        <small class="text-muted">{{ receiving.received_at|date:"d/m/Y H:i" }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    {% if order.status == 'DRAFT' %}
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="addItemModalOpen"
+         x-cloak
+         @open-modal.window="if ($event.detail.id === 'add-item') addItemModalOpen = true"
+         @close-modal.window="addItemModalOpen = false"
+         @keydown.escape.window="addItemModalOpen = false">
+        <div class="modal-dialog modal-lg" @click.outside="addItemModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Item ao Pedido</h5>
+                    <button type="button" class="btn-close" @click="addItemModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitAddItem">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label required">Material</label>
+                                <select class="form-select" x-model="itemData.material" required @change="loadMaterialInfo">
+                                    <option value="">Selecione...</option>
+                                    {% for material in materials %}
+                                    <option value="{{ material.id }}" data-unit="{{ material.unit_of_measure }}">
+                                        {{ material.code }} - {{ material.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required">Quantidade</label>
+                                <input type="number" step="0.01" min="0.01" class="form-control"
+                                       x-model="itemData.quantity" required @input="calculateTotal">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Unidade</label>
+                                <input type="text" class="form-control" x-model="itemData.unit" readonly>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required">Preco Unitario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" step="0.01" min="0" class="form-control"
+                                           x-model="itemData.unit_price" required @input="calculateTotal">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info mb-0" x-show="itemData.total > 0">
+                                    <strong>Subtotal do item:</strong> R$ <span x-text="itemData.total.toFixed(2)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="addItemModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" :disabled="submitting">
+                            <span x-show="!submitting">Adicionar Item</span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Adicionando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="addItemModalOpen" x-cloak></div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function orderDetail() {
+    return {
+        addItemModalOpen: false,
+        submitting: false,
+        itemData: {
+            material: '',
+            quantity: '',
+            unit: '',
+            unit_price: '',
+            total: 0
+        },
+
+        loadMaterialInfo() {
+            const select = document.querySelector('[x-model="itemData.material"]');
+            const option = select.options[select.selectedIndex];
+            if (option.dataset.unit) {
+                this.itemData.unit = option.dataset.unit;
+            }
+        },
+
+        calculateTotal() {
+            const qty = parseFloat(this.itemData.quantity) || 0;
+            const price = parseFloat(this.itemData.unit_price) || 0;
+            this.itemData.total = qty * price;
+        },
+
+        async submitAddItem() {
+            this.submitting = true;
+
+            const formData = new FormData();
+            formData.append('material', this.itemData.material);
+            formData.append('quantity', this.itemData.quantity);
+            formData.append('unit', this.itemData.unit);
+            formData.append('unit_price', this.itemData.unit_price);
+
+            try {
+                const response = await fetch('{% url "purchasing:order_item_add" order.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Erro ao adicionar item');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erro ao adicionar item');
+            } finally {
+                this.submitting = false;
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -269,6 +269,9 @@
                             <label class="form-label required">Material</label>
                             <select name="material_id" class="form-select" required>
                                 <option value="">Selecione um material...</option>
+                                {% for material in materials %}
+                                <option value="{{ material.id }}">{{ material.code }} - {{ material.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">

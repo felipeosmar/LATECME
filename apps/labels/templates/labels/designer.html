@@ -193,11 +193,13 @@
                     <div class="alert alert-info small mb-0">
                         <h4 class="alert-title">Variaveis disponiveis:</h4>
                         <ul class="mb-0 ps-3">
-                            <li><code>{{ "{{bin_code}}" }}</code> - Codigo do contentor</li>
-                            <li><code>{{ "{{warehouse_code}}" }}</code> - Codigo do armazem</li>
-                            <li><code>{{ "{{location}}" }}</code> - Localizacao</li>
-                            <li><code>{{ "{{capacity}}" }}</code> - Capacidade</li>
-                            <li><code>{{ "{{date}}" }}</code> - Data atual</li>
+                            {% verbatim %}
+                            <li><code>{{bin_code}}</code> - Codigo do contentor</li>
+                            <li><code>{{warehouse_code}}</code> - Codigo do armazem</li>
+                            <li><code>{{location}}</code> - Localizacao</li>
+                            <li><code>{{capacity}}</code> - Capacidade</li>
+                            <li><code>{{date}}</code> - Data atual</li>
+                            {% endverbatim %}
                         </ul>
                     </div>
                 </div>

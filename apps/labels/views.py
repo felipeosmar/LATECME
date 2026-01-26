@@ -274,3 +274,53 @@ def print_job_list(request):
         'jobs': jobs,
     }
     return render(request, 'labels/print_job_list.html', context)
+
+
+@login_required
+def quick_print(request):
+    """Tela de impressão avulsa - seleção de bin e impressão direta"""
+    from apps.inventory.models import Warehouse
+
+    # Filtros
+    search = request.GET.get('search', '').strip()
+    warehouse_id = request.GET.get('warehouse', '')
+    status_filter = request.GET.get('status', '')
+
+    # Query base
+    bins = Bin.objects.filter(is_active=True).select_related(
+        'warehouse', 'current_material'
+    ).order_by('warehouse__code', 'code')
+
+    # Aplicar filtros
+    if search:
+        bins = bins.filter(code__icontains=search)
+
+    if warehouse_id:
+        bins = bins.filter(warehouse_id=warehouse_id)
+
+    if status_filter:
+        bins = bins.filter(status=status_filter)
+
+    # Dados para os selects
+    warehouses = Warehouse.objects.filter(is_active=True).order_by('code')
+    templates = LabelTemplate.objects.filter(is_active=True).order_by('-is_default', 'name')
+    printers = PrinterConfiguration.objects.filter(is_active=True).order_by('-is_default', 'name')
+
+    # Defaults
+    default_template = templates.filter(is_default=True).first()
+    default_printer = printers.filter(is_default=True).first()
+
+    context = {
+        'bins': bins[:100],  # Limitar a 100 resultados
+        'total_bins': bins.count(),
+        'warehouses': warehouses,
+        'templates': templates,
+        'printers': printers,
+        'default_template': default_template,
+        'default_printer': default_printer,
+        'search': search,
+        'selected_warehouse': warehouse_id,
+        'selected_status': status_filter,
+        'status_choices': Bin.STATUS_CHOICES,
+    }
+    return render(request, 'labels/quick_print.html', context)

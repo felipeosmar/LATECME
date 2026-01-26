@@ -4,6 +4,9 @@ from . import views
 app_name = 'production'
 
 urlpatterns = [
+    # Dashboard
+    path('', views.production_order_list, name='dashboard'),
+
     # Ordens de Produção
     path('orders/', views.production_order_list, name='order_list'),
     path('orders/create/', views.production_order_create, name='order_create'),
@@ -14,6 +17,8 @@ urlpatterns = [
     # Contentores (Bins)
     path('bins/', views.bin_list, name='bin_list'),
     path('bins/create/', views.bin_create, name='bin_create'),
+    path('bins/batch-create/', views.bin_batch_create, name='bin_batch_create'),
+    path('bins/batch-print/', views.bin_batch_print, name='bin_batch_print'),
     path('bins/<uuid:bin_id>/', views.bin_detail, name='bin_detail'),
     path('bins/<uuid:bin_id>/load/', views.bin_load, name='bin_load'),
     path('bins/<uuid:bin_id>/empty/', views.bin_empty, name='bin_empty'),

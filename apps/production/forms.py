@@ -62,16 +62,12 @@ class ProductionOrderForm(forms.ModelForm):
 
 
 class BinForm(forms.ModelForm):
-    """Formulário para contentores"""
+    """Formulário para contentores - código é gerado automaticamente"""
 
     class Meta:
         model = Bin
-        fields = ['code', 'warehouse', 'capacity', 'location_code', 'notes']
+        fields = ['warehouse', 'capacity', 'location_code', 'notes']
         widgets = {
-            'code': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ex: CONT001, BIN-A01'
-            }),
             'warehouse': forms.Select(attrs={
                 'class': 'form-control'
             }),

@@ -84,6 +84,7 @@
                             <a class="dropdown-item" href="{% url 'inventory:dashboard' %}">Dashboard</a>
                             <a class="dropdown-item" href="{% url 'inventory:stock_list' %}">Consultar Estoque</a>
                             <a class="dropdown-item" href="{% url 'inventory:movements_list' %}">Movimentacoes</a>
+                            <a class="dropdown-item" href="{% url 'inventory:inventory_count_list' %}">Contagens</a>
                             <a class="dropdown-item" href="{% url 'inventory:warehouse_list' %}">Armazens</a>
                             <a class="dropdown-item" href="{% url 'inventory:reservations_list' %}">Reservas</a>
                             <a class="dropdown-item" href="{% url 'inventory:reports' %}">Relatorios</a>
@@ -110,6 +111,27 @@
                         </div>
                     </li>
 
+                    <!-- Compras -->
+                    <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'purchasing' %}true{% else %}false{% endif %} }">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'purchasing' %}active{% endif %}"
+                           href="#"
+                           @click.prevent="open = !open"
+                           :class="{ 'show': open }">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-shopping-cart"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Compras</span>
+                        </a>
+                        <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'purchasing:dashboard' %}">Dashboard</a>
+                            <a class="dropdown-item" href="{% url 'purchasing:request_list' %}">Solicitacoes</a>
+                            <a class="dropdown-item" href="{% url 'purchasing:order_list' %}">Pedidos</a>
+                            <a class="dropdown-item" href="{% url 'purchasing:receiving_list' %}">Recebimentos</a>
+                        </div>
+                    </li>
+
                     <!-- Labels -->
                     <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'labels' %}true{% else %}false{% endif %} }">
                         <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'labels' %}active{% endif %}"
@@ -124,6 +146,8 @@
                             <span class="nav-link-title">Etiquetas</span>
                         </a>
                         <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'labels:quick_print' %}">Impressao Avulsa</a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'labels:printer_list' %}">Impressoras</a>
                             <a class="dropdown-item" href="{% url 'labels:template_list' %}">Templates</a>
                             <a class="dropdown-item" href="{% url 'labels:print_job_list' %}">Historico</a>

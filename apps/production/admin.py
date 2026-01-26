@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import ProductionOrder, Bin, BinHistory, Batch, BatchItem
 
 
@@ -76,7 +77,7 @@ class BinAdmin(admin.ModelAdmin):
                 '<span style="color: blue;">{}</span>',
                 obj.current_material.code
             )
-        return format_html('<span style="color: gray;">-</span>')
+        return mark_safe('<span style="color: gray;">-</span>')
     current_material_code.short_description = 'Material'
 
     fieldsets = (
@@ -161,13 +162,13 @@ class BatchAdmin(admin.ModelAdmin):
     def quantity_status(self, obj):
         variance = obj.quantity_variance
         if obj.is_complete:
-            return format_html('<span style="color: green;">Completa</span>')
+            return mark_safe('<span style="color: green;">Completa</span>')
         elif variance < 0:
             return format_html(
                 '<span style="color: orange;">Falta {:.3f} kg</span>',
                 abs(variance)
             )
-        return format_html('<span style="color: red;">-</span>')
+        return mark_safe('<span style="color: red;">-</span>')
     quantity_status.short_description = 'Status Qtd'
 
     fieldsets = (

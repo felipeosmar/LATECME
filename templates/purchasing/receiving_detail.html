@@ -1,0 +1,480 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Recebimento {{ receiving.reference_number }} - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'purchasing:dashboard' %}">Compras</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchasing:receiving_list' %}">Recebimentos</a></li>
+<li class="breadcrumb-item active" aria-current="page">{{ receiving.reference_number }}</li>
+{% endblock %}
+
+{% block page_title %}Recebimento {{ receiving.reference_number }}{% endblock %}
+{% block page_subtitle %}
+<div class="page-subtitle">
+    {% if receiving.status == 'PENDING' %}
+    <span class="badge bg-yellow">Pendente</span>
+    {% elif receiving.status == 'INSPECTING' %}
+    <span class="badge bg-cyan">Em Inspecao</span>
+    {% elif receiving.status == 'APPROVED' %}
+    <span class="badge bg-green">Aprovado</span>
+    {% elif receiving.status == 'REJECTED' %}
+    <span class="badge bg-red">Rejeitado</span>
+    {% elif receiving.status == 'PARTIAL' %}
+    <span class="badge bg-orange">Parcial</span>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block page_actions %}
+{% if receiving.status == 'PENDING' or receiving.status == 'INSPECTING' %}
+<form method="post" action="{% url 'purchasing:receiving_approve' receiving.id %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success" {% if receiving.items.count == 0 %}disabled{% endif %}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+        </svg>
+        Aprovar
+    </button>
+</form>
+<form method="post" action="{% url 'purchasing:receiving_reject' receiving.id %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Rejeitar este recebimento?')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+        </svg>
+        Rejeitar
+    </button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block content_body %}
+<div x-data="receivingDetail()">
+    <div class="row">
+        <!-- Main Info -->
+        <div class="col-lg-8">
+            <!-- Receiving Info Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                        </svg>
+                        Informacoes do Recebimento
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-5">Pedido:</dt>
+                                <dd class="col-7">
+                                    <a href="{% url 'purchasing:order_detail' receiving.purchase_order.id %}">
+                                        {{ receiving.purchase_order.reference_number }}
+                                    </a>
+                                </dd>
+
+                                <dt class="col-5">Fornecedor:</dt>
+                                <dd class="col-7">
+                                    {{ receiving.purchase_order.supplier.trade_name }}
+                                </dd>
+
+                                <dt class="col-5">Armazem:</dt>
+                                <dd class="col-7">{{ receiving.purchase_order.warehouse.code }} - {{ receiving.purchase_order.warehouse.name }}</dd>
+
+                                <dt class="col-5">Recebido em:</dt>
+                                <dd class="col-7">{{ receiving.receiving_date|date:"d/m/Y" }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-5">NF-e:</dt>
+                                <dd class="col-7">{{ receiving.invoice_number|default:"-" }}</dd>
+
+                                <dt class="col-5">Recebido por:</dt>
+                                <dd class="col-7">{{ receiving.received_by.get_full_name|default:receiving.received_by.username }}</dd>
+
+                                {% if receiving.inspected_by %}
+                                <dt class="col-5">Inspecionado por:</dt>
+                                <dd class="col-7">{{ receiving.inspected_by.get_full_name|default:receiving.inspected_by.username }}</dd>
+                                {% endif %}
+
+                                {% if receiving.inspection_date %}
+                                <dt class="col-5">Inspecionado em:</dt>
+                                <dd class="col-7">{{ receiving.inspection_date|date:"d/m/Y H:i" }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+
+                    {% if receiving.notes %}
+                    <hr>
+                    <div>
+                        <strong>Observacoes:</strong>
+                        <p class="mb-0">{{ receiving.notes }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if receiving.rejection_reason %}
+                    <hr>
+                    <div class="alert alert-danger mb-0">
+                        <strong>Motivo da Rejeicao:</strong>
+                        <p class="mb-0">{{ receiving.rejection_reason }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Items Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list"></use>
+                        </svg>
+                        Itens Recebidos
+                        <span class="badge bg-secondary ms-2">{{ receiving.items.count }}</span>
+                    </h3>
+                    {% if receiving.status == 'PENDING' or receiving.status == 'INSPECTING' %}
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-primary btn-sm" @click="$dispatch('open-modal', {id: 'add-item'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            Adicionar Item
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if receiving.items.exists %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Qtd Esperada</th>
+                                <th>Qtd Recebida</th>
+                                <th>Unidade</th>
+                                <th>Lote</th>
+                                <th>Validade</th>
+                                <th>Aceito</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in receiving.items.all %}
+                            <tr>
+                                <td>
+                                    <div>{{ item.material.code }}</div>
+                                    <small class="text-muted">{{ item.material.name }}</small>
+                                </td>
+                                <td>{{ item.expected_quantity|floatformat:2 }}</td>
+                                <td>
+                                    <strong class="{% if item.received_quantity < item.expected_quantity %}text-warning{% else %}text-success{% endif %}">
+                                        {{ item.received_quantity|floatformat:2 }}
+                                    </strong>
+                                </td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.batch_number|default:"-" }}</td>
+                                <td>{{ item.expiry_date|date:"d/m/Y"|default:"-" }}</td>
+                                <td>
+                                    {% if item.accepted %}
+                                    <span class="badge bg-green">Sim</span>
+                                    {% else %}
+                                    <span class="badge bg-red">Nao</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if item.notes %}
+                            <tr>
+                                <td colspan="7" class="bg-light">
+                                    <small><strong>Obs:</strong> {{ item.notes }}</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <p class="empty-title">Nenhum item adicionado</p>
+                        {% if receiving.status == 'PENDING' or receiving.status == 'INSPECTING' %}
+                        <div class="empty-action">
+                            <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'add-item'})">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                                </svg>
+                                Adicionar Item
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Order Info Card -->
+            {% if receiving.purchase_order %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-shopping-cart"></use>
+                        </svg>
+                        Pedido de Origem
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'purchasing:order_detail' receiving.purchase_order.id %}" class="btn btn-outline-primary w-100">
+                        {{ receiving.purchase_order.order_number }}
+                    </a>
+                    <div class="mt-3">
+                        <strong>Fornecedor:</strong> {{ receiving.purchase_order.supplier.name }}
+                    </div>
+                    <div class="mt-2">
+                        <strong>Data do Pedido:</strong> {{ receiving.purchase_order.order_date|date:"d/m/Y" }}
+                    </div>
+                    <div class="mt-2">
+                        <strong>Total:</strong> R$ {{ receiving.purchase_order.total_amount|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Timeline Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                        </svg>
+                        Historico
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-yellow me-2">1</span>
+                            <div>
+                                <div>Recebido</div>
+                                <small class="text-muted">{{ receiving.receiving_date|date:"d/m/Y H:i" }}</small>
+                                <br><small class="text-muted">por {{ receiving.received_by.get_full_name|default:receiving.received_by.username }}</small>
+                            </div>
+                        </li>
+                        {% if receiving.inspection_date %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-cyan me-2">2</span>
+                            <div>
+                                <div>Inspecionado</div>
+                                <small class="text-muted">{{ receiving.inspection_date|date:"d/m/Y H:i" }}</small>
+                                {% if receiving.inspected_by %}
+                                <br><small class="text-muted">por {{ receiving.inspected_by.get_full_name|default:receiving.inspected_by.username }}</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if receiving.status == 'APPROVED' %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-green me-2">3</span>
+                            <div>
+                                <div>Aprovado</div>
+                                <small class="text-muted">{{ receiving.updated_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% elif receiving.status == 'REJECTED' %}
+                        <li class="list-group-item d-flex">
+                            <span class="badge bg-red me-2">3</span>
+                            <div>
+                                <div>Rejeitado</div>
+                                <small class="text-muted">{{ receiving.updated_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            {% if receiving.status == 'APPROVED' %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
+                        </svg>
+                        Acoes Rapidas
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'inventory:movements_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
+                        </svg>
+                        Ver Movimentacoes
+                    </a>
+                    <a href="{% url 'inventory:dashboard' %}" class="btn btn-outline-secondary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
+                        </svg>
+                        Dashboard Estoque
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    {% if receiving.status == 'PENDING' or receiving.status == 'INSPECTING' %}
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="addItemModalOpen"
+         x-cloak
+         @open-modal.window="if ($event.detail.id === 'add-item') addItemModalOpen = true"
+         @close-modal.window="addItemModalOpen = false"
+         @keydown.escape.window="addItemModalOpen = false">
+        <div class="modal-dialog modal-lg" @click.outside="addItemModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Item Recebido</h5>
+                    <button type="button" class="btn-close" @click="addItemModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitAddItem">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label required">Material</label>
+                                <select class="form-select" x-model="itemData.material" required @change="loadMaterialInfo">
+                                    <option value="">Selecione...</option>
+                                    {% for material in materials %}
+                                    <option value="{{ material.id }}" data-unit="{{ material.unit_of_measure }}">
+                                        {{ material.code }} - {{ material.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Qtd Esperada</label>
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                       x-model="itemData.expected_quantity">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required">Qtd Recebida</label>
+                                <input type="number" step="0.01" min="0.01" class="form-control"
+                                       x-model="itemData.received_quantity" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Unidade</label>
+                                <input type="text" class="form-control" x-model="itemData.unit" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Lote</label>
+                                <input type="text" class="form-control" x-model="itemData.batch_number" placeholder="Numero do lote">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Validade</label>
+                                <input type="date" class="form-control" x-model="itemData.expiry_date">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observacoes</label>
+                            <textarea class="form-control" rows="2" x-model="itemData.notes" placeholder="Observacoes sobre o item..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" x-model="itemData.accepted" checked>
+                                <span class="form-check-label">Item aceito na inspecao</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="addItemModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" :disabled="submitting">
+                            <span x-show="!submitting">Adicionar Item</span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Adicionando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="addItemModalOpen" x-cloak></div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function receivingDetail() {
+    return {
+        addItemModalOpen: false,
+        submitting: false,
+        itemData: {
+            material: '',
+            expected_quantity: '',
+            received_quantity: '',
+            unit: '',
+            batch_number: '',
+            expiry_date: '',
+            notes: '',
+            accepted: true
+        },
+
+        loadMaterialInfo() {
+            const select = document.querySelector('[x-model="itemData.material"]');
+            const option = select.options[select.selectedIndex];
+            if (option.dataset.unit) {
+                this.itemData.unit = option.dataset.unit;
+            }
+        },
+
+        async submitAddItem() {
+            this.submitting = true;
+
+            const formData = new FormData();
+            formData.append('material', this.itemData.material);
+            formData.append('expected_quantity', this.itemData.expected_quantity || 0);
+            formData.append('received_quantity', this.itemData.received_quantity);
+            formData.append('unit', this.itemData.unit);
+            formData.append('batch_number', this.itemData.batch_number);
+            formData.append('expiry_date', this.itemData.expiry_date);
+            formData.append('notes', this.itemData.notes);
+            formData.append('accepted', this.itemData.accepted);
+
+            try {
+                const response = await fetch('{% url "purchasing:receiving_item_add" receiving.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Erro ao adicionar item');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erro ao adicionar item');
+            } finally {
+                this.submitting = false;
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

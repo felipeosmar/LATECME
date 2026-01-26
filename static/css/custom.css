@@ -88,6 +88,11 @@
     background-color: rgba(var(--tblr-primary-rgb), 0.05);
 }
 
+/* Cursor pointer utility */
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* Badge for status indicators */
 .badge-status {
     text-transform: uppercase;

@@ -83,11 +83,11 @@ class PrinterConfigurationAdmin(admin.ModelAdmin):
 
     def status_indicator(self, obj):
         if obj.last_test_success is None:
-            return format_html('<span style="color: gray;">⚫ Não testado</span>')
+            return mark_safe('<span style="color: gray;">⚫ Não testado</span>')
         elif obj.last_test_success:
-            return format_html('<span style="color: green;">✓ Online</span>')
+            return mark_safe('<span style="color: green;">✓ Online</span>')
         else:
-            return format_html('<span style="color: red;">✗ Offline</span>')
+            return mark_safe('<span style="color: red;">✗ Offline</span>')
     status_indicator.short_description = 'Status'
 
     def save_model(self, request, obj, form, change):

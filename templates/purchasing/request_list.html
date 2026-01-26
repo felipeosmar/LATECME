@@ -1,0 +1,401 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Solicitacoes de Compra - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'purchasing:dashboard' %}">Compras</a></li>
+<li class="breadcrumb-item active" aria-current="page">Solicitacoes</li>
+{% endblock %}
+
+{% block page_title %}Solicitacoes de Compra{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestao de Requisicoes de Compra</div>{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-request'})" x-data>
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+    </svg>
+    Nova Solicitacao
+</button>
+{% endblock %}
+
+{% block content_body %}
+<div x-data="requestManager()">
+    <!-- Summary Stats -->
+    <div class="row row-deck row-cards mb-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <span class="bg-blue text-white avatar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <div class="font-weight-medium">{{ stats.total }}</div>
+                            <div class="text-muted">Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <span class="bg-secondary text-white avatar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-pencil"></use>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <div class="font-weight-medium">{{ stats.draft }}</div>
+                            <div class="text-muted">Rascunho</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <span class="bg-yellow text-white avatar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <div class="font-weight-medium">{{ stats.pending }}</div>
+                            <div class="text-muted">Pendentes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <span class="bg-green text-white avatar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <div class="font-weight-medium">{{ stats.approved }}</div>
+                            <div class="text-muted">Aprovadas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <div class="input-icon">
+                        <span class="input-icon-addon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                            </svg>
+                        </span>
+                        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>{{ status_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Prioridade</label>
+                    <select name="priority" class="form-select">
+                        <option value="">Todas</option>
+                        {% for priority_code, priority_name in priority_choices %}
+                        <option value="{{ priority_code }}" {% if priority_filter == priority_code %}selected{% endif %}>{{ priority_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{% url 'purchasing:request_list' %}" class="btn btn-secondary w-100">Limpar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
+                </svg>
+                Solicitacoes
+                <span class="badge bg-secondary ms-2">{{ requests.paginator.count }}</span>
+            </h3>
+        </div>
+        {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table table-hover">
+                <thead>
+                    <tr>
+                        <th>Referencia</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Solicitante</th>
+                        <th>Armazem</th>
+                        <th>Data</th>
+                        <th>Itens</th>
+                        <th class="w-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'purchasing:request_detail' req.id %}" class="text-reset">
+                                <strong>{{ req.reference_number }}</strong>
+                            </a>
+                        </td>
+                        <td>
+                            {% if req.status == 'DRAFT' %}
+                            <span class="badge bg-secondary">Rascunho</span>
+                            {% elif req.status == 'PENDING' %}
+                            <span class="badge bg-yellow">Pendente</span>
+                            {% elif req.status == 'APPROVED' %}
+                            <span class="badge bg-green">Aprovada</span>
+                            {% elif req.status == 'REJECTED' %}
+                            <span class="badge bg-red">Rejeitada</span>
+                            {% elif req.status == 'ORDERED' %}
+                            <span class="badge bg-blue">Pedido Gerado</span>
+                            {% elif req.status == 'CANCELLED' %}
+                            <span class="badge bg-dark">Cancelada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.priority == 'URGENT' %}
+                            <span class="badge bg-danger">Urgente</span>
+                            {% elif req.priority == 'HIGH' %}
+                            <span class="badge bg-warning">Alta</span>
+                            {% elif req.priority == 'NORMAL' %}
+                            <span class="badge bg-info">Normal</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Baixa</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>{{ req.requester.get_full_name|default:req.requester.username }}</div>
+                            {% if req.department %}
+                            <small class="text-muted">{{ req.department }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-lt">{{ req.warehouse.code }}</span>
+                        </td>
+                        <td>
+                            <div>{{ req.request_date|date:"d/m/Y" }}</div>
+                            {% if req.required_date %}
+                            <small class="text-muted">Necessario: {{ req.required_date|date:"d/m/Y" }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-lt">{{ req.items.count }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'purchasing:request_detail' req.id %}" class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if requests.has_other_pages %}
+        <div class="card-footer d-flex align-items-center">
+            <p class="m-0 text-muted">
+                Mostrando {{ requests.start_index }} a {{ requests.end_index }} de {{ requests.paginator.count }}
+            </p>
+            <ul class="pagination m-0 ms-auto">
+                {% if requests.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if priority_filter %}priority={{ priority_filter }}&{% endif %}page={{ requests.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %}
+                {% if requests.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if priority_filter %}priority={{ priority_filter }}&{% endif %}page={{ requests.next_page_number }}">Proximo</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
+                    </svg>
+                </div>
+                <p class="empty-title">Nenhuma solicitacao encontrada</p>
+                <div class="empty-action">
+                    <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-request'})">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Nova Solicitacao
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="createModalOpen"
+         x-cloak
+         @open-modal.window="if ($event.detail.id === 'create-request') createModalOpen = true"
+         @close-modal.window="createModalOpen = false"
+         @keydown.escape.window="createModalOpen = false">
+        <div class="modal-dialog modal-lg" @click.outside="createModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nova Solicitacao de Compra</h5>
+                    <button type="button" class="btn-close" @click="createModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitCreate">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Armazem Destino</label>
+                                <select class="form-select" x-model="formData.warehouse" required>
+                                    <option value="">Selecione...</option>
+                                    {% for warehouse in warehouses %}
+                                    <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prioridade</label>
+                                <select class="form-select" x-model="formData.priority">
+                                    {% for priority_code, priority_name in priority_choices %}
+                                    <option value="{{ priority_code }}">{{ priority_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Data Necessaria</label>
+                                <input type="date" class="form-control" x-model="formData.required_date">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Justificativa</label>
+                            <textarea class="form-control" rows="3" x-model="formData.justification" placeholder="Justifique a necessidade da compra..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observacoes</label>
+                            <textarea class="form-control" rows="2" x-model="formData.notes" placeholder="Observacoes adicionais..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" :disabled="submitting">
+                            <span x-show="!submitting">Criar Solicitacao</span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Criando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="createModalOpen" x-cloak></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function requestManager() {
+    return {
+        createModalOpen: false,
+        submitting: false,
+        formData: {
+            warehouse: '',
+            priority: 'NORMAL',
+            required_date: '',
+            justification: '',
+            notes: ''
+        },
+
+        async submitCreate() {
+            this.submitting = true;
+
+            const formData = new FormData();
+            Object.keys(this.formData).forEach(key => {
+                if (this.formData[key]) {
+                    formData.append(key, this.formData[key]);
+                }
+            });
+
+            try {
+                const response = await fetch('{% url "purchasing:request_create" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    alert(data.message || 'Erro ao criar solicitacao');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erro ao criar solicitacao');
+            } finally {
+                this.submitting = false;
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

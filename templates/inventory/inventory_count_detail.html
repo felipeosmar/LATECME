@@ -1,0 +1,552 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Contagem {{ count.reference_number }} - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
+<li class="breadcrumb-item"><a href="{% url 'inventory:inventory_count_list' %}">Contagens</a></li>
+<li class="breadcrumb-item active" aria-current="page">{{ count.reference_number }}</li>
+{% endblock %}
+
+{% block page_title %}{{ count.reference_number }}{% endblock %}
+{% block page_subtitle %}
+<div class="page-subtitle">
+    {% if count.status == 'PLANNED' %}
+    <span class="badge bg-info">Planejada</span>
+    {% elif count.status == 'IN_PROGRESS' %}
+    <span class="badge bg-yellow">Em Andamento</span>
+    {% elif count.status == 'COMPLETED' %}
+    <span class="badge bg-green">Concluida</span>
+    {% elif count.status == 'CANCELLED' %}
+    <span class="badge bg-red">Cancelada</span>
+    {% endif %}
+    <span class="ms-2">{{ count.warehouse.code }} - {{ count.warehouse.name }}</span>
+</div>
+{% endblock %}
+
+{% block page_actions %}
+{% if count.status == 'PLANNED' %}
+<button type="button" class="btn btn-warning" @click="startCount()" x-data="countActions()">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
+    </svg>
+    Iniciar Contagem
+</button>
+{% elif count.status == 'IN_PROGRESS' %}
+<button type="button" class="btn btn-success" id="btn-save-items">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
+    </svg>
+    Salvar Progresso
+</button>
+<button type="button" class="btn btn-primary" id="btn-complete">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
+    </svg>
+    Completar Contagem
+</button>
+{% elif count.status == 'COMPLETED' %}
+<button type="button" class="btn btn-info" id="btn-generate-adjustments">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-adjustments"></use>
+    </svg>
+    Gerar Ajustes de Estoque
+</button>
+{% endif %}
+<a href="{% url 'inventory:inventory_count_list' %}" class="btn btn-secondary">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-left"></use>
+    </svg>
+    Voltar
+</a>
+{% endblock %}
+
+{% block content_body %}
+<div x-data="countDetail()">
+    <!-- Count Info -->
+    <div class="row row-deck row-cards mb-3">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Informacoes da Contagem</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Referencia</div>
+                                    <div class="datagrid-content"><strong>{{ count.reference_number }}</strong></div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Armazem</div>
+                                    <div class="datagrid-content">{{ count.warehouse.code }} - {{ count.warehouse.name }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Data da Contagem</div>
+                                    <div class="datagrid-content">{{ count.count_date|date:"d/m/Y" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Contador</div>
+                                    <div class="datagrid-content">
+                                        {% if count.counter %}{{ count.counter.get_full_name|default:count.counter.username }}{% else %}-{% endif %}
+                                    </div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Supervisor</div>
+                                    <div class="datagrid-content">
+                                        {% if count.supervisor %}{{ count.supervisor.get_full_name|default:count.supervisor.username }}{% else %}-{% endif %}
+                                    </div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Status</div>
+                                    <div class="datagrid-content">
+                                        {% if count.status == 'PLANNED' %}
+                                        <span class="badge bg-info">Planejada</span>
+                                        {% elif count.status == 'IN_PROGRESS' %}
+                                        <span class="badge bg-yellow">Em Andamento</span>
+                                        {% elif count.status == 'COMPLETED' %}
+                                        <span class="badge bg-green">Concluida</span>
+                                        {% elif count.status == 'CANCELLED' %}
+                                        <span class="badge bg-red">Cancelada</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if count.notes %}
+                    <div class="mt-3">
+                        <div class="datagrid-title">Observacoes</div>
+                        <div class="datagrid-content">{{ count.notes }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Resumo</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="h1 m-0">{{ total_items }}</div>
+                            <div class="text-muted">Total de Itens</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="h1 m-0 text-success">{{ counted_items }}</div>
+                            <div class="text-muted">Contados</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="h1 m-0 text-warning">{{ items_with_variance }}</div>
+                            <div class="text-muted">Com Variacao</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="h1 m-0 text-danger">{{ total_variance|floatformat:3 }} kg</div>
+                            <div class="text-muted">Variacao Total</div>
+                        </div>
+                    </div>
+                    {% if total_items > 0 %}
+                    <div class="progress mt-3" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio counted_items total_items 100 %}%"></div>
+                    </div>
+                    <small class="text-muted">{{ counted_items }} de {{ total_items }} itens contados ({% widthratio counted_items total_items 100 %}%)</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list-check"></use>
+                </svg>
+                Itens da Contagem
+                <span class="badge bg-secondary ms-2">{{ total_items }}</span>
+            </h3>
+        </div>
+        {% if items %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table" id="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Codigo</th>
+                        <th>Material</th>
+                        <th style="width: 100px;">Localizacao</th>
+                        <th style="width: 130px;" class="text-end">Qtd. Sistema</th>
+                        <th style="width: 150px;" class="text-center">Qtd. Contada</th>
+                        <th style="width: 120px;" class="text-end">Variacao</th>
+                        <th style="width: 80px;" class="text-end">%</th>
+                        <th>Observacoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr data-item-id="{{ item.id }}" class="{% if item.variance and item.variance != 0 %}{% if item.variance|floatformat:3 != '0.000' %}{% if item.variance > 0 %}bg-success-lt{% else %}bg-danger-lt{% endif %}{% endif %}{% endif %}">
+                        <td>
+                            <strong>{{ item.material.code }}</strong>
+                        </td>
+                        <td>
+                            <div>{{ item.material.name|truncatechars:40 }}</div>
+                            <small class="text-muted">{{ item.material.get_material_type_display }}</small>
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ item.location_code|default:"-" }}</span>
+                        </td>
+                        <td class="text-end">
+                            <strong>{{ item.system_quantity|floatformat:3 }} kg</strong>
+                        </td>
+                        <td class="text-center">
+                            {% if count.status == 'IN_PROGRESS' %}
+                            <input type="number"
+                                   class="form-control form-control-sm text-end counted-qty"
+                                   step="0.001"
+                                   min="0"
+                                   value="{% if item.counted_quantity is not None %}{{ item.counted_quantity|floatformat:3 }}{% endif %}"
+                                   placeholder="0.000"
+                                   data-system="{{ item.system_quantity }}">
+                            {% else %}
+                            <span class="{% if item.counted_quantity is not None %}fw-bold{% else %}text-muted{% endif %}">
+                                {% if item.counted_quantity is not None %}{{ item.counted_quantity|floatformat:3 }} kg{% else %}-{% endif %}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end variance-cell">
+                            {% if item.variance is not None %}
+                            <span class="{% if item.variance > 0 %}text-success{% elif item.variance < 0 %}text-danger{% else %}text-muted{% endif %} fw-bold">
+                                {% if item.variance > 0 %}+{% endif %}{{ item.variance|floatformat:3 }} kg
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end variance-pct-cell">
+                            {% if item.variance_percentage is not None %}
+                            <span class="{% if item.variance_percentage > 5 or item.variance_percentage < -5 %}text-danger{% elif item.variance_percentage > 0 or item.variance_percentage < 0 %}text-warning{% else %}text-muted{% endif %}">
+                                {% if item.variance_percentage > 0 %}+{% endif %}{{ item.variance_percentage|floatformat:1 }}%
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if count.status == 'IN_PROGRESS' %}
+                            <input type="text"
+                                   class="form-control form-control-sm item-notes"
+                                   value="{{ item.notes }}"
+                                   placeholder="Obs...">
+                            {% else %}
+                            <span class="text-muted">{{ item.notes|default:"-" }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list-check"></use>
+                    </svg>
+                </div>
+                <p class="empty-title">Nenhum item na contagem</p>
+                <p class="empty-subtitle text-muted">
+                    {% if count.status == 'PLANNED' %}
+                    Inicie a contagem para carregar os itens do estoque.
+                    {% else %}
+                    Nao ha itens registrados nesta contagem.
+                    {% endif %}
+                </p>
+                {% if count.status == 'PLANNED' %}
+                <div class="empty-action">
+                    <button type="button" class="btn btn-warning" @click="startCount()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
+                        </svg>
+                        Iniciar Contagem
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Toast for feedback -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast-feedback" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <span class="avatar avatar-xs me-2" :class="toastType === 'success' ? 'bg-success' : 'bg-danger'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use x-show="toastType === 'success'" href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        <use x-show="toastType === 'error'" href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                    </svg>
+                </span>
+                <strong class="me-auto" x-text="toastTitle"></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" x-text="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="confirmModalOpen"
+         x-cloak
+         @keydown.escape.window="confirmModalOpen = false"
+         :class="{ 'show': confirmModalOpen }"
+         :style="confirmModalOpen ? 'display: block;' : ''">
+        <div class="modal-dialog modal-sm modal-dialog-centered" @click.outside="confirmModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-status" :class="confirmType === 'complete' ? 'bg-success' : confirmType === 'adjustments' ? 'bg-info' : 'bg-warning'"></div>
+                <div class="modal-body text-center py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" :class="confirmType === 'complete' ? 'text-success' : confirmType === 'adjustments' ? 'text-info' : 'text-warning'" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use x-show="confirmType === 'start'" href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
+                        <use x-show="confirmType === 'complete'" href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
+                        <use x-show="confirmType === 'adjustments'" href="{% static 'icons/tabler-sprite.svg' %}#tabler-adjustments"></use>
+                    </svg>
+                    <h3 x-text="confirmTitle"></h3>
+                    <div class="text-muted" x-text="confirmMessage"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <button type="button" class="btn w-100" @click="confirmModalOpen = false">Cancelar</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn w-100" :class="confirmType === 'complete' ? 'btn-success' : confirmType === 'adjustments' ? 'btn-info' : 'btn-warning'" @click="executeConfirm" :disabled="submitting">
+                                    <span x-show="!submitting">Confirmar</span>
+                                    <span x-show="submitting" x-cloak>
+                                        <span class="spinner-border spinner-border-sm"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="confirmModalOpen" x-cloak></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function countDetail() {
+    return {
+        confirmModalOpen: false,
+        confirmType: '',
+        confirmTitle: '',
+        confirmMessage: '',
+        submitting: false,
+        toastType: 'success',
+        toastTitle: '',
+        toastMessage: '',
+
+        init() {
+            // Setup button handlers
+            const saveBtn = document.getElementById('btn-save-items');
+            const completeBtn = document.getElementById('btn-complete');
+            const adjustmentsBtn = document.getElementById('btn-generate-adjustments');
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => this.saveItems());
+            }
+            if (completeBtn) {
+                completeBtn.addEventListener('click', () => this.showConfirm('complete'));
+            }
+            if (adjustmentsBtn) {
+                adjustmentsBtn.addEventListener('click', () => this.showConfirm('adjustments'));
+            }
+
+            // Setup real-time variance calculation
+            document.querySelectorAll('.counted-qty').forEach(input => {
+                input.addEventListener('input', (e) => this.updateVariance(e.target));
+            });
+        },
+
+        updateVariance(input) {
+            const row = input.closest('tr');
+            const systemQty = parseFloat(input.dataset.system) || 0;
+            const countedQty = parseFloat(input.value) || 0;
+            const variance = countedQty - systemQty;
+            const variancePct = systemQty > 0 ? (variance / systemQty) * 100 : 0;
+
+            // Update variance cell
+            const varianceCell = row.querySelector('.variance-cell');
+            if (input.value) {
+                let colorClass = 'text-muted';
+                if (variance > 0) colorClass = 'text-success';
+                else if (variance < 0) colorClass = 'text-danger';
+                varianceCell.innerHTML = `<span class="${colorClass} fw-bold">${variance > 0 ? '+' : ''}${variance.toFixed(3)} kg</span>`;
+            } else {
+                varianceCell.innerHTML = '<span class="text-muted">-</span>';
+            }
+
+            // Update variance percentage cell
+            const variancePctCell = row.querySelector('.variance-pct-cell');
+            if (input.value) {
+                let colorClass = 'text-muted';
+                if (Math.abs(variancePct) > 5) colorClass = 'text-danger';
+                else if (variancePct !== 0) colorClass = 'text-warning';
+                variancePctCell.innerHTML = `<span class="${colorClass}">${variancePct > 0 ? '+' : ''}${variancePct.toFixed(1)}%</span>`;
+            } else {
+                variancePctCell.innerHTML = '<span class="text-muted">-</span>';
+            }
+
+            // Update row background
+            row.classList.remove('bg-success-lt', 'bg-danger-lt');
+            if (input.value && variance !== 0) {
+                row.classList.add(variance > 0 ? 'bg-success-lt' : 'bg-danger-lt');
+            }
+        },
+
+        startCount() {
+            this.showConfirm('start');
+        },
+
+        showConfirm(type) {
+            this.confirmType = type;
+            if (type === 'start') {
+                this.confirmTitle = 'Iniciar Contagem?';
+                this.confirmMessage = 'Os itens do estoque serao carregados automaticamente.';
+            } else if (type === 'complete') {
+                this.confirmTitle = 'Completar Contagem?';
+                this.confirmMessage = 'Certifique-se de que todos os itens foram contados.';
+            } else if (type === 'adjustments') {
+                this.confirmTitle = 'Gerar Ajustes de Estoque?';
+                this.confirmMessage = 'Serao criadas movimentacoes de ajuste para corrigir as variacoes.';
+            }
+            this.confirmModalOpen = true;
+        },
+
+        async executeConfirm() {
+            this.submitting = true;
+            let url = '';
+
+            if (this.confirmType === 'start') {
+                url = '{% url "inventory:inventory_count_start" count.id %}';
+            } else if (this.confirmType === 'complete') {
+                url = '{% url "inventory:inventory_count_complete" count.id %}';
+            } else if (this.confirmType === 'adjustments') {
+                url = '{% url "inventory:inventory_count_generate_adjustments" count.id %}';
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.confirmModalOpen = false;
+                    window.location.reload();
+                } else {
+                    this.showToast('error', 'Erro', data.message || 'Erro ao executar acao');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                this.showToast('error', 'Erro', 'Erro ao executar acao');
+            } finally {
+                this.submitting = false;
+            }
+        },
+
+        async saveItems() {
+            const items = [];
+            document.querySelectorAll('#items-table tbody tr').forEach(row => {
+                const itemId = row.dataset.itemId;
+                const countedInput = row.querySelector('.counted-qty');
+                const notesInput = row.querySelector('.item-notes');
+
+                if (itemId) {
+                    items.push({
+                        id: itemId,
+                        counted_quantity: countedInput ? countedInput.value : null,
+                        notes: notesInput ? notesInput.value : ''
+                    });
+                }
+            });
+
+            try {
+                const response = await fetch('{% url "inventory:inventory_count_save_items" count.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ items: items })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.showToast('success', 'Salvo', data.message || 'Itens salvos com sucesso');
+                } else {
+                    this.showToast('error', 'Erro', data.message || 'Erro ao salvar itens');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                this.showToast('error', 'Erro', 'Erro ao salvar itens');
+            }
+        },
+
+        showToast(type, title, message) {
+            this.toastType = type;
+            this.toastTitle = title;
+            this.toastMessage = message;
+
+            const toastEl = document.getElementById('toast-feedback');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    }
+}
+
+function countActions() {
+    return {
+        async startCount() {
+            if (confirm('Iniciar contagem? Os itens do estoque serao carregados automaticamente.')) {
+                try {
+                    const response = await fetch('{% url "inventory:inventory_count_start" count.id %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Erro ao iniciar contagem');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao iniciar contagem');
+                }
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count
+from django.db import transaction
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -171,6 +172,8 @@ def bin_list(request):
     search = request.GET.get('search', '')
     warehouse_id = request.GET.get('warehouse', '')
     status = request.GET.get('status', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
 
     bins = Bin.objects.select_related('warehouse', 'current_material')
 
@@ -187,6 +190,12 @@ def bin_list(request):
     if status:
         bins = bins.filter(status=status)
 
+    if date_from:
+        bins = bins.filter(created_at__date__gte=date_from)
+
+    if date_to:
+        bins = bins.filter(created_at__date__lte=date_to)
+
     bins = bins.order_by('warehouse__code', 'code')
 
     paginator = Paginator(bins, 25)
@@ -196,6 +205,13 @@ def bin_list(request):
     warehouses = Warehouse.objects.filter(is_active=True)
     materials = Material.objects.filter(is_active=True)
 
+    # Dados para impressão em lote
+    from apps.labels.models import LabelTemplate, PrinterConfiguration
+    templates = LabelTemplate.objects.filter(is_active=True).order_by('-is_default', 'name')
+    printers = PrinterConfiguration.objects.filter(is_active=True).order_by('-is_default', 'name')
+    default_template = templates.filter(is_default=True).first()
+    default_printer = printers.filter(is_default=True).first()
+
     context = {
         'bins': bins,
         'search': search,
@@ -204,6 +220,13 @@ def bin_list(request):
         'warehouse_filter': warehouse_id,
         'status_filter': status,
         'status_choices': Bin.STATUS_CHOICES,
+        'date_from': date_from,
+        'date_to': date_to,
+        # Dados para impressão em lote
+        'templates': templates,
+        'printers': printers,
+        'default_template': default_template,
+        'default_printer': default_printer,
     }
 
     return render(request, 'production/bin_list.html', context)
@@ -609,3 +632,238 @@ def api_bins_by_material(request, material_id):
         'success': True,
         'bins': list(bins)
     })
+
+
+# =====================================================
+# VIEWS PARA CRIAÇÃO E IMPRESSÃO EM LOTE
+# =====================================================
+
+@login_required
+@require_http_methods(["POST"])
+def bin_batch_create(request):
+    """Criar múltiplos contentores em lote via AJAX"""
+    try:
+        # Obter dados do formulário
+        warehouse_id = request.POST.get('warehouse')
+        quantity = int(request.POST.get('quantity', 0))
+        capacity = request.POST.get('capacity')
+        location_code = request.POST.get('location_code', '')
+        notes = request.POST.get('notes', '')
+        auto_print = request.POST.get('auto_print') == 'true'
+        printer_id = request.POST.get('printer_id')
+        template_id = request.POST.get('template_id')
+
+        # Validações
+        if not warehouse_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Armazém é obrigatório.'
+            }, status=400)
+
+        if quantity < 1 or quantity > 100:
+            return JsonResponse({
+                'success': False,
+                'message': 'Quantidade deve ser entre 1 e 100.'
+            }, status=400)
+
+        warehouse = get_object_or_404(Warehouse, id=warehouse_id, is_active=True)
+
+        # Converter capacidade
+        capacity_decimal = None
+        if capacity:
+            capacity_decimal = Decimal(capacity)
+
+        # Criar contentores em transação atômica
+        created_bins = []
+        with transaction.atomic():
+            for _ in range(quantity):
+                bin_obj = Bin(
+                    warehouse=warehouse,
+                    capacity=capacity_decimal,
+                    location_code=location_code,
+                    notes=notes,
+                    status='EMPTY',
+                    created_by=request.user,
+                    updated_by=request.user
+                )
+                bin_obj.save()
+                created_bins.append({
+                    'id': str(bin_obj.id),
+                    'code': bin_obj.code
+                })
+
+        # Impressão automática se solicitada
+        print_status = {'success': True, 'printed': 0, 'errors': []}
+        if auto_print and printer_id and template_id:
+            print_status = _print_bin_labels(
+                [b['id'] for b in created_bins],
+                printer_id,
+                template_id,
+                request.user
+            )
+
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(created_bins)} contentor(es) criado(s) com sucesso.',
+            'bins_created': created_bins,
+            'print_status': print_status
+        })
+
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Valor inválido: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao criar contentores: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bin_batch_print(request):
+    """Imprimir etiquetas de múltiplos contentores via AJAX"""
+    try:
+        import json
+        data = json.loads(request.body) if request.content_type == 'application/json' else None
+
+        if data:
+            bin_ids = data.get('bin_ids', [])
+            printer_id = data.get('printer_id')
+            template_id = data.get('template_id')
+        else:
+            bin_ids = request.POST.getlist('bin_ids[]') or request.POST.getlist('bin_ids')
+            printer_id = request.POST.get('printer_id')
+            template_id = request.POST.get('template_id')
+
+        # Validações
+        if not bin_ids:
+            return JsonResponse({
+                'success': False,
+                'message': 'Nenhum contentor selecionado.'
+            }, status=400)
+
+        if not printer_id or not template_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Impressora e template são obrigatórios.'
+            }, status=400)
+
+        # Executar impressão
+        print_status = _print_bin_labels(bin_ids, printer_id, template_id, request.user)
+
+        if print_status['success']:
+            return JsonResponse({
+                'success': True,
+                'message': f'{print_status["printed"]} etiqueta(s) enviada(s) para impressão.',
+                'printed': print_status['printed'],
+                'errors': print_status['errors']
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Erro ao imprimir etiquetas.',
+                'printed': print_status['printed'],
+                'errors': print_status['errors']
+            }, status=500)
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Dados JSON inválidos.'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao imprimir: {str(e)}'
+        }, status=500)
+
+
+def _print_bin_labels(bin_ids, printer_id, template_id, user):
+    """
+    Função auxiliar para imprimir etiquetas de múltiplos contentores.
+    Retorna dict com status da impressão.
+    """
+    from apps.labels.models import LabelTemplate, PrinterConfiguration, PrintJob
+    from apps.labels.epl_generator import EPLGenerator
+    from apps.labels.printer_client import PrinterClient
+
+    result = {
+        'success': True,
+        'printed': 0,
+        'errors': []
+    }
+
+    try:
+        template = LabelTemplate.objects.get(id=template_id, is_active=True)
+        printer = PrinterConfiguration.objects.get(id=printer_id, is_active=True)
+        client = PrinterClient(printer)
+
+        for bin_id in bin_ids:
+            try:
+                bin_obj = Bin.objects.get(id=bin_id, is_active=True)
+
+                # Gerar EPL
+                generator = EPLGenerator(template, bin_obj)
+                epl_content = generator.generate()
+                bin_snapshot = generator.get_bin_snapshot()
+
+                # Criar PrintJob
+                print_job = PrintJob(
+                    printer=printer,
+                    template=template,
+                    bin=bin_obj,
+                    status='PROCESSING',
+                    epl_content=epl_content,
+                    bin_data_snapshot=bin_snapshot,
+                    created_by=user,
+                    updated_by=user
+                )
+                print_job.save()
+
+                # Enviar para impressora
+                success, error_message = client.send_epl(epl_content)
+
+                if success:
+                    print_job.status = 'SUCCESS'
+                    print_job.printed_at = timezone.now()
+                    result['printed'] += 1
+                else:
+                    print_job.status = 'FAILED'
+                    print_job.error_message = error_message
+                    result['errors'].append({
+                        'bin_id': str(bin_id),
+                        'bin_code': bin_obj.code,
+                        'error': error_message
+                    })
+
+                print_job.save()
+
+            except Bin.DoesNotExist:
+                result['errors'].append({
+                    'bin_id': str(bin_id),
+                    'error': 'Contentor não encontrado'
+                })
+            except Exception as e:
+                result['errors'].append({
+                    'bin_id': str(bin_id),
+                    'error': str(e)
+                })
+
+    except LabelTemplate.DoesNotExist:
+        result['success'] = False
+        result['errors'].append({'error': 'Template não encontrado'})
+    except PrinterConfiguration.DoesNotExist:
+        result['success'] = False
+        result['errors'].append({'error': 'Impressora não encontrada'})
+    except Exception as e:
+        result['success'] = False
+        result['errors'].append({'error': str(e)})
+
+    # Se houve erros mas algumas impressões funcionaram, ainda consideramos sucesso parcial
+    if result['errors'] and result['printed'] > 0:
+        result['success'] = True  # Sucesso parcial
+
+    return result

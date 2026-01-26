@@ -32,6 +32,7 @@ urlpatterns = [
     path("inventory/", include('apps.inventory.urls')),
     path("production/", include('apps.production.urls')),
     path("labels/", include('apps.labels.urls')),
+    path("purchasing/", include('apps.purchasing.urls')),
     path("", redirect_to_login),
 ]
 

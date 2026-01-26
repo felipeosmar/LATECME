@@ -151,7 +151,9 @@ class Bin(BaseModel):
 
     code = models.CharField(
         max_length=50,
-        verbose_name="Código do Contentor"
+        blank=True,
+        verbose_name="Código do Contentor",
+        help_text="Gerado automaticamente se não informado"
     )
     warehouse = models.ForeignKey(
         'inventory.Warehouse',
@@ -220,6 +222,32 @@ class Bin(BaseModel):
     def __str__(self):
         status_display = f" ({self.current_quantity} kg de {self.current_material.code})" if self.current_material else " (Vazio)"
         return f"{self.code}{status_display}"
+
+    def save(self, *args, **kwargs):
+        # Gerar código automaticamente se não definido
+        if not self.code:
+            self.code = self._generate_code()
+        super().save(*args, **kwargs)
+
+    def _generate_code(self):
+        """Gera código sequencial no formato BINXXXXX"""
+        # Buscar o último código BIN (com ou sem hífen para compatibilidade)
+        last_bin = Bin.objects.filter(
+            code__regex=r'^BIN-?\d+$'
+        ).order_by('-code').first()
+
+        if last_bin:
+            try:
+                # Extrair número do último código (remove BIN e hífen opcional)
+                last_number = int(last_bin.code.replace('BIN-', '').replace('BIN', ''))
+                new_number = last_number + 1
+            except ValueError:
+                # Se não conseguir extrair, contar todos os bins
+                new_number = Bin.objects.count() + 1
+        else:
+            new_number = 1
+
+        return f"BIN{new_number:05d}"
 
     @property
     def is_empty(self):

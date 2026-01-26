@@ -1,0 +1,358 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Compras - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Compras</li>
+{% endblock %}
+
+{% block page_title %}Dashboard de Compras{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Visao Geral do Modulo de Compras</div>{% endblock %}
+
+{% block content_body %}
+<!-- Stats Cards Row -->
+<div class="row row-deck row-cards">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-yellow text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">{{ stats.pending_requests }}</div>
+                        <div class="text-muted">Aguardando Aprovacao</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-green text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">{{ stats.approved_requests }}</div>
+                        <div class="text-muted">Aprovadas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-blue text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck-delivery"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">{{ stats.open_orders }}</div>
+                        <div class="text-muted">Pedidos Abertos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-orange text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">{{ stats.pending_receivings }}</div>
+                        <div class="text-muted">Recebimentos Pendentes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row row-deck row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
+                    </svg>
+                    Acoes Rapidas
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'purchasing:request_list' %}" class="btn btn-primary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
+                            </svg>
+                            Solicitacoes
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'purchasing:order_list' %}" class="btn btn-success w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-shopping-cart"></use>
+                            </svg>
+                            Pedidos
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'purchasing:receiving_list' %}" class="btn btn-info w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                            </svg>
+                            Recebimentos
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'materials:supplier_list' %}" class="btn btn-secondary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-users"></use>
+                            </svg>
+                            Fornecedores
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row row-deck row-cards mt-3">
+    <!-- Pending Requests -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-warning me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                    </svg>
+                    Solicitacoes Pendentes de Aprovacao
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if pending_requests %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Referencia</th>
+                                <th>Solicitante</th>
+                                <th>Prioridade</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in pending_requests %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'purchasing:request_detail' req.id %}">
+                                        <strong>{{ req.reference_number }}</strong>
+                                    </a>
+                                </td>
+                                <td>{{ req.requester.get_full_name|default:req.requester.username }}</td>
+                                <td>
+                                    {% if req.priority == 'URGENT' %}
+                                    <span class="badge bg-danger">Urgente</span>
+                                    {% elif req.priority == 'HIGH' %}
+                                    <span class="badge bg-warning">Alta</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ req.get_priority_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">{{ req.request_date|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'purchasing:request_list' %}?status=PENDING" class="btn btn-warning btn-sm">
+                        Ver Todas
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
+                        </svg>
+                    </div>
+                    <p class="empty-title">Nenhuma solicitacao pendente</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-blue me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck-delivery"></use>
+                    </svg>
+                    Pedidos Aguardando Entrega
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if pending_orders %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Pedido</th>
+                                <th>Fornecedor</th>
+                                <th>Previsao</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in pending_orders %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'purchasing:order_detail' order.id %}">
+                                        <strong>{{ order.reference_number }}</strong>
+                                    </a>
+                                </td>
+                                <td>{{ order.supplier.trade_name|truncatechars:20 }}</td>
+                                <td class="text-muted">
+                                    {% if order.expected_delivery_date %}
+                                    {{ order.expected_delivery_date|date:"d/m/Y" }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if order.status == 'PARTIAL' %}
+                                    <span class="badge bg-warning">Parcial</span>
+                                    {% elif order.status == 'CONFIRMED' %}
+                                    <span class="badge bg-success">Confirmado</span>
+                                    {% else %}
+                                    <span class="badge bg-info">Enviado</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'purchasing:order_list' %}" class="btn btn-info btn-sm">
+                        Ver Todos
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
+                        </svg>
+                    </div>
+                    <p class="empty-title">Nenhum pedido pendente</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Inspections -->
+<div class="row row-deck row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-orange me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                    </svg>
+                    Recebimentos Pendentes de Inspecao
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if pending_inspections %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Recebimento</th>
+                                <th>Pedido</th>
+                                <th>NF</th>
+                                <th>Recebido por</th>
+                                <th>Data</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for receiving in pending_inspections %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'purchasing:receiving_detail' receiving.id %}">
+                                        <strong>{{ receiving.reference_number }}</strong>
+                                    </a>
+                                </td>
+                                <td>{{ receiving.purchase_order.reference_number }}</td>
+                                <td>{{ receiving.invoice_number|default:"-" }}</td>
+                                <td>{{ receiving.received_by.get_full_name|default:receiving.received_by.username }}</td>
+                                <td class="text-muted">{{ receiving.receiving_date|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{% url 'purchasing:receiving_detail' receiving.id %}" class="btn btn-sm btn-warning">
+                                        Inspecionar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
+                        </svg>
+                    </div>
+                    <p class="empty-title">Nenhum recebimento pendente de inspecao</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

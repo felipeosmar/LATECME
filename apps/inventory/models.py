@@ -141,12 +141,12 @@ class StockMovement(BaseModel):
 
     material = models.ForeignKey(
         Material,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Material"
     )
     warehouse = models.ForeignKey(
         Warehouse,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Armazém"
     )
     movement_type = models.CharField(

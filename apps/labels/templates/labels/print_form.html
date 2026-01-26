@@ -150,7 +150,8 @@
     </div>
 
     <!-- Confirm Print Modal -->
-    <div class="modal modal-blur" x-show="confirmPrintOpen" x-cloak
+    <template x-if="confirmPrintOpen">
+    <div class="modal modal-blur show"
          @keydown.escape.window="confirmPrintOpen = false"
          style="display: block; background: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-sm modal-dialog-centered" @click.outside="confirmPrintOpen = false">
@@ -183,6 +184,7 @@
             </div>
         </div>
     </div>
+    </template>
 </div>
 {% endblock %}
 
@@ -190,8 +192,8 @@
 <script>
 function printFormManager() {
     return {
-        templateId: '{% if default_template %}{{ default_template.id }}{% endif %}',
-        printerId: '{% if default_printer %}{{ default_printer.id }}{% endif %}',
+        templateId: '{% firstof default_template.id templates.0.id "" %}',
+        printerId: '{% firstof default_printer.id printers.0.id "" %}',
         printing: false,
         testing: false,
         confirmPrintOpen: false,

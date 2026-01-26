@@ -365,7 +365,7 @@
             </div>
             <div class="card-body">
                 <div class="row g-2">
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-2">
                         <a href="{% url 'inventory:stock_list' %}" class="btn btn-primary w-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
@@ -373,23 +373,39 @@
                             Consultar Estoque
                         </a>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-2">
                         <a href="{% url 'inventory:movements_list' %}" class="btn btn-success w-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                             </svg>
-                            Nova Movimentacao
+                            Movimentacoes
                         </a>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-2">
+                        <a href="{% url 'inventory:inventory_count_list' %}" class="btn btn-purple w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-check"></use>
+                            </svg>
+                            Contagens
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-2">
                         <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-info w-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                             </svg>
-                            Gerenciar Armazens
+                            Armazens
                         </a>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-md-2">
+                        <a href="{% url 'inventory:reservations_list' %}" class="btn btn-secondary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-lock"></use>
+                            </svg>
+                            Reservas
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-2">
                         <a href="{% url 'inventory:reports' %}" class="btn btn-warning w-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
