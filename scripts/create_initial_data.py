@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 import os
+import sys
+
+# Adiciona o diretório raiz do projeto ao path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
 import django
 
 # Setup Django

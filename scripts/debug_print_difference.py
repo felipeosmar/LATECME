@@ -4,6 +4,11 @@ Script para debug: descobrir diferença entre web e script
 """
 import os
 import sys
+
+# Adiciona o diretório raiz do projeto ao path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
 import django
 import socket
 import time

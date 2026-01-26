@@ -6,6 +6,11 @@ Gera dados para todas as funcionalidades com quantidade suficiente para testar p
 
 import os
 import sys
+
+# Adiciona o diretório raiz do projeto ao path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
 import django
 import random
 from decimal import Decimal
