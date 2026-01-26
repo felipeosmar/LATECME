@@ -1,0 +1,76 @@
+{% comment %}
+Modal Component - Alpine.js powered
+Usage:
+    {% include 'components/_modal.html' with modal_id="my-modal" title="Modal Title" size="lg" %}
+
+    In your template, add the content block:
+    <template x-teleport="body">
+        {% include 'components/_modal.html' with modal_id="my-modal" title="Title" %}
+    </template>
+
+    Trigger with: @click="$dispatch('open-modal', { id: 'my-modal' })"
+    Close with: @click="$dispatch('close-modal')"
+
+Parameters:
+    - modal_id: Unique identifier for the modal (required)
+    - title: Modal title (optional)
+    - size: Modal size - sm, md, lg, xl (default: md)
+    - static: If true, modal won't close on backdrop click
+{% endcomment %}
+{% load static %}
+
+<div x-data="{ open: false }"
+     x-show="open"
+     @open-modal.window="if ($event.detail.id === '{{ modal_id }}') open = true"
+     @close-modal.window="open = false"
+     @keydown.escape.window="open = false"
+     class="modal modal-blur fade"
+     :class="{ 'show d-block': open }"
+     tabindex="-1"
+     role="dialog"
+     x-cloak>
+
+    <!-- Backdrop -->
+    <div class="modal-backdrop fade show" x-show="open" x-transition.opacity></div>
+
+    <!-- Modal dialog -->
+    <div class="modal-dialog modal-{{ size|default:'md' }} modal-dialog-centered"
+         role="document"
+         x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         {% if not static %}@click.outside="open = false"{% endif %}>
+
+        <div class="modal-content">
+            {% if title %}
+            <div class="modal-header">
+                <h5 class="modal-title">{{ title }}</h5>
+                <button type="button" class="btn-close" @click="open = false" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <div class="modal-body" id="{{ modal_id }}-content">
+                {% block modal_body %}
+                {{ content }}
+                {% endblock %}
+            </div>
+
+            {% block modal_footer %}
+            {% if show_footer %}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="open = false">
+                    {{ cancel_text|default:"Cancelar" }}
+                </button>
+                <button type="button" class="btn btn-primary" @click="$dispatch('modal-confirm', { id: '{{ modal_id }}' })">
+                    {{ confirm_text|default:"Confirmar" }}
+                </button>
+            </div>
+            {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+</div>

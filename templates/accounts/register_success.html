@@ -3,40 +3,65 @@
 
 {% block title %}Registro Realizado - LATECME{% endblock %}
 
-{% block content %}
-<!-- begin #page-container -->
-<div id="page-container" class="fade">
-    <!-- begin login -->
-    <div class="login bg-black animated fadeInDown">
-        <!-- begin brand -->
-        <div class="login-header">
-            <div class="brand">
-                <span class="logo"></span> LATECME
-                <small>Sistema de Controle de Manufatura</small>
-            </div>
-            <div class="icon">
-                <i class="fa fa-check-circle text-success"></i>
-            </div>
+{% block body_class %}d-flex flex-column{% endblock %}
+
+{% block body %}
+<div class="page page-center">
+    <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+            <a href="." class="navbar-brand navbar-brand-autodark">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                </svg>
+                <span class="h2 ms-2">LATECME</span>
+            </a>
         </div>
-        <!-- end brand -->
-        <div class="login-content">
-            <div class="alert alert-success">
-                <h4><i class="fa fa-check"></i> Registro Realizado com Sucesso!</h4>
-                <p>
-                    Sua conta foi criada e está aguardando aprovação do administrador. 
-                    Você receberá uma notificação quando sua conta for aprovada e você 
-                    poderá acessar o sistema.
+
+        <div class="card card-md">
+            <div class="card-body text-center py-4">
+                <div class="mb-4">
+                    <span class="avatar avatar-xl bg-success-lt">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        </svg>
+                    </span>
+                </div>
+
+                <h2 class="h2 mb-3">Registro Realizado com Sucesso!</h2>
+
+                <p class="text-muted mb-4">
+                    Sua conta foi criada e esta aguardando aprovacao do administrador.
+                    Voce recebera uma notificacao quando sua conta for aprovada e podera
+                    acessar o sistema.
                 </p>
-            </div>
-            
-            <div class="text-center m-t-20">
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
-                    <i class="fa fa-sign-in"></i> Voltar ao Login
-                </a>
+
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="alert-title">Proximos passos</h4>
+                            <div class="text-muted">
+                                Um administrador ira revisar seu cadastro. Isso geralmente leva
+                                ate 24 horas em dias uteis.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-login"></use>
+                        </svg>
+                        Voltar ao Login
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    <!-- end login -->
 </div>
-<!-- end page container -->
 {% endblock %}

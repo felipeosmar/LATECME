@@ -5,179 +5,234 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
-<li class="breadcrumb-item active">Fornecedores</li>
+<li class="breadcrumb-item active" aria-current="page">Fornecedores</li>
 {% endblock %}
 
 {% block page_title %}Fornecedores{% endblock %}
-{% block page_subtitle %}Lista Completa{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Lista Completa</div>{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'materials:supplier_create' %}" class="btn btn-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+    </svg>
+    Novo Fornecedor
+</a>
+{% endblock %}
 
 {% block content_body %}
-<!-- begin panel -->
-<div class="panel panel-inverse">
-    <div class="panel-heading">
-        <div class="panel-heading-btn">
-            <a href="{% url 'materials:supplier_create' %}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Novo Fornecedor
-            </a>
-        </div>
-        <h4 class="panel-title">
-            Fornecedores Cadastrados 
-            <small class="text-muted">({{ total_suppliers }} total)</small>
-        </h4>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Fornecedores Cadastrados
+            <span class="badge bg-secondary ms-2">{{ total_suppliers }} total</span>
+        </h3>
     </div>
-    <div class="panel-body">
-        <!-- begin search -->
-        <form method="get" class="form-inline mb-3">
-            <div class="form-group mr-2">
-                <input type="text" name="search" value="{{ search }}" 
-                       class="form-control" placeholder="Buscar por nome, código ou CNPJ">
+    <div class="card-body border-bottom py-3">
+        <!-- Search -->
+        <form method="get" class="row g-2"
+              hx-get="{% url 'materials:supplier_list' %}"
+              hx-target="#suppliers-table"
+              hx-push-url="true"
+              hx-trigger="submit">
+            <div class="col-md-8">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                        </svg>
+                    </span>
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por nome, codigo ou CNPJ...">
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-search"></i> Buscar
-            </button>
-            <a href="{% url 'materials:supplier_list' %}" class="btn btn-default ml-1">
-                <i class="fa fa-refresh"></i> Limpar
-            </a>
+            <div class="col-md-4">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                        </svg>
+                        Buscar
+                    </button>
+                    <a href="{% url 'materials:supplier_list' %}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                        Limpar
+                    </a>
+                </div>
+            </div>
         </form>
-        <!-- end search -->
-        
+    </div>
+
+    <div id="suppliers-table">
         {% if page_obj %}
-            <!-- begin table -->
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th width="10%">Código</th>
-                            <th width="25%">Nome</th>
-                            <th width="15%">CNPJ</th>
-                            <th width="25%">Contato</th>
-                            <th width="8%" class="text-center">Materiais</th>
-                            <th width="7%" class="text-center">Status</th>
-                            <th width="10%" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for supplier in page_obj %}
-                        <tr>
-                            <td>
-                                <strong>{{ supplier.code }}</strong>
-                            </td>
-                            <td>
-                                <strong>{{ supplier.name }}</strong>
-                                {% if supplier.address %}
-                                    <br><small class="text-muted">{{ supplier.address|truncatechars:50 }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="font-monospace">{{ supplier.cnpj }}</span>
-                            </td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-envelope text-muted"></i> 
-                                    <a href="mailto:{{ supplier.contact_email }}">{{ supplier.contact_email }}</a>
-                                </div>
-                                {% if supplier.contact_phone %}
-                                <div class="mt-1">
-                                    <i class="fa fa-phone text-muted"></i> 
-                                    <a href="tel:{{ supplier.contact_phone }}">{{ supplier.contact_phone }}</a>
-                                </div>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                {% with material_count=supplier.material_count %}
-                                    {% if material_count > 0 %}
-                                        <span class="badge badge-success">{{ material_count }}</span>
-                                    {% else %}
-                                        <span class="badge badge-secondary">0</span>
-                                    {% endif %}
-                                {% endwith %}
-                            </td>
-                            <td class="text-center">
-                                {% if supplier.is_active %}
-                                    <span class="badge badge-success">Ativo</span>
-                                {% else %}
-                                    <span class="badge badge-danger">Inativo</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{% url 'materials:supplier_detail' supplier.id %}" 
-                                       class="btn btn-primary btn-xs" title="Ver Detalhes">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'materials:supplier_edit' supplier.id %}" 
-                                       class="btn btn-warning btn-xs" title="Editar">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-info btn-xs" title="Materiais">
-                                        <i class="fa fa-cubes"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- end table -->
-            
-            <!-- begin pagination -->
-            {% if page_obj.has_other_pages %}
-                <nav aria-label="Paginação">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}">
-                                    <i class="fa fa-angle-left"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}&search={{ search }}">
-                                        {{ num }}
-                                    </a>
-                                </li>
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 10%">Codigo</th>
+                        <th style="width: 25%">Nome</th>
+                        <th style="width: 15%">CNPJ</th>
+                        <th style="width: 25%">Contato</th>
+                        <th class="text-center" style="width: 8%">Materiais</th>
+                        <th class="text-center" style="width: 7%">Status</th>
+                        <th class="text-center" style="width: 10%">Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in page_obj %}
+                    <tr>
+                        <td>
+                            <strong>{{ supplier.code }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ supplier.name }}</strong>
+                            {% if supplier.address %}
+                            <br><small class="text-muted">{{ supplier.address|truncatechars:50 }}</small>
                             {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}">
-                                    <i class="fa fa-angle-right"></i>
+                        </td>
+                        <td>
+                            <span class="font-monospace">{{ supplier.cnpj }}</span>
+                        </td>
+                        <td>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm text-muted me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-mail"></use>
+                                </svg>
+                                <a href="mailto:{{ supplier.contact_email }}">{{ supplier.contact_email }}</a>
+                            </div>
+                            {% if supplier.contact_phone %}
+                            <div class="mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm text-muted me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-phone"></use>
+                                </svg>
+                                <a href="tel:{{ supplier.contact_phone }}">{{ supplier.contact_phone }}</a>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% with material_count=supplier.material_count %}
+                            {% if material_count > 0 %}
+                            <span class="badge bg-success">{{ material_count }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">0</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-center">
+                            {% if supplier.is_active %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-list flex-nowrap">
+                                <a href="{% url 'materials:supplier_detail' supplier.id %}" class="btn btn-icon btn-sm btn-primary" title="Ver Detalhes">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                                    </svg>
                                 </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-            <!-- end pagination -->
+                                <a href="{% url 'materials:supplier_edit' supplier.id %}" class="btn btn-icon btn-sm btn-warning" title="Editar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+                                    </svg>
+                                </a>
+                                <button type="button" class="btn btn-icon btn-sm btn-info" title="Materiais">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer d-flex align-items-center">
+            <p class="m-0 text-muted">
+                Mostrando <span>{{ page_obj.start_index }}</span> a <span>{{ page_obj.end_index }}</span> de <span>{{ page_obj.paginator.count }}</span> fornecedores
+            </p>
+            <ul class="pagination m-0 ms-auto">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}"
+                       hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}"
+                       hx-target="#suppliers-table"
+                       hx-push-url="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
+                        </svg>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&search={{ search }}"
+                       hx-get="?page={{ num }}&search={{ search }}"
+                       hx-target="#suppliers-table"
+                       hx-push-url="true">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}"
+                       hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}"
+                       hx-target="#suppliers-table"
+                       hx-push-url="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                        </svg>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
         {% else %}
-            <!-- begin empty state -->
-            <div class="text-center text-muted p-5">
-                <i class="fa fa-truck fa-4x mb-3"></i>
-                <h4>Nenhum fornecedor encontrado</h4>
+        <!-- Empty State -->
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                    </svg>
+                </div>
+                <p class="empty-title">Nenhum fornecedor encontrado</p>
                 {% if search %}
-                    <p>Tente ajustar os termos de busca.</p>
+                <p class="empty-subtitle text-muted">Tente ajustar os termos de busca.</p>
+                <div class="empty-action">
                     <a href="{% url 'materials:supplier_list' %}" class="btn btn-primary">
-                        <i class="fa fa-refresh"></i> Limpar Busca
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                        Limpar Busca
                     </a>
+                </div>
                 {% else %}
-                    <p>Cadastre o primeiro fornecedor do sistema.</p>
+                <p class="empty-subtitle text-muted">Cadastre o primeiro fornecedor do sistema.</p>
+                <div class="empty-action">
                     <a href="{% url 'materials:supplier_create' %}" class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Novo Fornecedor
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Novo Fornecedor
                     </a>
+                </div>
                 {% endif %}
             </div>
-            <!-- end empty state -->
+        </div>
         {% endif %}
     </div>
 </div>
-<!-- end panel -->
 {% endblock %}

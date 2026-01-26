@@ -4,474 +4,637 @@
 {% block title %}Contentores - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventário</a></li>
+<li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
 <li class="breadcrumb-item active">Contentores</li>
 {% endblock %}
 
 {% block page_title %}Lista de Contentores{% endblock %}
-{% block page_subtitle %}Gestão de Contentores (Bins){% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestao de Contentores (Bins)</div>{% endblock %}
+
+{% block page_actions %}
+<a href="#" class="btn btn-primary" @click.prevent="createModalOpen = true">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+    </svg>
+    Novo Contentor
+</a>
+{% endblock %}
 
 {% block content_body %}
-<!-- begin search -->
-<div class="panel panel-inverse">
-    <div class="panel-heading">
-        <h4 class="panel-title">
-            <i class="fa fa-search"></i> Filtrar Contentores
-        </h4>
-    </div>
-    <div class="panel-body">
-        <form method="get" class="form-inline">
-            <div class="form-group mr-3">
-                <input type="text" name="search" class="form-control" placeholder="Buscar por código..." value="{{ search }}">
-            </div>
-            <div class="form-group mr-3">
-                <select name="warehouse" class="form-control">
-                    <option value="">Todos os Armazéns</option>
-                    {% for wh in warehouses %}
-                        <option value="{{ wh.id }}" {% if warehouse_filter == wh.id|stringformat:'s' %}selected{% endif %}>{{ wh.code }} - {{ wh.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group mr-3">
-                <select name="status" class="form-control">
-                    <option value="">Todos os Status</option>
-                    <option value="EMPTY" {% if status_filter == 'EMPTY' %}selected{% endif %}>Vazio</option>
-                    <option value="LOADED" {% if status_filter == 'LOADED' %}selected{% endif %}>Carregado</option>
-                    <option value="IN_USE" {% if status_filter == 'IN_USE' %}selected{% endif %}>Em Uso</option>
-                    <option value="MAINTENANCE" {% if status_filter == 'MAINTENANCE' %}selected{% endif %}>Manutenção</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-search"></i> Buscar
-            </button>
-            <a href="{% url 'production:bin_list' %}" class="btn btn-secondary ml-2">
-                <i class="fa fa-times"></i> Limpar
-            </a>
-        </form>
-    </div>
-</div>
-<!-- end search -->
-
-<!-- begin results -->
-<div class="panel panel-inverse">
-    <div class="panel-heading">
-        <div class="panel-heading-btn">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#binModal">
-                <i class="fa fa-plus"></i> Novo Contentor
-            </button>
+<div x-data="binManager()">
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
+                </svg>
+                Filtrar Contentores
+            </h3>
         </div>
-        <h4 class="panel-title">
-            Contentores
-            <small class="text-muted">({{ bins.paginator.count }} encontrado{{ bins.paginator.count|pluralize:"s" }})</small>
-        </h4>
+        <div class="card-body">
+            <form hx-get="{% url 'production:bin_list' %}"
+                  hx-target="#bins-results"
+                  hx-push-url="true"
+                  hx-trigger="submit, change from:select">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-icon">
+                            <span class="input-icon-addon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                                </svg>
+                            </span>
+                            <input type="text" name="search" class="form-control" placeholder="Buscar por codigo..."
+                                   value="{{ search }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="warehouse" class="form-select">
+                            <option value="">Todos os Armazens</option>
+                            {% for wh in warehouses %}
+                            <option value="{{ wh.id }}" {% if warehouse_filter == wh.id|stringformat:'s' %}selected{% endif %}>
+                                {{ wh.code }} - {{ wh.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">Todos os Status</option>
+                            <option value="EMPTY" {% if status_filter == 'EMPTY' %}selected{% endif %}>Vazio</option>
+                            <option value="LOADED" {% if status_filter == 'LOADED' %}selected{% endif %}>Carregado</option>
+                            <option value="IN_USE" {% if status_filter == 'IN_USE' %}selected{% endif %}>Em Uso</option>
+                            <option value="MAINTENANCE" {% if status_filter == 'MAINTENANCE' %}selected{% endif %}>Manutencao</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                                </svg>
+                                Buscar
+                            </button>
+                            <a href="{% url 'production:bin_list' %}" class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="panel-body">
-        {% if bins %}
-            <div class="row">
-                {% for bin in bins %}
-                <div class="col-xl-4 col-lg-6 col-md-12 mb-4">
-                    <div class="card" style="border: 1px solid rgba(0,0,0,0.2); border-radius: 5px;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <h5 class="card-title">
-                                        <i class="fa fa-box text-primary"></i>
-                                        {{ bin.code }}
-                                        {% if not bin.is_active %}
-                                            <span class="badge badge-secondary">Inativo</span>
+
+    <!-- Results -->
+    <div id="bins-results">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Contentores
+                    <span class="text-muted ms-2">({{ bins.paginator.count }} encontrado{{ bins.paginator.count|pluralize:"s" }})</span>
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if bins %}
+                <div class="row row-deck row-cards">
+                    {% for bin in bins %}
+                    <div class="col-xl-4 col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h3 class="mb-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon text-primary me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                                            </svg>
+                                            {{ bin.code }}
+                                            {% if not bin.is_active %}
+                                            <span class="badge bg-secondary ms-1">Inativo</span>
+                                            {% endif %}
+                                        </h3>
+                                        <div class="text-muted">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
+                                            </svg>
+                                            {{ bin.warehouse.code }}
+                                            {% if bin.location_code %}
+                                            <span class="ms-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-map-pin"></use>
+                                                </svg>
+                                                {{ bin.location_code }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        {% if bin.status == 'EMPTY' %}
+                                        <span class="badge bg-secondary">Vazio</span>
+                                        {% elif bin.status == 'LOADED' %}
+                                        <span class="badge bg-success">Carregado</span>
+                                        {% elif bin.status == 'IN_USE' %}
+                                        <span class="badge bg-warning">Em Uso</span>
+                                        {% elif bin.status == 'MAINTENANCE' %}
+                                        <span class="badge bg-danger">Manutencao</span>
                                         {% endif %}
-                                    </h5>
-                                    <p class="card-text text-muted mb-1">
-                                        <i class="fa fa-warehouse"></i> {{ bin.warehouse.code }}
-                                        {% if bin.location_code %}
-                                            - <i class="fa fa-map-marker-alt"></i> {{ bin.location_code }}
-                                        {% endif %}
-                                    </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    {% if bin.status == 'EMPTY' %}
-                                        <span class="badge badge-secondary badge-lg">Vazio</span>
-                                    {% elif bin.status == 'LOADED' %}
-                                        <span class="badge badge-success badge-lg">Carregado</span>
-                                    {% elif bin.status == 'IN_USE' %}
-                                        <span class="badge badge-warning badge-lg">Em Uso</span>
-                                    {% elif bin.status == 'MAINTENANCE' %}
-                                        <span class="badge badge-danger badge-lg">Manutenção</span>
+
+                                {% if bin.current_material %}
+                                <div class="bg-light rounded p-3 mb-3">
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <small class="text-muted d-block">Material</small>
+                                            <strong>{{ bin.current_material.code }}</strong> - {{ bin.current_material.name|truncatechars:30 }}
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Quantidade</small>
+                                            <span class="text-primary fw-bold">{{ bin.current_quantity|floatformat:3 }} kg</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Capacidade</small>
+                                            {{ bin.capacity|floatformat:1 }} kg
+                                        </div>
+                                    </div>
+                                    {% if bin.current_supplier_batch %}
+                                    <div class="mt-2 pt-2 border-top">
+                                        <small class="text-muted">Lote Fornecedor: <strong>{{ bin.current_supplier_batch }}</strong></small>
+                                    </div>
                                     {% endif %}
                                 </div>
-                            </div>
-
-                            {% if bin.current_material %}
-                            <div class="mt-3 p-2 bg-light rounded">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <small class="text-muted">Material:</small>
-                                        <p class="mb-1"><strong>{{ bin.current_material.code }}</strong> - {{ bin.current_material.name|truncatechars:30 }}</p>
-                                    </div>
-                                    <div class="col-6">
-                                        <small class="text-muted">Quantidade:</small>
-                                        <p class="mb-0"><strong class="text-primary">{{ bin.current_quantity|floatformat:3 }} kg</strong></p>
-                                    </div>
-                                    <div class="col-6">
-                                        <small class="text-muted">Capacidade:</small>
-                                        <p class="mb-0">{{ bin.capacity|floatformat:1 }} kg</p>
-                                    </div>
-                                </div>
-                                {% if bin.current_supplier_batch %}
-                                <div class="mt-2">
-                                    <small class="text-muted">Lote Fornecedor: <strong>{{ bin.current_supplier_batch }}</strong></small>
+                                {% else %}
+                                <div class="bg-light rounded p-3 mb-3 text-center text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box-off"></use>
+                                    </svg>
+                                    <div>Contentor vazio</div>
+                                    <small>Capacidade: {{ bin.capacity|floatformat:1 }} kg</small>
                                 </div>
                                 {% endif %}
-                            </div>
-                            {% else %}
-                            <div class="mt-3 p-2 bg-light rounded text-center text-muted">
-                                <i class="fa fa-box-open"></i> Contentor vazio
-                                <br><small>Capacidade: {{ bin.capacity|floatformat:1 }} kg</small>
-                            </div>
-                            {% endif %}
 
-                            <!-- Quick actions -->
-                            <div class="mt-3">
-                                <div class="btn-group btn-block" role="group">
+                                <div class="btn-list">
                                     <a href="{% url 'production:bin_detail' bin.id %}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fa fa-eye"></i> Detalhes
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                                        </svg>
+                                        Detalhes
                                     </a>
                                     {% if bin.status == 'EMPTY' %}
-                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="loadBin('{{ bin.id }}')">
-                                        <i class="fa fa-arrow-down"></i> Carregar
+                                    <button type="button" class="btn btn-outline-success btn-sm" @click="openLoadModal('{{ bin.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-down"></use>
+                                        </svg>
+                                        Carregar
                                     </button>
                                     {% elif bin.status == 'LOADED' %}
-                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="emptyBin('{{ bin.id }}')">
-                                        <i class="fa fa-arrow-up"></i> Esvaziar
+                                    <button type="button" class="btn btn-outline-warning btn-sm" @click="openEmptyModal('{{ bin.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-up"></use>
+                                        </svg>
+                                        Esvaziar
                                     </button>
                                     {% endif %}
                                     <a href="{% url 'production:bin_history' bin.id %}" class="btn btn-outline-info btn-sm">
-                                        <i class="fa fa-history"></i> Histórico
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
+                                        </svg>
+                                        Historico
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
 
-            <!-- Pagination -->
-            {% if bins.has_other_pages %}
-                <nav aria-label="Paginação">
+                <!-- Pagination -->
+                {% if bins.has_other_pages %}
+                <div class="mt-4">
                     <ul class="pagination justify-content-center">
                         {% if bins.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.previous_page_number }}">Anterior</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.previous_page_number }}"
+                               hx-get="{% url 'production:bin_list' %}?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.previous_page_number }}"
+                               hx-target="#bins-results"
+                               hx-push-url="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
+                                </svg>
+                                Anterior
+                            </a>
+                        </li>
                         {% endif %}
 
                         {% for num in bins.paginator.page_range %}
                             {% if bins.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
                             {% elif num > bins.number|add:'-3' and num < bins.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}">{{ num }}</a>
-                                </li>
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
+                                   hx-get="{% url 'production:bin_list' %}?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
+                                   hx-target="#bins-results"
+                                   hx-push-url="true">
+                                    {{ num }}
+                                </a>
+                            </li>
                             {% endif %}
                         {% endfor %}
 
                         {% if bins.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.next_page_number }}">Próximo</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.next_page_number }}"
+                               hx-get="{% url 'production:bin_list' %}?{% if search %}search={{ search }}&{% endif %}{% if warehouse_filter %}warehouse={{ warehouse_filter }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ bins.next_page_number }}"
+                               hx-target="#bins-results"
+                               hx-push-url="true">
+                                Proximo
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                                </svg>
+                            </a>
+                        </li>
                         {% endif %}
                     </ul>
-                </nav>
-            {% endif %}
-        {% else %}
-            <div class="text-center text-muted p-5">
-                <i class="fa fa-box fa-3x"></i>
-                <h4 class="mt-3">Nenhum contentor encontrado</h4>
-                <p>{% if search or warehouse_filter or status_filter %}Não há contentores que correspondam aos filtros.{% else %}Nenhum contentor foi cadastrado ainda.{% endif %}</p>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#binModal">
-                    <i class="fa fa-plus"></i> Cadastrar Primeiro Contentor
-                </button>
-            </div>
-        {% endif %}
-    </div>
-</div>
-<!-- end results -->
+                </div>
+                {% endif %}
 
-<!-- Bin Modal -->
-<div class="modal fade" id="binModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Novo Contentor</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                        </svg>
+                    </div>
+                    <p class="empty-title">Nenhum contentor encontrado</p>
+                    <p class="empty-subtitle text-muted">
+                        {% if search or warehouse_filter or status_filter %}
+                        Nao ha contentores que correspondam aos filtros.
+                        {% else %}
+                        Nenhum contentor foi cadastrado ainda.
+                        {% endif %}
+                    </p>
+                    <div class="empty-action">
+                        <button type="button" class="btn btn-primary" @click="createModalOpen = true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            Cadastrar Primeiro Contentor
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            <form id="binForm">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Código <span class="text-danger">*</span></label>
-                                <input type="text" name="code" class="form-control" required maxlength="50"
+        </div>
+    </div>
+
+    <!-- Create Bin Modal -->
+    <div class="modal modal-blur" x-show="createModalOpen" x-cloak
+         @keydown.escape.window="createModalOpen = false"
+         style="display: block; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered" @click.outside="createModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                        </svg>
+                        Novo Contentor
+                    </h5>
+                    <button type="button" class="btn-close" @click="createModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitCreate">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Codigo</label>
+                                <input type="text" class="form-control" x-model="createForm.code" required maxlength="50"
                                        placeholder="Ex: BIN-001, CONT-A01">
-                                <small class="form-text text-muted">Código único para identificação</small>
+                                <small class="form-hint">Codigo unico para identificacao</small>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Armazém <span class="text-danger">*</span></label>
-                                <select name="warehouse" class="form-control" required>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Armazem</label>
+                                <select class="form-select" x-model="createForm.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for wh in warehouses %}
-                                        <option value="{{ wh.id }}">{{ wh.code }} - {{ wh.name }}</option>
+                                    <option value="{{ wh.id }}">{{ wh.code }} - {{ wh.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Capacidade (kg)</label>
-                                <input type="number" name="capacity" class="form-control" step="0.001" min="0"
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Capacidade (kg)</label>
+                                <input type="number" class="form-control" x-model="createForm.capacity" step="0.001" min="0"
                                        placeholder="Ex: 100.00">
-                                <small class="form-text text-muted">Capacidade máxima (informativo)</small>
+                                <small class="form-hint">Capacidade maxima (informativo)</small>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Localização</label>
-                                <input type="text" name="location_code" class="form-control" maxlength="50"
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Localizacao</label>
+                                <input type="text" class="form-control" x-model="createForm.location_code" maxlength="50"
                                        placeholder="Ex: Prateleira A-01">
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observacoes</label>
+                            <textarea class="form-control" x-model="createForm.notes" rows="3"
+                                      placeholder="Observacoes sobre o contentor..."></textarea>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Observações</label>
-                        <textarea name="notes" class="form-control" rows="3"
-                                  placeholder="Observações sobre o contentor..."></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-success" :disabled="submitting">
+                            <span x-show="!submitting">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
+                                </svg>
+                                Salvar Contentor
+                            </span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Salvando...
+                            </span>
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fa fa-save"></i> Salvar Contentor
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Load Bin Modal -->
-<div class="modal fade" id="loadBinModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Carregar Contentor</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="loadBinForm">
-                {% csrf_token %}
-                <input type="hidden" name="bin_id" id="loadBinId">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Material <span class="text-danger">*</span></label>
-                                <select name="material" class="form-control" required id="loadMaterial">
+    <!-- Load Bin Modal -->
+    <div class="modal modal-blur" x-show="loadModalOpen" x-cloak
+         @keydown.escape.window="loadModalOpen = false"
+         style="display: block; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered" @click.outside="loadModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-down"></use>
+                        </svg>
+                        Carregar Contentor
+                    </h5>
+                    <button type="button" class="btn-close" @click="loadModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitLoad">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Material</label>
+                                <select class="form-select" x-model="loadForm.material" required>
                                     <option value="">Selecione...</option>
                                     {% for material in materials %}
-                                        <option value="{{ material.id }}">{{ material.code }} - {{ material.name|truncatechars:40 }}</option>
+                                    <option value="{{ material.id }}">{{ material.code }} - {{ material.name|truncatechars:40 }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Quantidade (kg) <span class="text-danger">*</span></label>
-                                <input type="number" name="quantity" class="form-control" step="0.001" min="0.001" required>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required">Quantidade (kg)</label>
+                                <input type="number" class="form-control" x-model="loadForm.quantity" step="0.001" min="0.001" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Lote do Fornecedor</label>
-                                <input type="text" name="supplier_batch" class="form-control" maxlength="100"
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Lote do Fornecedor</label>
+                                <input type="text" class="form-control" x-model="loadForm.supplier_batch" maxlength="100"
                                        placeholder="Ex: LOTE-2024-001">
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Certificado</label>
-                                <input type="text" name="certificate" class="form-control" maxlength="100"
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Certificado</label>
+                                <input type="text" class="form-control" x-model="loadForm.certificate" maxlength="100"
                                        placeholder="Ex: CERT-2024-001">
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observacoes</label>
+                            <textarea class="form-control" x-model="loadForm.notes" rows="2"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Observações</label>
-                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="loadModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-success" :disabled="submitting">
+                            <span x-show="!submitting">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-down"></use>
+                                </svg>
+                                Carregar Material
+                            </span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Carregando...
+                            </span>
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fa fa-arrow-down"></i> Carregar Material
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Empty Bin Modal -->
-<div class="modal fade" id="emptyBinModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Esvaziar Contentor</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+    <!-- Empty Bin Modal -->
+    <div class="modal modal-blur" x-show="emptyModalOpen" x-cloak
+         @keydown.escape.window="emptyModalOpen = false"
+         style="display: block; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered" @click.outside="emptyModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-status bg-warning"></div>
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-up"></use>
+                        </svg>
+                        Esvaziar Contentor
+                    </h5>
+                    <button type="button" class="btn-close" @click="emptyModalOpen = false"></button>
+                </div>
+                <form @submit.prevent="submitEmpty">
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <div class="d-flex">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="alert-title">Atencao!</h4>
+                                    <div class="text-muted">Esta acao ira esvaziar todo o conteudo do contentor.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Motivo / Observacoes</label>
+                            <textarea class="form-control" x-model="emptyForm.notes" rows="3"
+                                      placeholder="Informe o motivo do esvaziamento..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="emptyModalOpen = false">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" :disabled="submitting">
+                            <span x-show="!submitting">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-up"></use>
+                                </svg>
+                                Confirmar Esvaziamento
+                            </span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Processando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
             </div>
-            <form id="emptyBinForm">
-                {% csrf_token %}
-                <input type="hidden" name="bin_id" id="emptyBinId">
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="fa fa-exclamation-triangle"></i>
-                        <strong>Atenção!</strong> Esta ação irá esvaziar todo o conteúdo do contentor.
-                    </div>
-                    <div class="form-group">
-                        <label>Motivo / Observações</label>
-                        <textarea name="notes" class="form-control" rows="3"
-                                  placeholder="Informe o motivo do esvaziamento..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning">
-                        <i class="fa fa-arrow-up"></i> Confirmar Esvaziamento
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 {% endblock %}
 
-{% block inline_js %}
+{% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Handle bin creation form
-    $('#binForm').on('submit', function(e) {
-        e.preventDefault();
+function binManager() {
+    return {
+        createModalOpen: false,
+        loadModalOpen: false,
+        emptyModalOpen: false,
+        submitting: false,
+        selectedBinId: null,
 
-        $.ajax({
-            url: "{% url 'production:bin_create' %}",
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
-                    alert('Contentor criado com sucesso!');
-                    $('#binModal').modal('hide');
-                    location.reload();
+        createForm: {
+            code: '',
+            warehouse: '',
+            capacity: '',
+            location_code: '',
+            notes: ''
+        },
+
+        loadForm: {
+            material: '',
+            quantity: '',
+            supplier_batch: '',
+            certificate: '',
+            notes: ''
+        },
+
+        emptyForm: {
+            notes: ''
+        },
+
+        openLoadModal(binId) {
+            this.selectedBinId = binId;
+            this.loadForm = {
+                material: '',
+                quantity: '',
+                supplier_batch: '',
+                certificate: '',
+                notes: ''
+            };
+            this.loadModalOpen = true;
+        },
+
+        openEmptyModal(binId) {
+            this.selectedBinId = binId;
+            this.emptyForm = { notes: '' };
+            this.emptyModalOpen = true;
+        },
+
+        async submitCreate() {
+            this.submitting = true;
+            try {
+                const formData = new FormData();
+                formData.append('code', this.createForm.code);
+                formData.append('warehouse', this.createForm.warehouse);
+                formData.append('capacity', this.createForm.capacity);
+                formData.append('location_code', this.createForm.location_code);
+                formData.append('notes', this.createForm.notes);
+
+                const response = await fetch('{% url "production:bin_create" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.createModalOpen = false;
+                    window.location.reload();
                 } else {
-                    alert('Erro: ' + (response.message || 'Erro desconhecido'));
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
                 }
-            },
-            error: function(xhr) {
-                let message = 'Erro ao criar contentor.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
+            } catch (error) {
+                alert('Erro ao criar contentor: ' + error.message);
+            } finally {
+                this.submitting = false;
             }
-        });
-    });
+        },
 
-    // Handle load bin form
-    $('#loadBinForm').on('submit', function(e) {
-        e.preventDefault();
+        async submitLoad() {
+            this.submitting = true;
+            try {
+                const formData = new FormData();
+                formData.append('material', this.loadForm.material);
+                formData.append('quantity', this.loadForm.quantity);
+                formData.append('supplier_batch', this.loadForm.supplier_batch);
+                formData.append('certificate', this.loadForm.certificate);
+                formData.append('notes', this.loadForm.notes);
 
-        const binId = $('#loadBinId').val();
+                const response = await fetch(`/inventory/bins/${this.selectedBinId}/load/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
 
-        $.ajax({
-            url: `/inventory/bins/${binId}/load/`,
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
-                    alert('Material carregado com sucesso!');
-                    $('#loadBinModal').modal('hide');
-                    location.reload();
+                const data = await response.json();
+                if (data.success) {
+                    this.loadModalOpen = false;
+                    window.location.reload();
                 } else {
-                    alert('Erro: ' + (response.message || 'Erro desconhecido'));
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
                 }
-            },
-            error: function(xhr) {
-                let message = 'Erro ao carregar material.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
+            } catch (error) {
+                alert('Erro ao carregar material: ' + error.message);
+            } finally {
+                this.submitting = false;
             }
-        });
-    });
+        },
 
-    // Handle empty bin form
-    $('#emptyBinForm').on('submit', function(e) {
-        e.preventDefault();
+        async submitEmpty() {
+            this.submitting = true;
+            try {
+                const formData = new FormData();
+                formData.append('notes', this.emptyForm.notes);
 
-        const binId = $('#emptyBinId').val();
+                const response = await fetch(`/inventory/bins/${this.selectedBinId}/empty/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
 
-        $.ajax({
-            url: `/inventory/bins/${binId}/empty/`,
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
-                    alert('Contentor esvaziado com sucesso!');
-                    $('#emptyBinModal').modal('hide');
-                    location.reload();
+                const data = await response.json();
+                if (data.success) {
+                    this.emptyModalOpen = false;
+                    window.location.reload();
                 } else {
-                    alert('Erro: ' + (response.message || 'Erro desconhecido'));
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
                 }
-            },
-            error: function(xhr) {
-                let message = 'Erro ao esvaziar contentor.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                alert(message);
+            } catch (error) {
+                alert('Erro ao esvaziar contentor: ' + error.message);
+            } finally {
+                this.submitting = false;
             }
-        });
-    });
-});
-
-function loadBin(binId) {
-    $('#loadBinId').val(binId);
-    $('#loadBinForm')[0].reset();
-    $('#loadBinId').val(binId);
-    $('#loadBinModal').modal('show');
-}
-
-function emptyBin(binId) {
-    $('#emptyBinId').val(binId);
-    $('#emptyBinForm')[0].reset();
-    $('#emptyBinId').val(binId);
-    $('#emptyBinModal').modal('show');
+        }
+    };
 }
 </script>
 {% endblock %}

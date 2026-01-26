@@ -6,291 +6,375 @@
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
 <li class="breadcrumb-item"><a href="{% url 'materials:list' %}">Lista</a></li>
-<li class="breadcrumb-item active">{{ title }}</li>
+<li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
 {% endblock %}
 
 {% block page_title %}{{ title }}{% endblock %}
-{% block page_subtitle %}{% if material %}{{ material.code }}{% else %}Novo Material{% endif %}{% endblock %}
+{% block page_subtitle %}
+<div class="page-subtitle">{% if material %}{{ material.code }}{% else %}Novo Material{% endif %}</div>
+{% endblock %}
 
 {% block content_body %}
-<div class="row">
+<div class="row row-deck row-cards">
+    <!-- Main Form -->
     <div class="col-lg-8">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">{{ title }}</h4>
-            </div>
-            <div class="panel-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <!-- begin basic info -->
+        <form method="post" x-data="compositionForm()" @submit="submitting = true">
+            {% csrf_token %}
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                        </svg>
+                        Informacoes do Material
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Basic Info -->
                     <div class="row">
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.code.label }} <span class="text-danger">*</span></label>
-                                {{ form.code }}
-                                {% if form.code.errors %}
-                                    <div class="text-danger">{{ form.code.errors }}</div>
-                                {% endif %}
-                                <small class="form-text text-muted">{{ form.code.help_text }}</small>
-                            </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <label class="form-label required" for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>
+                            <input type="text" name="code" id="{{ form.code.id_for_label }}"
+                                   class="form-control{% if form.code.errors %} is-invalid{% endif %}"
+                                   value="{{ form.code.value|default:'' }}" required
+                                   placeholder="Ex: AL7075">
+                            {% if form.code.errors %}
+                            <div class="invalid-feedback">{% for e in form.code.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                            <small class="form-hint">{{ form.code.help_text }}</small>
                         </div>
-                        
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.name.label }} <span class="text-danger">*</span></label>
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger">{{ form.name.errors }}</div>
-                                {% endif %}
-                            </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <label class="form-label required" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                            <input type="text" name="name" id="{{ form.name.id_for_label }}"
+                                   class="form-control{% if form.name.errors %} is-invalid{% endif %}"
+                                   value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback">{% for e in form.name.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
                         </div>
-                        
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.material_type.label }} <span class="text-danger">*</span></label>
-                                {{ form.material_type }}
-                                {% if form.material_type.errors %}
-                                    <div class="text-danger">{{ form.material_type.errors }}</div>
-                                {% endif %}
-                            </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <label class="form-label required" for="{{ form.material_type.id_for_label }}">{{ form.material_type.label }}</label>
+                            {{ form.material_type }}
+                            {% if form.material_type.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.material_type.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
                         </div>
-                        
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.category.label }}</label>
-                                {{ form.category }}
-                                {% if form.category.errors %}
-                                    <div class="text-danger">{{ form.category.errors }}</div>
-                                {% endif %}
-                            </div>
+
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.category.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
                         </div>
                     </div>
-                    <!-- end basic info -->
-                    
-                    <!-- begin physical properties -->
-                    <h5 class="mt-4 mb-3">Propriedades Físicas</h5>
-                    
+
+                    <hr class="my-4">
+
+                    <!-- Physical Properties -->
+                    <h4 class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flask"></use>
+                        </svg>
+                        Propriedades Fisicas
+                    </h4>
+
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.density.label }} <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    {{ form.density }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">g/cm³</span>
-                                    </div>
-                                </div>
-                                {% if form.density.errors %}
-                                    <div class="text-danger">{{ form.density.errors }}</div>
-                                {% endif %}
-                                <small class="form-text text-muted">{{ form.density.help_text }}</small>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label required" for="{{ form.density.id_for_label }}">{{ form.density.label }}</label>
+                            <div class="input-group">
+                                <input type="number" name="density" id="{{ form.density.id_for_label }}"
+                                       class="form-control{% if form.density.errors %} is-invalid{% endif %}"
+                                       value="{{ form.density.value|default:'' }}" required step="0.001">
+                                <span class="input-group-text">g/cm3</span>
                             </div>
+                            {% if form.density.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.density.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                            <small class="form-hint">{{ form.density.help_text }}</small>
                         </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="col-form-label">{{ form.melting_point.label }}</label>
-                                <div class="input-group">
-                                    {{ form.melting_point }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">°C</span>
-                                    </div>
-                                </div>
-                                {% if form.melting_point.errors %}
-                                    <div class="text-danger">{{ form.melting_point.errors }}</div>
-                                {% endif %}
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="{{ form.melting_point.id_for_label }}">{{ form.melting_point.label }}</label>
+                            <div class="input-group">
+                                <input type="number" name="melting_point" id="{{ form.melting_point.id_for_label }}"
+                                       class="form-control{% if form.melting_point.errors %} is-invalid{% endif %}"
+                                       value="{{ form.melting_point.value|default:'' }}">
+                                <span class="input-group-text">C</span>
                             </div>
-                        </div>
-                    </div>
-                    <!-- end physical properties -->
-                    
-                    <!-- begin composition -->
-                    <h5 class="mt-4 mb-3">Composição Química</h5>
-                    
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            {{ formset.management_form }}
-                            <table class="table table-sm" id="composition-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40%">Elemento</th>
-                                        <th style="width: 25%">Percentual (%)</th>
-                                        <th style="width: 20%">Valor Máximo</th>
-                                        <th style="width: 15%">Remover</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in formset %}
-                                        <tr class="composition-form">
-                                            <td>
-                                                {{ form.element }}
-                                                {{ form.element.errors }}
-                                            </td>
-                                            <td>
-                                                {{ form.percentage }}
-                                                {{ form.percentage.errors }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ form.is_max }}
-                                                {{ form.is_max.errors }}
-                                            </td>
-                                            <td class="text-center">
-                                                {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                                                {{ form.id }}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-sm btn-success" id="add-composition">
-                                <i class="fa fa-plus"></i> Adicionar Elemento
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <h5 class="mt-4 mb-3">Especificações Técnicas</h5>
-                    
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{ form.specifications_text.label }}</label>
-                        <div class="col-md-9">
-                            {{ form.specifications_text }}
-                            {% if form.specifications_text.errors %}
-                                <div class="text-danger">{{ form.specifications_text.errors }}</div>
-                            {% endif %}
-                            <small class="form-text text-muted">{{ form.specifications_text.help_text }}</small>
-                        </div>
-                    </div>
-                    <!-- end composition -->
-                    
-                    <!-- begin requirements -->
-                    <h5 class="mt-4 mb-3">Requisitos</h5>
-                    
-                    <div class="form-group row">
-                        <div class="col-md-9 offset-md-3">
-                            <div class="form-check">
-                                {{ form.requires_certificate }}
-                                <label class="form-check-label">
-                                    {{ form.requires_certificate.label }}
-                                </label>
-                            </div>
-                            {% if form.requires_certificate.errors %}
-                                <div class="text-danger">{{ form.requires_certificate.errors }}</div>
+                            {% if form.melting_point.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.melting_point.errors %}{{ e }}{% endfor %}</div>
                             {% endif %}
                         </div>
                     </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{ form.storage_requirements.label }}</label>
-                        <div class="col-md-9">
-                            {{ form.storage_requirements }}
-                            {% if form.storage_requirements.errors %}
-                                <div class="text-danger">{{ form.storage_requirements.errors }}</div>
-                            {% endif %}
-                        </div>
+
+                    <hr class="my-4">
+
+                    <!-- Chemical Composition -->
+                    <h4 class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-atom"></use>
+                        </svg>
+                        Composicao Quimica
+                    </h4>
+
+                    {{ formset.management_form }}
+                    <div class="table-responsive">
+                        <table class="table table-vcenter" id="composition-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%">Elemento</th>
+                                    <th style="width: 25%">Percentual (%)</th>
+                                    <th style="width: 20%" class="text-center">Valor Maximo</th>
+                                    <th style="width: 15%" class="text-center">Remover</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comp_form in formset %}
+                                <tr class="composition-form" x-show="!deletedRows.includes({{ forloop.counter0 }})">
+                                    <td>
+                                        {{ comp_form.element }}
+                                        {% if comp_form.element.errors %}
+                                        <div class="invalid-feedback d-block">{{ comp_form.element.errors }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ comp_form.percentage }}
+                                        {% if comp_form.percentage.errors %}
+                                        <div class="invalid-feedback d-block">{{ comp_form.percentage.errors }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ comp_form.is_max }}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if comp_form.instance.pk %}
+                                        <label class="form-check form-check-inline m-0">
+                                            {{ comp_form.DELETE }}
+                                            <span class="text-danger" @click="markDeleted({{ forloop.counter0 }})">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-trash"></use>
+                                                </svg>
+                                            </span>
+                                        </label>
+                                        {% endif %}
+                                        {{ comp_form.id }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{ form.safety_notes.label }}</label>
-                        <div class="col-md-9">
-                            {{ form.safety_notes }}
-                            {% if form.safety_notes.errors %}
-                                <div class="text-danger">{{ form.safety_notes.errors }}</div>
-                            {% endif %}
-                        </div>
+                    <button type="button" class="btn btn-success btn-sm" @click="addComposition()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Adicionar Elemento
+                    </button>
+
+                    <hr class="my-4">
+
+                    <!-- Technical Specifications -->
+                    <h4 class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-settings"></use>
+                        </svg>
+                        Especificacoes Tecnicas
+                    </h4>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.specifications_text.id_for_label }}">{{ form.specifications_text.label }}</label>
+                        {{ form.specifications_text }}
+                        {% if form.specifications_text.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.specifications_text.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                        <small class="form-hint">{{ form.specifications_text.help_text }}</small>
                     </div>
-                    <!-- end requirements -->
-                    
-                    <!-- begin form actions -->
-                    <div class="form-group row">
-                        <div class="col-md-9 offset-md-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-save"></i> {{ action }}
-                            </button>
-                            <a href="{% if material %}{% url 'materials:detail' material.id %}{% else %}{% url 'materials:list' %}{% endif %}" 
-                               class="btn btn-default ml-2">
-                                <i class="fa fa-times"></i> Cancelar
-                            </a>
-                        </div>
+
+                    <hr class="my-4">
+
+                    <!-- Requirements -->
+                    <h4 class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-check"></use>
+                        </svg>
+                        Requisitos
+                    </h4>
+
+                    <div class="mb-3">
+                        <label class="form-check">
+                            {{ form.requires_certificate }}
+                            <span class="form-check-label">{{ form.requires_certificate.label }}</span>
+                        </label>
+                        {% if form.requires_certificate.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.requires_certificate.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
                     </div>
-                    <!-- end form actions -->
-                </form>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.storage_requirements.id_for_label }}">{{ form.storage_requirements.label }}</label>
+                        {{ form.storage_requirements }}
+                        {% if form.storage_requirements.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.storage_requirements.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.safety_notes.id_for_label }}">{{ form.safety_notes.label }}</label>
+                        {{ form.safety_notes }}
+                        {% if form.safety_notes.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.safety_notes.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer text-end">
+                    <a href="{% if material %}{% url 'materials:detail' material.id %}{% else %}{% url 'materials:list' %}{% endif %}" class="btn btn-secondary me-2">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary" :disabled="submitting">
+                        <span x-show="!submitting">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
+                            </svg>
+                            {{ action }}
+                        </span>
+                        <span x-show="submitting" x-cloak>
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Salvando...
+                        </span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
-    
-    <!-- begin help sidebar -->
+
+    <!-- Help Sidebar -->
     <div class="col-lg-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Ajuda</h4>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-help"></use>
+                    </svg>
+                    Ajuda
+                </h3>
             </div>
-            <div class="panel-body">
-                <h6><i class="fa fa-info-circle text-info"></i> Dicas de Preenchimento</h6>
-                <ul class="list-unstyled">
-                    <li><strong>Código:</strong> Use o padrão TIPO + identificador (ex: AL7075, TI6AL4V)</li>
-                    <li><strong>Composição:</strong> Selecione elementos e informe percentuais</li>
-                    <li><strong>Especificações:</strong> Propriedades mecânicas em JSON</li>
-                    <li><strong>Densidade:</strong> Valor em g/cm³</li>
-                </ul>
-                
-                <h6 class="mt-3"><i class="fa fa-flask text-warning"></i> Dica sobre Composição</h6>
-                <p class="small">
-                    A soma dos percentuais não pode exceder 100%. 
-                    Use "Valor Máximo" para indicar teor máximo permitido de um elemento.
-                </p>
-                
-                <h6 class="mt-3"><i class="fa fa-cogs text-success"></i> Exemplo de Especificações</h6>
-                <pre class="bg-light p-2 small">
-{
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h4 class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                        </svg>
+                        Dicas de Preenchimento
+                    </h4>
+                    <ul class="mb-0">
+                        <li><strong>Codigo:</strong> Use o padrao TIPO + identificador (ex: AL7075, TI6AL4V)</li>
+                        <li><strong>Composicao:</strong> Selecione elementos e informe percentuais</li>
+                        <li><strong>Especificacoes:</strong> Propriedades mecanicas em JSON</li>
+                        <li><strong>Densidade:</strong> Valor em g/cm3</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning">
+                    <h4 class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flask"></use>
+                        </svg>
+                        Dica sobre Composicao
+                    </h4>
+                    <p class="mb-0">A soma dos percentuais nao pode exceder 100%. Use "Valor Maximo" para indicar teor maximo permitido de um elemento.</p>
+                </div>
+
+                <div class="alert alert-success">
+                    <h4 class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-code"></use>
+                        </svg>
+                        Exemplo de Especificacoes
+                    </h4>
+                    <pre class="mb-0 bg-light p-2 rounded small">{
   "resistencia_tracao": "572 MPa",
   "limite_escoamento": "503 MPa",
   "alongamento": "11%"
 }</pre>
+                </div>
             </div>
         </div>
     </div>
-    <!-- end help sidebar -->
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Gerenciar formset de composição
-    let totalForms = $('#id_compositions-TOTAL_FORMS');
-    let formCount = parseInt(totalForms.val());
-    
-    $('#add-composition').click(function() {
-        let emptyForm = $('.composition-form:first').clone();
-        let formIdx = formCount;
-        
-        emptyForm.find(':input').each(function() {
-            if ($(this).attr('name')) {
-                let name = $(this).attr('name').replace('-0-', '-' + formIdx + '-');
-                let id = 'id_' + name;
-                $(this).attr({'name': name, 'id': id}).val('');
-                $(this).prop('checked', false);
+function compositionForm() {
+    return {
+        submitting: false,
+        deletedRows: [],
+        formCount: parseInt(document.getElementById('id_compositions-TOTAL_FORMS').value),
+
+        markDeleted(index) {
+            this.deletedRows.push(index);
+        },
+
+        addComposition() {
+            const tbody = document.querySelector('#composition-table tbody');
+            const firstRow = tbody.querySelector('.composition-form');
+            if (!firstRow) return;
+
+            const newRow = firstRow.cloneNode(true);
+            const formIdx = this.formCount;
+
+            // Update input names and IDs
+            newRow.querySelectorAll('[name]').forEach(input => {
+                if (input.name) {
+                    const name = input.name.replace(/-\d+-/, '-' + formIdx + '-');
+                    const id = 'id_' + name;
+                    input.name = name;
+                    input.id = id;
+                    input.value = '';
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    }
+                }
+            });
+
+            // Update labels
+            newRow.querySelectorAll('label[for]').forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr) {
+                    label.setAttribute('for', forAttr.replace(/-\d+-/, '-' + formIdx + '-'));
+                }
+            });
+
+            // Clear errors
+            newRow.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+            // Remove delete button for new rows
+            const deleteCell = newRow.querySelector('td:last-child');
+            if (deleteCell) {
+                deleteCell.innerHTML = '';
             }
-        });
-        
-        emptyForm.find('select').val('');
-        emptyForm.find('.text-danger').remove();
-        
-        $('#composition-table tbody').append(emptyForm);
-        
-        formCount++;
-        totalForms.val(formCount);
-    });
-    
-    // Remover linha de composição
-    $(document).on('change', 'input[type=checkbox][name$="-DELETE"]', function() {
-        if($(this).is(':checked')) {
-            $(this).closest('tr').fadeOut();
-        } else {
-            $(this).closest('tr').fadeIn();
+
+            // Remove x-show attribute since new rows shouldn't be tracked
+            newRow.removeAttribute('x-show');
+
+            tbody.appendChild(newRow);
+            this.formCount++;
+            document.getElementById('id_compositions-TOTAL_FORMS').value = this.formCount;
         }
-    });
-});
+    }
+}
 </script>
 {% endblock %}

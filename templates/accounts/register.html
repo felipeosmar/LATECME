@@ -3,164 +3,254 @@
 
 {% block title %}Registro - LATECME{% endblock %}
 
-{% block body_class %}pace-top bg-white{% endblock %}
+{% block body_class %}d-flex flex-column{% endblock %}
 
-{% block content %}
-<!-- begin #page-container -->
-<div id="page-container" class="fade">
-    <!-- begin register -->
-    <div class="register register-with-news-feed">
-        <!-- begin news-feed -->
-        <div class="news-feed">
-            <div class="news-image">
-                <img src="{% static 'img/login-bg/bg-8.jpg' %}" alt="" />
-            </div>
-            <div class="news-caption">
-                <h4 class="caption-title"><i class="fa fa-industry text-success"></i> Sistema LATECME</h4>
-                <p>
-                    Sistema de Controle de Manufatura Aditiva. Gerencie materiais, estoque e produção 
-                    com total rastreabilidade e controle de qualidade.
-                </p>
-            </div>
-        </div>
-        <!-- end news-feed -->
-        <!-- begin right-content -->
-        <div class="right-content">
-            <!-- begin register-header -->
-            <h1 class="register-header">
-                Registrar-se
-                <small>Crie sua conta no Sistema LATECME.</small>
-            </h1>
-            <!-- end register-header -->
-            <!-- begin register-content -->
-            <div class="register-content">
-                <!-- Mensagens de erro/sucesso -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade in">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <form method="post" class="margin-bottom-0">
-                    {% csrf_token %}
-                    
-                    <label class="control-label">Nome de Usuário <span class="text-danger">*</span></label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.username }}
-                            {% if form.username.errors %}
-                                <div class="text-danger">{{ form.username.errors }}</div>
-                            {% endif %}
-                        </div>
+{% block body %}
+<div class="page page-center">
+    <div class="container container-normal py-4">
+        <div class="row align-items-center g-4">
+            <!-- Left side - Info -->
+            <div class="col-lg d-none d-lg-block">
+                <div class="container-tight">
+                    <div class="text-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-primary" width="64" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2"></use>
+                        </svg>
                     </div>
-                    
-                    <label class="control-label">Nome <span class="text-danger">*</span></label>
-                    <div class="row row-space-10">
-                        <div class="col-md-6 m-b-15">
-                            {{ form.first_name }}
-                            {% if form.first_name.errors %}
-                                <div class="text-danger">{{ form.first_name.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6 m-b-15">
-                            {{ form.last_name }}
-                            {% if form.last_name.errors %}
-                                <div class="text-danger">{{ form.last_name.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Email <span class="text-danger">*</span></label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.email }}
-                            {% if form.email.errors %}
-                                <div class="text-danger">{{ form.email.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Confirmar Email <span class="text-danger">*</span></label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.email_confirm }}
-                            {% if form.email_confirm.errors %}
-                                <div class="text-danger">{{ form.email_confirm.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Senha <span class="text-danger">*</span></label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.password1 }}
-                            {% if form.password1.errors %}
-                                <div class="text-danger">{{ form.password1.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Confirmar Senha <span class="text-danger">*</span></label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.password2 }}
-                            {% if form.password2.errors %}
-                                <div class="text-danger">{{ form.password2.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Telefone</label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.phone }}
-                            {% if form.phone.errors %}
-                                <div class="text-danger">{{ form.phone.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <label class="control-label">Departamento</label>
-                    <div class="row m-b-15">
-                        <div class="col-md-12">
-                            {{ form.department }}
-                            {% if form.department.errors %}
-                                <div class="text-danger">{{ form.department.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox m-b-30">
-                        <label>
-                            <input type="checkbox" required /> Ao clicar em Registrar, você concorda com nossos 
-                            <a href="#">Termos</a> e que leu nossa <a href="#">Política de Privacidade</a>.
-                        </label>
-                    </div>
-                    
-                    <div class="register-buttons">
-                        <button type="submit" class="btn btn-primary btn-block btn-lg">Registrar</button>
-                    </div>
-                    
-                    <div class="m-t-20 m-b-40 p-b-40 text-inverse">
-                        Já tem uma conta? <a href="{% url 'accounts:login' %}">Entre aqui</a>.
-                    </div>
-                    
-                    <hr />
-                    <p class="text-center">
-                        &copy; LATECME {{ current_year }} - Todos os direitos reservados
+                    <h2 class="text-center mb-3">Sistema LATECME</h2>
+                    <p class="text-muted text-center">
+                        Sistema de Controle de Manufatura Aditiva. Gerencie materiais, estoque e producao
+                        com total rastreabilidade e controle de qualidade.
                     </p>
-                </form>
+                    <div class="mt-4">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="avatar bg-primary-lt me-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <div class="font-weight-medium">Materiais</div>
+                                                <div class="text-muted">Gestao completa</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="avatar bg-success-lt me-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-archive"></use>
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <div class="font-weight-medium">Estoque</div>
+                                                <div class="text-muted">Controle total</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="avatar bg-warning-lt me-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2"></use>
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <div class="font-weight-medium">Producao</div>
+                                                <div class="text-muted">Rastreabilidade</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <span class="avatar bg-info-lt me-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                                                </svg>
+                                            </span>
+                                            <div>
+                                                <div class="font-weight-medium">Etiquetas</div>
+                                                <div class="text-muted">Impressao EPL</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- end register-content -->
+
+            <!-- Right side - Form -->
+            <div class="col-lg">
+                <div class="container-tight">
+                    <div class="card card-md">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4">Criar sua conta</h2>
+
+                            <!-- Messages -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post" x-data="{ submitting: false }" @submit="submitting = true">
+                                {% csrf_token %}
+
+                                <!-- Username -->
+                                <div class="mb-3">
+                                    <label class="form-label required" for="id_username">Nome de Usuario</label>
+                                    <input type="text" name="username" id="id_username"
+                                           class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                                           placeholder="Escolha um nome de usuario"
+                                           value="{{ form.username.value|default:'' }}" required>
+                                    {% if form.username.errors %}
+                                    <div class="invalid-feedback">{% for e in form.username.errors %}{{ e }}{% endfor %}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Name -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label required" for="id_first_name">Nome</label>
+                                        <input type="text" name="first_name" id="id_first_name"
+                                               class="form-control{% if form.first_name.errors %} is-invalid{% endif %}"
+                                               placeholder="Seu nome"
+                                               value="{{ form.first_name.value|default:'' }}" required>
+                                        {% if form.first_name.errors %}
+                                        <div class="invalid-feedback">{% for e in form.first_name.errors %}{{ e }}{% endfor %}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label required" for="id_last_name">Sobrenome</label>
+                                        <input type="text" name="last_name" id="id_last_name"
+                                               class="form-control{% if form.last_name.errors %} is-invalid{% endif %}"
+                                               placeholder="Seu sobrenome"
+                                               value="{{ form.last_name.value|default:'' }}" required>
+                                        {% if form.last_name.errors %}
+                                        <div class="invalid-feedback">{% for e in form.last_name.errors %}{{ e }}{% endfor %}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label class="form-label required" for="id_email">Email</label>
+                                    <input type="email" name="email" id="id_email"
+                                           class="form-control{% if form.email.errors %} is-invalid{% endif %}"
+                                           placeholder="seu.email@empresa.com"
+                                           value="{{ form.email.value|default:'' }}" required>
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback">{% for e in form.email.errors %}{{ e }}{% endfor %}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label required" for="id_email_confirm">Confirmar Email</label>
+                                    <input type="email" name="email_confirm" id="id_email_confirm"
+                                           class="form-control{% if form.email_confirm.errors %} is-invalid{% endif %}"
+                                           placeholder="Confirme seu email"
+                                           value="{{ form.email_confirm.value|default:'' }}" required>
+                                    {% if form.email_confirm.errors %}
+                                    <div class="invalid-feedback">{% for e in form.email_confirm.errors %}{{ e }}{% endfor %}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Password -->
+                                <div class="mb-3">
+                                    <label class="form-label required" for="id_password1">Senha</label>
+                                    <input type="password" name="password1" id="id_password1"
+                                           class="form-control{% if form.password1.errors %} is-invalid{% endif %}"
+                                           placeholder="Escolha uma senha segura" required>
+                                    {% if form.password1.errors %}
+                                    <div class="invalid-feedback">{% for e in form.password1.errors %}{{ e }}{% endfor %}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label required" for="id_password2">Confirmar Senha</label>
+                                    <input type="password" name="password2" id="id_password2"
+                                           class="form-control{% if form.password2.errors %} is-invalid{% endif %}"
+                                           placeholder="Confirme sua senha" required>
+                                    {% if form.password2.errors %}
+                                    <div class="invalid-feedback">{% for e in form.password2.errors %}{{ e }}{% endfor %}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Optional fields -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="id_phone">Telefone</label>
+                                        <input type="text" name="phone" id="id_phone"
+                                               class="form-control{% if form.phone.errors %} is-invalid{% endif %}"
+                                               placeholder="(00) 00000-0000"
+                                               value="{{ form.phone.value|default:'' }}">
+                                        {% if form.phone.errors %}
+                                        <div class="invalid-feedback">{% for e in form.phone.errors %}{{ e }}{% endfor %}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="id_department">Departamento</label>
+                                        <input type="text" name="department" id="id_department"
+                                               class="form-control{% if form.department.errors %} is-invalid{% endif %}"
+                                               placeholder="Seu departamento"
+                                               value="{{ form.department.value|default:'' }}">
+                                        {% if form.department.errors %}
+                                        <div class="invalid-feedback">{% for e in form.department.errors %}{{ e }}{% endfor %}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Terms -->
+                                <div class="mb-3">
+                                    <label class="form-check">
+                                        <input type="checkbox" class="form-check-input" required>
+                                        <span class="form-check-label">
+                                            Concordo com os <a href="#">Termos de Uso</a> e
+                                            <a href="#">Politica de Privacidade</a>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-primary w-100" :disabled="submitting">
+                                        <span x-show="!submitting">Criar conta</span>
+                                        <span x-show="submitting" x-cloak>
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                            Registrando...
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="text-center text-muted mt-3">
+                        Ja tem uma conta? <a href="{% url 'accounts:login' %}" tabindex="-1">Entre aqui</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- end right-content -->
     </div>
-    <!-- end register -->
 </div>
-<!-- end page container -->
 {% endblock %}

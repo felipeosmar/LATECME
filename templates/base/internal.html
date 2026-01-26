@@ -1,178 +1,267 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block content %}
-<!-- begin #page-container -->
-<div id="page-container">
-    <!-- begin #header -->
-    <div id="header" class="header navbar-default">
-        <!-- begin navbar-header -->
-        <div class="navbar-header">
-            <a href="{% url 'core:dashboard' %}" class="navbar-brand">
-                <span class="navbar-logo"></span> LATECME
-            </a>
-            <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <!-- end navbar-header -->
-        
-        <!-- begin header navigation right -->
-        <ul class="navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
-                    {% if user.profile_photo %}
-                        <img src="{{ user.profile_photo.url }}" alt="{{ user.get_full_name|default:user.username }}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover; margin-right: 5px;">
-                    {% else %}
-                        <i class="fa fa-user"></i>
-                    {% endif %}
-                    <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span> 
-                    <b class="caret"></b>
+{% block body_class %}d-flex flex-column{% endblock %}
+
+{% block body %}
+<div class="page">
+    <!-- Sidebar -->
+    <aside class="navbar navbar-vertical navbar-expand-lg"
+           data-bs-theme="dark"
+           x-data="{ expanded: $store.sidebar.open }"
+           :class="{ 'show': expanded }">
+        <div class="container-fluid">
+            <!-- Brand -->
+            <h1 class="navbar-brand navbar-brand-autodark">
+                <a href="{% url 'core:dashboard' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                    </svg>
+                    <span class="ms-2">LATECME</span>
                 </a>
-                <ul class="dropdown-menu animated fadeInLeft">
-                    <li class="arrow"></li>
-                    <li><a href="{% url 'accounts:profile' %}">Perfil</a></li>
-                    <li class="divider"></li>
-                    <li><a href="{% url 'accounts:logout' %}">Sair</a></li>
+            </h1>
+
+            <!-- Mobile toggle -->
+            <button class="navbar-toggler" type="button"
+                    @click="$store.sidebar.toggle()"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Sidebar content -->
+            <div class="collapse navbar-collapse" :class="{ 'show': expanded }">
+                <ul class="navbar-nav pt-lg-3">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' and request.resolver_match.app_name == 'core' %}active{% endif %}"
+                           href="{% url 'core:dashboard' %}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-home"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Materiais -->
+                    <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'materials' %}true{% else %}false{% endif %} }">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'materials' %}active{% endif %}"
+                           href="#"
+                           @click.prevent="open = !open"
+                           :class="{ 'show': open }">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Materiais</span>
+                        </a>
+                        <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'materials:dashboard' %}">Dashboard</a>
+                            <a class="dropdown-item" href="{% url 'materials:list' %}">Lista de Materiais</a>
+                            <a class="dropdown-item" href="{% url 'materials:supplier_list' %}">Fornecedores</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'materials:create' %}">Novo Material</a>
+                            <a class="dropdown-item" href="{% url 'materials:supplier_create' %}">Novo Fornecedor</a>
+                        </div>
+                    </li>
+
+                    <!-- Estoque -->
+                    <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'inventory' %}true{% else %}false{% endif %} }">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}"
+                           href="#"
+                           @click.prevent="open = !open"
+                           :class="{ 'show': open }">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-archive"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Estoque</span>
+                        </a>
+                        <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'inventory:dashboard' %}">Dashboard</a>
+                            <a class="dropdown-item" href="{% url 'inventory:stock_list' %}">Consultar Estoque</a>
+                            <a class="dropdown-item" href="{% url 'inventory:movements_list' %}">Movimentacoes</a>
+                            <a class="dropdown-item" href="{% url 'inventory:warehouse_list' %}">Armazens</a>
+                            <a class="dropdown-item" href="{% url 'inventory:reservations_list' %}">Reservas</a>
+                            <a class="dropdown-item" href="{% url 'inventory:reports' %}">Relatorios</a>
+                        </div>
+                    </li>
+
+                    <!-- Producao -->
+                    <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'production' %}true{% else %}false{% endif %} }">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'production' %}active{% endif %}"
+                           href="#"
+                           @click.prevent="open = !open"
+                           :class="{ 'show': open }">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Producao</span>
+                        </a>
+                        <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'production:order_list' %}">Ordens de Producao</a>
+                            <a class="dropdown-item" href="{% url 'production:batch_list' %}">Bateladas</a>
+                            <a class="dropdown-item" href="{% url 'production:bin_list' %}">Contentores</a>
+                        </div>
+                    </li>
+
+                    <!-- Labels -->
+                    <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'labels' %}true{% else %}false{% endif %} }">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'labels' %}active{% endif %}"
+                           href="#"
+                           @click.prevent="open = !open"
+                           :class="{ 'show': open }">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Etiquetas</span>
+                        </a>
+                        <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
+                            <a class="dropdown-item" href="{% url 'labels:printer_list' %}">Impressoras</a>
+                            <a class="dropdown-item" href="{% url 'labels:template_list' %}">Templates</a>
+                            <a class="dropdown-item" href="{% url 'labels:print_job_list' %}">Historico</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item mt-auto">
+                        <hr class="dropdown-divider my-2">
+                    </li>
+
+                    <!-- User profile link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:profile' %}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-user"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Perfil</span>
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:logout' %}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-logout"></use>
+                                </svg>
+                            </span>
+                            <span class="nav-link-title">Sair</span>
+                        </a>
+                    </li>
                 </ul>
-            </li>
-        </ul>
-        <!-- end header navigation right -->
-    </div>
-    <!-- end #header -->
-    
-    <!-- begin #sidebar -->
-    <div id="sidebar" class="sidebar">
-        <!-- begin sidebar scrollbar -->
-        <div data-scrollbar="true" data-height="100%">
-            <!-- begin sidebar user -->
-            <ul class="nav">
-                <li class="nav-profile">
-                    <a href="javascript:;" data-toggle="nav-profile">
-                        <div class="cover with-shadow"></div>
-                        <div class="image">
-                            {% if user.profile_photo %}
-                                <img src="{{ user.profile_photo.url }}" alt="{{ user.get_full_name|default:user.username }}" />
-                            {% else %}
-                                <img src="{% static 'img/user-13.jpg' %}" alt="" />
-                            {% endif %}
-                        </div>
-                        <div class="info">
-                            <b class="caret pull-right"></b>
-                            {{ user.get_full_name|default:user.username }}
-                            <small>{{ user.role.name|default:"Usuário" }}</small>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <ul class="nav nav-profile">
-                        <li><a href="{% url 'accounts:profile' %}"><i class="fa fa-user"></i> Perfil</a></li>
-                        <li><a href="{% url 'accounts:logout' %}"><i class="fa fa-power-off"></i> Sair</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <!-- end sidebar user -->
-            
-            <!-- begin sidebar nav -->
-            <ul class="nav">
-                <li class="nav-header">Navegação</li>
-                <li {% if request.resolver_match.app_name == 'core' %}class="active"{% endif %}>
-                    <a href="{% url 'core:dashboard' %}">
-                        <i class="fa fa-dashboard"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="has-sub {% if request.resolver_match.app_name == 'materials' %}active{% endif %}">
-                    <a href="javascript:;">
-                        <b class="caret"></b>
-                        <i class="fa fa-cubes"></i>
-                        <span>Materiais</span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li><a href="{% url 'materials:dashboard' %}">Dashboard</a></li>
-                        <li><a href="{% url 'materials:list' %}">Lista de Materiais</a></li>
-                        <li><a href="{% url 'materials:supplier_list' %}">Fornecedores</a></li>
-                        <li><a href="{% url 'materials:create' %}">Novo Material</a></li>
-                        <li><a href="{% url 'materials:supplier_create' %}">Novo Fornecedor</a></li>
-                    </ul>
-                </li>
-                <li class="has-sub {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
-                    <a href="javascript:;">
-                        <b class="caret"></b>
-                        <i class="fa fa-archive"></i>
-                        <span>Estoque</span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li><a href="{% url 'inventory:dashboard' %}">Dashboard</a></li>
-                        <li><a href="{% url 'inventory:stock_list' %}">Consultar Estoque</a></li>
-                        <li><a href="{% url 'inventory:movements_list' %}">Movimentações</a></li>
-                        <li><a href="{% url 'inventory:warehouse_list' %}">Armazéns</a></li>
-                        <li><a href="{% url 'inventory:reservations_list' %}">Reservas</a></li>
-                        <li><a href="{% url 'inventory:reports' %}">Relatórios</a></li>
-                    </ul>
-                </li>
-                <li class="has-sub {% if request.resolver_match.app_name == 'production' %}active{% endif %}">
-                    <a href="javascript:;">
-                        <b class="caret"></b>
-                        <i class="fa fa-industry"></i>
-                        <span>Produção</span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li><a href="{% url 'production:order_list' %}">Ordens de Produção</a></li>
-                        <li><a href="{% url 'production:batch_list' %}">Bateladas</a></li>
-                        <li><a href="{% url 'production:bin_list' %}">Contentores</a></li>
-                    </ul>
-                </li>
-                <li><a href="javascript:;"><i class="fa fa-shopping-cart"></i> <span>Compras</span></a></li>
-                <li><a href="javascript:;"><i class="fa fa-print"></i> <span>Impressão</span></a></li>
-                <li><a href="javascript:;"><i class="fa fa-barcode"></i> <span>Códigos</span></a></li>
-                
-                <!-- begin sidebar minify button -->
-                <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
-                <!-- end sidebar minify button -->
-            </ul>
-            <!-- end sidebar nav -->
+            </div>
         </div>
-        <!-- end sidebar scrollbar -->
-    </div>
-    <div class="sidebar-bg"></div>
-    <!-- end #sidebar -->
-    
-    <!-- begin #content -->
-    <div id="content" class="content">
-        <!-- begin breadcrumb -->
-        <ol class="breadcrumb float-xl-right">
-            <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Home</a></li>
-            {% block breadcrumb %}{% endblock %}
-        </ol>
-        <!-- end breadcrumb -->
-        
-        <!-- begin page-header -->
-        <h1 class="page-header">
-            {% block page_title %}{% endblock %}
-            {% block page_subtitle %}<small>{% endblock %}</small>
-        </h1>
-        <!-- end page-header -->
-        
-        <!-- begin messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade in">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    {{ message }}
+    </aside>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="navbar-overlay"
+         x-show="$store.sidebar.open"
+         @click="$store.sidebar.close()"
+         x-cloak></div>
+
+    <!-- Page wrapper -->
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'core:dashboard' %}">Home</a></li>
+                                {% block breadcrumb %}{% endblock %}
+                            </ol>
+                        </nav>
+                        <!-- Page title -->
+                        <h2 class="page-title">
+                            {% block page_title %}{% endblock %}
+                        </h2>
+                        {% block page_subtitle %}{% endblock %}
+                    </div>
+                    <!-- Page title actions -->
+                    <div class="col-auto ms-auto d-print-none">
+                        {% block page_actions %}{% endblock %}
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
-        <!-- end messages -->
-        
-        {% block content_body %}
-        {% endblock %}
+            </div>
+        </div>
+
+        <!-- Page body -->
+        <div class="page-body">
+            <div class="container-xl">
+                <!-- Messages -->
+                {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible" role="alert"
+                         x-data="{ show: true }" x-show="show" x-transition>
+                        <div class="d-flex">
+                            <div>
+                                {% if message.tags == 'success' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                                </svg>
+                                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-circle"></use>
+                                </svg>
+                                {% elif message.tags == 'warning' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                                </svg>
+                                {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" @click="show = false" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Page content -->
+                {% block content_body %}{% endblock %}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer footer-transparent d-print-none">
+            <div class="container-xl">
+                <div class="row text-center align-items-center flex-row-reverse">
+                    <div class="col-lg-auto ms-lg-auto">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item">
+                                <a href="#" class="link-secondary">Documentacao</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item">
+                                LATECME &copy; {% now "Y" %}
+                            </li>
+                            <li class="list-inline-item">
+                                <span class="text-muted">v1.0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-    <!-- end #content -->
 </div>
-<!-- end page container -->
 {% endblock %}

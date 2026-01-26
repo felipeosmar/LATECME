@@ -161,8 +161,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    BASE_DIR / "color-admin" / "assets",
+    BASE_DIR / "static",  # Tabler + HTMX + Alpine.js assets
 ]
 
 # Media files

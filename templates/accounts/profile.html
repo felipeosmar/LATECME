@@ -4,140 +4,195 @@
 {% block title %}Meu Perfil - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item active">Perfil</li>
+<li class="breadcrumb-item active" aria-current="page">Perfil</li>
 {% endblock %}
 
 {% block page_title %}Meu Perfil{% endblock %}
-{% block page_subtitle %}{{ user.get_full_name|default:user.username }}{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">{{ user.get_full_name|default:user.username }}</div>{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+    </svg>
+    Editar Perfil
+</a>
+{% endblock %}
 
 {% block content_body %}
-<div class="row">
-    <div class="col-xl-8">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Informações do Usuário</h4>
+<div class="row row-deck row-cards">
+    <!-- User Info Card -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Informacoes do Usuario</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3 text-center">
-                        <div class="profile-photo-container mb-3">
-                            {% if user.profile_photo %}
-                                <img src="{{ user.profile_photo.url }}" alt="Foto do Perfil" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
-                                    <i class="fa fa-user fa-4x text-muted"></i>
-                                </div>
-                            {% endif %}
+                    <!-- Profile Photo -->
+                    <div class="col-md-3 text-center mb-4">
+                        {% if user.profile_photo %}
+                        <span class="avatar avatar-xl" style="background-image: url({{ user.profile_photo.url }})"></span>
+                        {% else %}
+                        <span class="avatar avatar-xl bg-primary-lt">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-user"></use>
+                            </svg>
+                        </span>
+                        {% endif %}
+                        <div class="mt-2">
+                            <span class="text-muted">{{ user.username }}</span>
                         </div>
                     </div>
+
+                    <!-- User Details -->
                     <div class="col-md-4">
-                        <dl class="row">
-                            <dt class="col-sm-4">Nome de usuário:</dt>
-                            <dd class="col-sm-8">{{ user.username }}</dd>
-                            
-                            <dt class="col-sm-4">Nome completo:</dt>
-                            <dd class="col-sm-8">{{ user.get_full_name|default:"Não informado" }}</dd>
-                            
-                            <dt class="col-sm-4">Email:</dt>
-                            <dd class="col-sm-8">{{ user.email }}</dd>
-                            
-                            <dt class="col-sm-4">Telefone:</dt>
-                            <dd class="col-sm-8">{{ user.phone|default:"Não informado" }}</dd>
-                        </dl>
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Nome completo</div>
+                                <div class="datagrid-content">{{ user.get_full_name|default:"Nao informado" }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Email</div>
+                                <div class="datagrid-content">{{ user.email }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Telefone</div>
+                                <div class="datagrid-content">{{ user.phone|default:"Nao informado" }}</div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-5">
-                        <dl class="row">
-                            <dt class="col-sm-4">Função:</dt>
-                            <dd class="col-sm-8">
-                                {% if user.role %}
-                                    <span class="badge badge-primary">{{ user.role.name }}</span>
-                                {% else %}
-                                    <span class="text-muted">Não atribuída</span>
-                                {% endif %}
-                            </dd>
-                            
-                            <dt class="col-sm-4">Status:</dt>
-                            <dd class="col-sm-8">
-                                {% if user.status == 'approved' %}
-                                    <span class="badge badge-success">{{ user.get_status_display }}</span>
-                                {% elif user.status == 'pending' %}
-                                    <span class="badge badge-warning">{{ user.get_status_display }}</span>
-                                {% else %}
-                                    <span class="badge badge-danger">{{ user.get_status_display }}</span>
-                                {% endif %}
-                            </dd>
-                            
-                            <dt class="col-sm-4">Departamento:</dt>
-                            <dd class="col-sm-8">{{ user.department|default:"Não informado" }}</dd>
-                            
-                            <dt class="col-sm-4">Membro desde:</dt>
-                            <dd class="col-sm-8">{{ user.registration_date|date:"d/m/Y" }}</dd>
-                        </dl>
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Funcao</div>
+                                <div class="datagrid-content">
+                                    {% if user.role %}
+                                    <span class="badge bg-primary">{{ user.role.name }}</span>
+                                    {% else %}
+                                    <span class="text-muted">Nao atribuida</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Status</div>
+                                <div class="datagrid-content">
+                                    {% if user.status == 'approved' %}
+                                    <span class="badge bg-success">{{ user.get_status_display }}</span>
+                                    {% elif user.status == 'pending' %}
+                                    <span class="badge bg-warning">{{ user.get_status_display }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ user.get_status_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Departamento</div>
+                                <div class="datagrid-content">{{ user.department|default:"Nao informado" }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Membro desde</div>
+                                <div class="datagrid-content">{{ user.registration_date|date:"d/m/Y" }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
+
                 {% if user.role and user.role.permissions %}
-                <h5 class="mt-4">Permissões</h5>
-                <div class="row">
-                    <div class="col-md-12">
-                        {% for permission in user.role.permissions %}
-                            <span class="badge badge-secondary mr-1 mb-1">{{ permission }}</span>
-                        {% endfor %}
-                    </div>
+                <hr class="my-4">
+                <h4>Permissoes</h4>
+                <div class="mt-2">
+                    {% for permission in user.role.permissions %}
+                    <span class="badge bg-secondary me-1 mb-1">{{ permission }}</span>
+                    {% endfor %}
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Ações</h4>
+
+    <!-- Actions Card -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Acoes</h3>
             </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block">
-                            <i class="fa fa-edit"></i><br>
-                            Editar Perfil
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-4">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+                            </svg>
+                            <span class="small">Editar Perfil</span>
                         </a>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'accounts:change_password' %}" class="btn btn-warning btn-block">
-                            <i class="fa fa-key"></i><br>
-                            Alterar Senha
+                    <div class="col-4">
+                        <a href="{% url 'accounts:change_password' %}" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-key"></use>
+                            </svg>
+                            <span class="small">Alterar Senha</span>
                         </a>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary btn-block" style="border: 1px solid rgba(0,0,0,0.2);">
-                            <i class="fa fa-dashboard"></i><br>
-                            Voltar ao Dashboard
+                    <div class="col-4">
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-home"></use>
+                            </svg>
+                            <span class="small">Dashboard</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Segurança</h4>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">Seguranca</h3>
             </div>
-            <div class="panel-body">
-                <ul class="list-unstyled">
-                    <li><i class="fa fa-check text-success"></i> Conta ativa</li>
-                    <li><i class="fa fa-check text-success"></i> Email verificado</li>
-                    {% if user.role %}
-                        <li><i class="fa fa-check text-success"></i> Função atribuída</li>
-                    {% else %}
-                        <li><i class="fa fa-times text-danger"></i> Função não atribuída</li>
-                    {% endif %}
-                    {% if user.status == 'approved' %}
-                        <li><i class="fa fa-check text-success"></i> Conta aprovada</li>
-                    {% else %}
-                        <li><i class="fa fa-clock text-warning"></i> Aguardando aprovação</li>
-                    {% endif %}
-                </ul>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        </svg>
+                        Conta ativa
+                    </div>
+                    <div class="list-group-item d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        </svg>
+                        Email verificado
+                    </div>
+                    <div class="list-group-item d-flex align-items-center">
+                        {% if user.role %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        </svg>
+                        Funcao atribuida
+                        {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-danger me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                        </svg>
+                        <span class="text-muted">Funcao nao atribuida</span>
+                        {% endif %}
+                    </div>
+                    <div class="list-group-item d-flex align-items-center">
+                        {% if user.status == 'approved' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                        </svg>
+                        Conta aprovada
+                        {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-warning me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
+                        </svg>
+                        <span class="text-muted">Aguardando aprovacao</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

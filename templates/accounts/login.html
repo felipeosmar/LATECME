@@ -3,70 +3,121 @@
 
 {% block title %}Login - LATECME{% endblock %}
 
-{% block content %}
-<!-- begin #page-container -->
-<div id="page-container" class="fade">
-    <!-- begin login -->
-    <div class="login bg-black animated fadeInDown">
-        <!-- begin brand -->
-        <div class="login-header">
-            <div class="brand">
-                <span class="logo"></span> LATECME
-                <small>Sistema de Controle de Manufatura</small>
-            </div>
-            <div class="icon">
-                <i class="fa fa-sign-in"></i>
+{% block body_class %}d-flex flex-column{% endblock %}
+
+{% block body %}
+<div class="page page-center">
+    <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+            <a href="." class="navbar-brand navbar-brand-autodark">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                </svg>
+                <span class="h2 ms-2">LATECME</span>
+            </a>
+        </div>
+
+        <div class="card card-md">
+            <div class="card-body">
+                <h2 class="h2 text-center mb-4">Entrar no Sistema</h2>
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible" role="alert"
+                         x-data="{ show: true }" x-show="show" x-transition>
+                        <div class="d-flex">
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" @click="show = false"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" autocomplete="off" x-data="{ submitting: false }" @submit="submitting = true">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="id_username">Usuario</label>
+                        <input type="text"
+                               name="username"
+                               id="id_username"
+                               class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                               placeholder="Digite seu usuario"
+                               autocomplete="username"
+                               value="{{ form.username.value|default:'' }}"
+                               required>
+                        {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="id_password">
+                            Senha
+                            <span class="form-label-description">
+                                <a href="#">Esqueceu a senha?</a>
+                            </span>
+                        </label>
+                        <div class="input-group input-group-flat" x-data="{ showPassword: false }">
+                            <input :type="showPassword ? 'text' : 'password'"
+                                   name="password"
+                                   id="id_password"
+                                   class="form-control{% if form.password.errors %} is-invalid{% endif %}"
+                                   placeholder="Digite sua senha"
+                                   autocomplete="current-password"
+                                   required>
+                            <span class="input-group-text">
+                                <a href="#" class="link-secondary" @click.prevent="showPassword = !showPassword">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" x-show="!showPassword">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" x-show="showPassword" x-cloak>
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye-off"></use>
+                                    </svg>
+                                </a>
+                            </span>
+                        </div>
+                        {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-check">
+                            <input type="checkbox" name="remember_me" class="form-check-input">
+                            <span class="form-check-label">Lembrar-me neste dispositivo</span>
+                        </label>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary w-100" :disabled="submitting">
+                            <span x-show="!submitting">Entrar</span>
+                            <span x-show="submitting" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Entrando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-        <!-- end brand -->
-        <div class="login-content">
-            <!-- Mensagens de erro/sucesso -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade in">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-            
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-            
-            <form method="post" class="margin-bottom-0">
-                {% csrf_token %}
-                <div class="form-group m-b-20">
-                    {{ form.username }}
-                    {% if form.username.errors %}
-                        <div class="text-danger">{{ form.username.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group m-b-20">
-                    {{ form.password }}
-                    {% if form.password.errors %}
-                        <div class="text-danger">{{ form.password.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="checkbox m-b-20">
-                    <label>
-                        {{ form.remember_me }} Lembrar-me
-                    </label>
-                </div>
-                <div class="login-buttons">
-                    <button type="submit" class="btn btn-success btn-block btn-lg">Entrar</button>
-                </div>
-                <div class="m-t-20 m-b-40 p-b-40 text-inverse">
-                    Não tem uma conta? <a href="{% url 'accounts:register' %}">Registre-se aqui</a>.
-                </div>
-            </form>
+
+        <div class="text-center text-muted mt-3">
+            Nao tem uma conta? <a href="{% url 'accounts:register' %}" tabindex="-1">Registre-se</a>
         </div>
     </div>
-    <!-- end login -->
 </div>
-<!-- end page container -->
 {% endblock %}

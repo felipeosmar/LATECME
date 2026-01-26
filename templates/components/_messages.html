@@ -1,0 +1,109 @@
+{% comment %}
+Messages/Toasts Component - Alpine.js powered
+Usage:
+    {% include 'components/_messages.html' %}
+
+This component renders Django messages and also provides a toast container
+for dynamic notifications via Alpine.js store.
+
+For dynamic toasts, use:
+    Alpine.store('toasts').success('Operacao realizada com sucesso!')
+    Alpine.store('toasts').error('Ocorreu um erro!')
+    Alpine.store('toasts').warning('Atencao!')
+    Alpine.store('toasts').info('Informacao')
+{% endcomment %}
+{% load static %}
+
+<!-- Django Messages -->
+{% if messages %}
+<div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible" role="alert"
+         x-data="{ show: true }"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform -translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div class="d-flex">
+            <div>
+                {% if message.tags == 'success' %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                </svg>
+                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-circle"></use>
+                </svg>
+                {% elif message.tags == 'warning' %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                </svg>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                </svg>
+                {% endif %}
+            </div>
+            <div>
+                {{ message }}
+            </div>
+        </div>
+        <button type="button" class="btn-close" @click="show = false" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Toast Container for dynamic notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"
+     x-data
+     x-show="$store.toasts.items.length > 0">
+    <template x-for="toast in $store.toasts.items" :key="toast.id">
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-x-4"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0 transform translate-x-4">
+            <div class="toast-header">
+                <span class="avatar avatar-xs me-2"
+                      :class="{
+                          'bg-success': toast.type === 'success',
+                          'bg-danger': toast.type === 'danger' || toast.type === 'error',
+                          'bg-warning': toast.type === 'warning',
+                          'bg-info': toast.type === 'info'
+                      }">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-check text-white" x-show="toast.type === 'success'" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M5 12l5 5l10 -10" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-white" x-show="toast.type === 'danger' || toast.type === 'error'" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                        <path d="M12 9v4" />
+                        <path d="M12 16v.01" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-white" x-show="toast.type === 'warning'" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 9v4" />
+                        <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z" />
+                        <path d="M12 16h.01" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-white" x-show="toast.type === 'info'" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                        <path d="M12 8l.01 0" />
+                        <path d="M11 12l1 0l0 4l1 0" />
+                    </svg>
+                </span>
+                <strong class="me-auto" x-text="toast.type === 'success' ? 'Sucesso' : (toast.type === 'danger' || toast.type === 'error' ? 'Erro' : (toast.type === 'warning' ? 'Aviso' : 'Info'))"></strong>
+                <button type="button" class="ms-2 btn-close" @click="$store.toasts.remove(toast.id)" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" x-text="toast.message"></div>
+        </div>
+    </template>
+</div>

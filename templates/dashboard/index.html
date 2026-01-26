@@ -1,213 +1,264 @@
-{% extends 'base/base.html' %}
+{% extends 'base/internal.html' %}
 {% load static %}
 
 {% block title %}Dashboard - LATECME{% endblock %}
 
-{% block content %}
-<!-- begin #page-container -->
-<div id="page-container">
-    <!-- begin #header -->
-    <div id="header" class="header navbar-default">
-        <!-- begin navbar-header -->
-        <div class="navbar-header">
-            <a href="{% url 'core:dashboard' %}" class="navbar-brand"><span class="navbar-logo"></span> LATECME</a>
-            <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <!-- end navbar-header -->
-        
-        <!-- begin header navigation right -->
-        <ul class="navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
-                    <i class="fa fa-user"></i>
-                    <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span> <b class="caret"></b>
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Sistema de Controle de Manufatura</div>{% endblock %}
+
+{% block content_body %}
+<!-- Stats Cards Row -->
+<div class="row row-deck row-cards">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Materiais</div>
+                        <div class="text-muted">{{ stats.materials_count|default:"--" }} cadastrados</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'materials:list' %}" class="btn btn-link btn-sm">
+                    Ver Detalhes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
                 </a>
-                <ul class="dropdown-menu animated fadeInLeft">
-                    <li class="arrow"></li>
-                    <li><a href="{% url 'accounts:profile' %}">Perfil</a></li>
-                    <li class="divider"></li>
-                    <li><a href="{% url 'accounts:logout' %}">Sair</a></li>
-                </ul>
-            </li>
-        </ul>
-        <!-- end header navigation right -->
-    </div>
-    <!-- end #header -->
-    
-    <!-- begin #sidebar -->
-    <div id="sidebar" class="sidebar">
-        <!-- begin sidebar scrollbar -->
-        <div data-scrollbar="true" data-height="100%">
-            <!-- begin sidebar user -->
-            <ul class="nav">
-                <li class="nav-profile">
-                    <a href="javascript:;" data-toggle="nav-profile">
-                        <div class="cover with-shadow"></div>
-                        <div class="image">
-                            <img src="{% static 'img/user-13.jpg' %}" alt="" />
-                        </div>
-                        <div class="info">
-                            <b class="caret pull-right"></b>
-                            {{ user.get_full_name|default:user.username }}
-                            <small>{{ user.role.name|default:"Usuário" }}</small>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <ul class="nav nav-profile">
-                        <li><a href="{% url 'accounts:profile' %}"><i class="fa fa-user"></i> Perfil</a></li>
-                        <li><a href="{% url 'accounts:logout' %}"><i class="fa fa-power-off"></i> Sair</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <!-- end sidebar user -->
-            
-            <!-- begin sidebar nav -->
-            <ul class="nav">
-                <li class="nav-header">Navegação</li>
-                <li class="active">
-                    <a href="{% url 'core:dashboard' %}">
-                        <i class="fa fa-dashboard"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret"></b>
-                        <i class="fa fa-cubes"></i>
-                        <span>Materiais</span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li><a href="{% url 'materials:dashboard' %}">Dashboard</a></li>
-                        <li><a href="{% url 'materials:list' %}">Lista de Materiais</a></li>
-                        <li><a href="{% url 'materials:supplier_list' %}">Fornecedores</a></li>
-                    </ul>
-                </li>
-                <li><a href="javascript:;"><i class="fa fa-archive"></i> <span>Estoque</span></a></li>
-                <li><a href="javascript:;"><i class="fa fa-shopping-cart"></i> <span>Compras</span></a></li>
-                <li><a href="javascript:;"><i class="fa fa-print"></i> <span>Impressão</span></a></li>
-                <li><a href="javascript:;"><i class="fa fa-barcode"></i> <span>Códigos</span></a></li>
-                
-                <!-- begin sidebar minify button -->
-                <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
-                <!-- end sidebar minify button -->
-            </ul>
-            <!-- end sidebar nav -->
-        </div>
-        <!-- end sidebar scrollbar -->
-    </div>
-    <div class="sidebar-bg"></div>
-    <!-- end #sidebar -->
-    
-    <!-- begin #content -->
-    <div id="content" class="content">
-        <!-- begin breadcrumb -->
-        <ol class="breadcrumb float-xl-right">
-            <li class="breadcrumb-item"><a href="javascript:;">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
-        </ol>
-        <!-- end breadcrumb -->
-        
-        <!-- begin page-header -->
-        <h1 class="page-header">Dashboard <small>Sistema de Controle de Manufatura</small></h1>
-        <!-- end page-header -->
-        
-        <!-- begin row -->
-        <div class="row">
-            <div class="col-xl-3 col-md-3">
-                <div class="widget widget-stats bg-blue">
-                    <div class="stats-icon"><i class="fa fa-cubes"></i></div>
-                    <div class="stats-info">
-                        <h4>MATERIAIS</h4>
-                        <p>--</p>	
-                    </div>
-                    <div class="stats-link">
-                        <a href="javascript:;">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-3">
-                <div class="widget widget-stats bg-info">
-                    <div class="stats-icon"><i class="fa fa-archive"></i></div>
-                    <div class="stats-info">
-                        <h4>ESTOQUE</h4>
-                        <p>--</p>	
-                    </div>
-                    <div class="stats-link">
-                        <a href="javascript:;">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-3">
-                <div class="widget widget-stats bg-orange">
-                    <div class="stats-icon"><i class="fa fa-shopping-cart"></i></div>
-                    <div class="stats-info">
-                        <h4>PEDIDOS</h4>
-                        <p>--</p>	
-                    </div>
-                    <div class="stats-link">
-                        <a href="javascript:;">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-3">
-                <div class="widget widget-stats bg-red">
-                    <div class="stats-icon"><i class="fa fa-print"></i></div>
-                    <div class="stats-info">
-                        <h4>ETIQUETAS</h4>
-                        <p>--</p>	
-                    </div>
-                    <div class="stats-link">
-                        <a href="javascript:;">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
-                    </div>
-                </div>
             </div>
         </div>
-        <!-- end row -->
-        
-        <!-- begin row -->
-        <div class="row">
-            <div class="col-xl-8">
-                <div class="panel panel-inverse">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Atividades Recentes</h4>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-info text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-archive"></use>
+                            </svg>
+                        </span>
                     </div>
-                    <div class="panel-body">
-                        <p>Bem-vindo ao Sistema LATECME!</p>
-                        <p>Você está logado como: <strong>{{ user.get_full_name|default:user.username }}</strong></p>
-                        {% if user.role %}
-                            <p>Função: <strong>{{ user.role.name }}</strong></p>
-                        {% endif %}
-                        <p>Status da conta: <span class="badge badge-success">{{ user.get_status_display }}</span></p>
+                    <div class="col">
+                        <div class="font-weight-medium">Estoque</div>
+                        <div class="text-muted">{{ stats.stock_items|default:"--" }} itens</div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-xl-4">
-                <div class="panel panel-inverse">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Informações do Sistema</h4>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="list-unstyled">
-                            <li><i class="fa fa-check text-success"></i> Sistema Online</li>
-                            <li><i class="fa fa-check text-success"></i> Banco de Dados Conectado</li>
-                            <li><i class="fa fa-check text-success"></i> Usuário Autenticado</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="card-footer">
+                <a href="{% url 'inventory:stock_list' %}" class="btn btn-link btn-sm">
+                    Ver Detalhes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
             </div>
         </div>
-        <!-- end row -->
     </div>
-    <!-- end #content -->
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-warning text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Producao</div>
+                        <div class="text-muted">{{ stats.production_orders|default:"--" }} ordens</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'production:order_list' %}" class="btn btn-link btn-sm">
+                    Ver Detalhes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-danger text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Etiquetas</div>
+                        <div class="text-muted">{{ stats.print_jobs|default:"--" }} impressas</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'labels:print_job_list' %}" class="btn btn-link btn-sm">
+                    Ver Detalhes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-<!-- end page container -->
+
+<!-- Main Content Row -->
+<div class="row row-deck row-cards mt-3">
+    <!-- Recent Activity -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Atividades Recentes</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="mb-2">Bem-vindo ao Sistema LATECME!</p>
+                    <p class="mb-2">
+                        Voce esta logado como:
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                    </p>
+                    {% if user.role %}
+                    <p class="mb-2">
+                        Funcao:
+                        <span class="badge bg-primary">{{ user.role.name }}</span>
+                    </p>
+                    {% endif %}
+                    <p class="mb-0">
+                        Status da conta:
+                        {% if user.status == 'approved' %}
+                        <span class="badge bg-success">{{ user.get_status_display }}</span>
+                        {% elif user.status == 'pending' %}
+                        <span class="badge bg-warning">{{ user.get_status_display }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ user.get_status_display }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if recent_activities %}
+                <div class="hr-text">Ultimas atividades</div>
+                <div class="list-group list-group-flush">
+                    {% for activity in recent_activities %}
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <span class="avatar avatar-sm bg-{{ activity.color|default:'secondary' }}-lt">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ activity.icon|default:'activity' }}"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="col">
+                                <div class="text-body">{{ activity.description }}</div>
+                                <div class="text-muted">{{ activity.created_at|timesince }} atras</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="hr-text">Ultimas atividades</div>
+                <div class="text-muted text-center py-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-activity"></use>
+                    </svg>
+                    <p class="mb-0">Nenhuma atividade recente</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Informacoes do Sistema</h3>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex align-items-center">
+                        <span class="status status-green me-3"></span>
+                        Sistema Online
+                    </div>
+                    <div class="list-group-item d-flex align-items-center">
+                        <span class="status status-green me-3"></span>
+                        Banco de Dados Conectado
+                    </div>
+                    <div class="list-group-item d-flex align-items-center">
+                        <span class="status status-green me-3"></span>
+                        Usuario Autenticado
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">Acoes Rapidas</h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="{% url 'materials:create' %}" class="btn btn-outline-primary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            Novo Material
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-outline-primary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            Novo Fornecedor
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'inventory:stock_list' %}" class="btn btn-outline-info w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                            </svg>
+                            Consultar Estoque
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'labels:template_list' %}" class="btn btn-outline-warning w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                            </svg>
+                            Imprimir Etiqueta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

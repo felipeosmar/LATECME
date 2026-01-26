@@ -5,198 +5,243 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
-<li class="breadcrumb-item active">Lista</li>
+<li class="breadcrumb-item active" aria-current="page">Lista</li>
 {% endblock %}
 
 {% block page_title %}Materiais{% endblock %}
-{% block page_subtitle %}Lista Completa{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Lista Completa</div>{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'materials:create' %}" class="btn btn-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+    </svg>
+    Novo Material
+</a>
+{% endblock %}
 
 {% block content_body %}
-<!-- begin panel -->
-<div class="panel panel-inverse">
-    <div class="panel-heading">
-        <div  class="panel-heading-btn">
-            <a href="{% url 'materials:create' %}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Novo Material
-            </a>
-        </div>
-        <h4 class="panel-title">
-            Materiais Cadastrados 
-            <small class="text-muted">({{ total_materials }} total)</small>
-        </h4>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Materiais Cadastrados
+            <span class="badge bg-secondary ms-2">{{ total_materials }} total</span>
+        </h3>
     </div>
-    <div class="panel-body">
-        <!-- begin search and filters -->
-        <form method="get" class="form-inline mb-3">
-            <div class="form-group mr-2">
-                <input type="text" name="search" value="{{ search }}" 
-                       class="form-control" placeholder="Buscar por código ou nome">
+    <div class="card-body border-bottom py-3">
+        <!-- Search and Filters -->
+        <form method="get" class="row g-2"
+              hx-get="{% url 'materials:list' %}"
+              hx-target="#materials-table"
+              hx-push-url="true"
+              hx-trigger="submit">
+            <div class="col-md-4">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
+                        </svg>
+                    </span>
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por codigo ou nome...">
+                </div>
             </div>
-            <div class="form-group mr-2">
-                <select name="type" class="form-control">
+            <div class="col-md-3">
+                <select name="type" class="form-select">
                     <option value="">Todos os Tipos</option>
                     {% for value, label in material_types %}
-                        <option value="{{ value }}" {% if material_type == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
+                    <option value="{{ value }}" {% if material_type == value %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group mr-2">
-                <select name="category" class="form-control">
+            <div class="col-md-3">
+                <select name="category" class="form-select">
                     <option value="">Todas as Categorias</option>
                     {% for category in categories %}
-                        <option value="{{ category.id }}" {% if category_id == category.id %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
+                    <option value="{{ category.id }}" {% if category_id == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-search"></i> Filtrar
-            </button>
-            <a href="{% url 'materials:list' %}" class="btn btn-default ml-1">
-                <i class="fa fa-refresh"></i> Limpar
-            </a>
-        </form>
-        <!-- end search and filters -->
-        
-        {% if page_obj %}
-            <!-- begin table -->
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th width="12%">Código</th>
-                            <th width="25%">Nome</th>
-                            <th width="12%">Tipo</th>
-                            <th width="15%">Categoria</th>
-                            <th width="8%" class="text-center">Densidade</th>
-                            <th width="8%" class="text-center">Fornecedores</th>
-                            <th width="12%" class="text-center">Melhor Preço</th>
-                            <th width="8%" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for material in page_obj %}
-                        <tr>
-                            <td>
-                                <strong>{{ material.code }}</strong>
-                                {% if material.requires_certificate %}
-                                    <i class="fa fa-certificate text-warning" 
-                                       title="Requer Certificado"></i>
-                                {% endif %}
-                            </td>
-                            <td>{{ material.name }}</td>
-                            <td>
-                                <span class="badge badge-info">
-                                    {{ material.get_material_type_display }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if material.category %}
-                                    <span class="badge" style="background-color: {{ material.category.color }};">
-                                        {{ material.category.name }}
-                                    </span>
-                                {% else %}
-                                    <span class="text-muted">-</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">{{ material.density }} g/cm³</td>
-                            <td class="text-center">
-                                {% with supplier_count=material.suppliers.count %}
-                                    {% if supplier_count > 0 %}
-                                        <span class="badge badge-success">{{ supplier_count }}</span>
-                                    {% else %}
-                                        <span class="badge badge-danger">0</span>
-                                    {% endif %}
-                                {% endwith %}
-                            </td>
-                            <td class="text-center">
-                                {% with best_price=material.get_best_price %}
-                                    {% if best_price %}
-                                        <strong class="text-success">R$ {{ best_price|floatformat:2 }}/kg</strong>
-                                    {% else %}
-                                        <span class="text-muted">-</span>
-                                    {% endif %}
-                                {% endwith %}
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{% url 'materials:detail' material.id %}" 
-                                       class="btn btn-primary btn-xs" title="Ver Detalhes">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a href="{% url 'materials:edit' material.id %}" 
-                                       class="btn btn-warning btn-xs" title="Editar">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="col-md-2">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
+                        </svg>
+                        Filtrar
+                    </button>
+                    <a href="{% url 'materials:list' %}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                    </a>
+                </div>
             </div>
-            <!-- end table -->
-            
-            <!-- begin pagination -->
-            {% if page_obj.has_other_pages %}
-                <nav aria-label="Paginação">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}">
-                                    <i class="fa fa-angle-left"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}">
-                                        {{ num }}
-                                    </a>
-                                </li>
+        </form>
+    </div>
+
+    <div id="materials-table">
+        {% if page_obj %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Codigo</th>
+                        <th style="width: 25%">Nome</th>
+                        <th style="width: 12%">Tipo</th>
+                        <th style="width: 15%">Categoria</th>
+                        <th class="text-center" style="width: 8%">Densidade</th>
+                        <th class="text-center" style="width: 8%">Fornecedores</th>
+                        <th class="text-center" style="width: 12%">Melhor Preco</th>
+                        <th class="text-center" style="width: 8%">Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for material in page_obj %}
+                    <tr>
+                        <td>
+                            <strong>{{ material.code }}</strong>
+                            {% if material.requires_certificate %}
+                            <span class="badge bg-warning-lt ms-1" title="Requer Certificado">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-certificate"></use>
+                                </svg>
+                            </span>
                             {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}">
-                                    <i class="fa fa-angle-right"></i>
+                        </td>
+                        <td>{{ material.name }}</td>
+                        <td>
+                            <span class="badge bg-info-lt">{{ material.get_material_type_display }}</span>
+                        </td>
+                        <td>
+                            {% if material.category %}
+                            <span class="badge" style="background-color: {{ material.category.color }}; color: #fff;">
+                                {{ material.category.name }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ material.density }} g/cm3</td>
+                        <td class="text-center">
+                            {% with supplier_count=material.suppliers.count %}
+                            {% if supplier_count > 0 %}
+                            <span class="badge bg-success">{{ supplier_count }}</span>
+                            {% else %}
+                            <span class="badge bg-danger">0</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-center">
+                            {% with best_price=material.get_best_price %}
+                            {% if best_price %}
+                            <strong class="text-success">R$ {{ best_price|floatformat:2 }}/kg</strong>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-list flex-nowrap">
+                                <a href="{% url 'materials:detail' material.id %}" class="btn btn-icon btn-sm btn-primary" title="Ver Detalhes">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                                    </svg>
                                 </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-            <!-- end pagination -->
+                                <a href="{% url 'materials:edit' material.id %}" class="btn btn-icon btn-sm btn-warning" title="Editar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="card-footer d-flex align-items-center">
+            <p class="m-0 text-muted">
+                Mostrando <span>{{ page_obj.start_index }}</span> a <span>{{ page_obj.end_index }}</span> de <span>{{ page_obj.paginator.count }}</span> materiais
+            </p>
+            <ul class="pagination m-0 ms-auto">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-target="#materials-table"
+                       hx-push-url="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
+                        </svg>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-get="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-target="#materials-table"
+                       hx-push-url="true">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                       hx-target="#materials-table"
+                       hx-push-url="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                        </svg>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
         {% else %}
-            <!-- begin empty state -->
-            <div class="text-center text-muted p-5">
-                <i class="fa fa-cube fa-4x mb-3"></i>
-                <h4>Nenhum material encontrado</h4>
+        <!-- Empty State -->
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                    </svg>
+                </div>
+                <p class="empty-title">Nenhum material encontrado</p>
                 {% if search or material_type or category_id %}
-                    <p>Tente ajustar os filtros de busca.</p>
+                <p class="empty-subtitle text-muted">Tente ajustar os filtros de busca.</p>
+                <div class="empty-action">
                     <a href="{% url 'materials:list' %}" class="btn btn-primary">
-                        <i class="fa fa-refresh"></i> Limpar Filtros
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                        Limpar Filtros
                     </a>
+                </div>
                 {% else %}
-                    <p>Cadastre o primeiro material do sistema.</p>
+                <p class="empty-subtitle text-muted">Cadastre o primeiro material do sistema.</p>
+                <div class="empty-action">
                     <a href="{% url 'materials:create' %}" class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Novo Material
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Novo Material
                     </a>
+                </div>
                 {% endif %}
             </div>
-            <!-- end empty state -->
+        </div>
         {% endif %}
     </div>
 </div>
-<!-- end panel -->
 {% endblock %}

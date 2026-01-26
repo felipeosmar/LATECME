@@ -1,0 +1,142 @@
+/**
+ * LATECME Custom Styles
+ * Extends Tabler CSS framework with project-specific customizations
+ */
+
+/* Inter Font - Local Files */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../vendor/tabler/fonts/UcCo3FwrK3iLTcvoYwY.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Override Tabler's default font stack to use Inter */
+:root {
+    --tblr-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+}
+
+/* HTMX loading indicator */
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline-block;
+}
+
+.htmx-request.htmx-indicator {
+    display: inline-block;
+}
+
+/* Page loading overlay */
+.page-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* LATECME Brand Colors */
+:root {
+    --latecme-primary: #206bc4;
+    --latecme-secondary: #626976;
+    --latecme-success: #2fb344;
+    --latecme-warning: #f76707;
+    --latecme-danger: #d63939;
+}
+
+/* Sidebar active state enhancement */
+.navbar-vertical .nav-link.active {
+    background: var(--tblr-primary);
+    color: white;
+}
+
+/* Card hover effect for dashboard stats */
+.card-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Alpine.js cloak - hide until Alpine loads */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Form validation states */
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+    border-color: var(--tblr-danger);
+}
+
+.form-control.is-valid,
+.was-validated .form-control:valid {
+    border-color: var(--tblr-success);
+}
+
+/* Table row hover effect */
+.table-hover tbody tr:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.05);
+}
+
+/* Badge for status indicators */
+.badge-status {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Responsive sidebar toggle for mobile */
+@media (max-width: 991.98px) {
+    .navbar-vertical.navbar-expand-lg {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 100vh;
+        width: 15rem;
+        transition: left 0.3s ease-in-out;
+        z-index: 1050;
+    }
+
+    .navbar-vertical.navbar-expand-lg.show {
+        left: 0;
+    }
+
+    .navbar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        display: none;
+    }
+
+    .navbar-overlay.show {
+        display: block;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print,
+    .navbar,
+    .navbar-vertical {
+        display: none !important;
+    }
+
+    .page-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}

@@ -1,0 +1,31 @@
+{% comment %}
+Loading Indicator Component
+Usage:
+    {% include 'components/_loading.html' %}
+    {% include 'components/_loading.html' with text="Carregando dados..." %}
+    {% include 'components/_loading.html' with size="sm" inline=True %}
+
+Parameters:
+    - text: Loading text (optional)
+    - size: Size - sm, md, lg (default: md)
+    - inline: If true, displays inline (default: false)
+    - class: Additional CSS classes
+{% endcomment %}
+
+{% if inline %}
+<span class="htmx-indicator {{ class }}">
+    <span class="spinner-border spinner-border-{{ size|default:'sm' }}" role="status"></span>
+    {% if text %}<span class="ms-2">{{ text }}</span>{% endif %}
+</span>
+{% else %}
+<div class="htmx-indicator d-flex justify-content-center align-items-center py-4 {{ class }}">
+    <div class="text-center">
+        <div class="spinner-border text-primary {% if size == 'lg' %}spinner-border-lg{% elif size == 'sm' %}spinner-border-sm{% endif %}" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        {% if text %}
+        <div class="text-muted mt-2">{{ text }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

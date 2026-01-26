@@ -5,174 +5,267 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
-<li class="breadcrumb-item active">Dashboard</li>
+<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
 {% endblock %}
 
 {% block page_title %}Materiais{% endblock %}
-{% block page_subtitle %}Dashboard e Estatísticas{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Dashboard e Estatisticas</div>{% endblock %}
 
 {% block content_body %}
-<!-- begin row -->
-<div class="row">
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-blue">
-            <div class="stats-icon"><i class="fa fa-cubes"></i></div>
-            <div class="stats-info">
-                <h4>MATERIAIS</h4>
-                <p>{{ total_materials }}</p>	
+<!-- Stats Cards Row -->
+<div class="row row-deck row-cards">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Materiais</div>
+                        <div class="text-muted">{{ total_materials }} cadastrados</div>
+                    </div>
+                </div>
             </div>
-            <div class="stats-link">
-                <a href="{% url 'materials:list' %}">Ver Materiais <i class="fa fa-arrow-alt-circle-right"></i></a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-info">
-            <div class="stats-icon"><i class="fa fa-truck"></i></div>
-            <div class="stats-info">
-                <h4>FORNECEDORES</h4>
-                <p>{{ total_suppliers }}</p>	
-            </div>
-            <div class="stats-link">
-                <a href="{% url 'materials:supplier_list' %}">Ver Fornecedores <i class="fa fa-arrow-alt-circle-right"></i></a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-orange">
-            <div class="stats-icon"><i class="fa fa-tags"></i></div>
-            <div class="stats-info">
-                <h4>CATEGORIAS</h4>
-                <p>{{ total_categories }}</p>	
-            </div>
-            <div class="stats-link">
-                <a href="javascript:;">Ver Categorias <i class="fa fa-arrow-alt-circle-right"></i></a>
+            <div class="card-footer">
+                <a href="{% url 'materials:list' %}" class="btn btn-link btn-sm">
+                    Ver Materiais
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-red">
-            <div class="stats-icon"><i class="fa fa-exclamation-triangle"></i></div>
-            <div class="stats-info">
-                <h4>SEM FORNECEDOR</h4>
-                <p>{{ materials_no_suppliers }}</p>	
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-info text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Fornecedores</div>
+                        <div class="text-muted">{{ total_suppliers }} cadastrados</div>
+                    </div>
+                </div>
             </div>
-            <div class="stats-link">
-                <a href="{% url 'materials:list' %}">Ver Detalhes <i class="fa fa-arrow-alt-circle-right"></i></a>
+            <div class="card-footer">
+                <a href="{% url 'materials:supplier_list' %}" class="btn btn-link btn-sm">
+                    Ver Fornecedores
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-warning text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-tags"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Categorias</div>
+                        <div class="text-muted">{{ total_categories }} cadastradas</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="btn btn-link btn-sm">
+                    Ver Categorias
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-danger text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Sem Fornecedor</div>
+                        <div class="text-muted">{{ materials_no_suppliers }} materiais</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'materials:list' %}" class="btn btn-link btn-sm">
+                    Ver Detalhes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
 </div>
-<!-- end row -->
 
-<!-- begin row -->
-<div class="row">
-    <div class="col-xl-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Materiais por Tipo</h4>
+<!-- Main Content Row -->
+<div class="row row-deck row-cards mt-3">
+    <!-- Materials by Type -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-pie"></use>
+                    </svg>
+                    Materiais por Tipo
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if materials_by_type %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Tipo de Material</th>
-                                    <th class="text-center">Quantidade</th>
-                                    <th class="text-center">Percentual</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in materials_by_type %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ item.material_type }}</strong>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-primary">{{ item.count }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        {% widthratio item.count total_materials 100 %}%
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo de Material</th>
+                                <th class="text-center">Qtd</th>
+                                <th class="text-center">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in materials_by_type %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.material_type }}</strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">{{ item.count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% widthratio item.count total_materials 100 %}%
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted">
-                        <i class="fa fa-cube fa-3x"></i>
-                        <p class="m-t-10">Nenhum material cadastrado ainda.</p>
-                        <a href="{% url 'materials:create' %}" class="btn btn-primary btn-sm">
-                            <i class="fa fa-plus"></i> Cadastrar Primeiro Material
-                        </a>
-                    </div>
+                <div class="text-center text-muted py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                    </svg>
+                    <p class="mb-3">Nenhum material cadastrado ainda.</p>
+                    <a href="{% url 'materials:create' %}" class="btn btn-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Cadastrar Primeiro Material
+                    </a>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Principais Fornecedores</h4>
+
+    <!-- Top Suppliers -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                    </svg>
+                    Principais Fornecedores
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if top_suppliers %}
-                    <div class="list-group">
-                        {% for supplier in top_suppliers %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ supplier.name }}</strong>
-                                <br>
-                                <small class="text-muted">{{ supplier.code }}</small>
-                            </div>
-                            <span class="badge badge-primary badge-pill">
-                                {{ supplier.material_count }} material{{ supplier.material_count|pluralize:"is" }}
-                            </span>
+                <div class="list-group list-group-flush">
+                    {% for supplier in top_suppliers %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ supplier.name }}</strong>
+                            <br>
+                            <small class="text-muted">{{ supplier.code }}</small>
                         </div>
-                        {% endfor %}
+                        <span class="badge bg-primary rounded-pill">
+                            {{ supplier.material_count }} material{{ supplier.material_count|pluralize:"is" }}
+                        </span>
                     </div>
+                    {% endfor %}
+                </div>
                 {% else %}
-                    <div class="text-center text-muted">
-                        <i class="fa fa-truck fa-2x"></i>
-                        <p class="m-t-10">Nenhum fornecedor cadastrado.</p>
-                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-primary btn-sm">
-                            <i class="fa fa-plus"></i> Cadastrar Fornecedor
-                        </a>
-                    </div>
+                <div class="text-center text-muted py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                    </svg>
+                    <p class="mb-3">Nenhum fornecedor cadastrado.</p>
+                    <a href="{% url 'materials:supplier_create' %}" class="btn btn-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Cadastrar Fornecedor
+                    </a>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
-    <div class="col-xl-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Ações Rápidas</h4>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
+                    </svg>
+                    Acoes Rapidas
+                </h3>
             </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'materials:create' %}" class="btn btn-primary btn-block">
-                            <i class="fa fa-plus"></i><br>
-                            Novo Material
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-4">
+                        <a href="{% url 'materials:create' %}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                            </svg>
+                            <span class="small">Novo Material</span>
                         </a>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-info btn-block">
-                            <i class="fa fa-truck"></i><br>
-                            Novo Fornecedor
+                    <div class="col-4">
+                        <a href="{% url 'materials:supplier_create' %}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                            </svg>
+                            <span class="small">Novo Fornecedor</span>
                         </a>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-block" style="border: 1px solid rgba(0,0,0,0.2);">
-                            <i class="fa fa-list"></i><br>
-                            Lista Completa
+                    <div class="col-4">
+                        <a href="{% url 'materials:list' %}" class="btn btn-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list"></use>
+                            </svg>
+                            <span class="small">Lista Completa</span>
                         </a>
                     </div>
                 </div>
@@ -180,5 +273,4 @@
         </div>
     </div>
 </div>
-<!-- end row -->
 {% endblock %}

@@ -1,0 +1,111 @@
+{% comment %}
+Form Field Component
+Usage:
+    {% include 'components/_form_field.html' with field=form.name %}
+    {% include 'components/_form_field.html' with field=form.email icon="mail" %}
+
+Parameters:
+    - field: Django form field (required)
+    - icon: Tabler icon name for input addon (optional)
+    - help_text: Override field help text (optional)
+    - horizontal: Use horizontal layout (default: false)
+    - label_cols: Bootstrap columns for label in horizontal mode (default: 3)
+    - input_cols: Bootstrap columns for input in horizontal mode (default: 9)
+    - floating: Use floating labels (default: false)
+{% endcomment %}
+{% load static %}
+
+{% if horizontal %}
+<div class="row mb-3">
+    <label class="col-{{ label_cols|default:3 }} col-form-label {% if field.field.required %}required{% endif %}" for="{{ field.id_for_label }}">
+        {{ field.label }}
+    </label>
+    <div class="col-{{ input_cols|default:9 }}">
+{% else %}
+<div class="mb-3">
+    {% if not floating %}
+    <label class="form-label {% if field.field.required %}required{% endif %}" for="{{ field.id_for_label }}">
+        {{ field.label }}
+    </label>
+    {% endif %}
+{% endif %}
+
+{% if icon %}
+<div class="input-icon">
+    <span class="input-icon-addon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ icon }}"></use>
+        </svg>
+    </span>
+{% endif %}
+
+{% if floating %}
+<div class="form-floating">
+{% endif %}
+
+{% with field_type=field.field.widget.input_type %}
+{% if field_type == 'checkbox' %}
+    <label class="form-check">
+        <input type="checkbox"
+               class="form-check-input{% if field.errors %} is-invalid{% endif %}"
+               id="{{ field.id_for_label }}"
+               name="{{ field.html_name }}"
+               {% if field.value %}checked{% endif %}
+               {% for attr, value in field.field.widget.attrs.items %}{{ attr }}="{{ value }}" {% endfor %}>
+        <span class="form-check-label {% if field.field.required %}required{% endif %}">{{ field.label }}</span>
+    </label>
+{% elif field_type == 'select' or field.field.widget.template_name == 'django/forms/widgets/select.html' %}
+    <select class="form-select{% if field.errors %} is-invalid{% endif %}"
+            id="{{ field.id_for_label }}"
+            name="{{ field.html_name }}"
+            {% if field.field.required %}required{% endif %}
+            {% for attr, value in field.field.widget.attrs.items %}{{ attr }}="{{ value }}" {% endfor %}>
+        {% for choice in field.field.choices %}
+        <option value="{{ choice.0 }}" {% if field.value|stringformat:"s" == choice.0|stringformat:"s" %}selected{% endif %}>{{ choice.1 }}</option>
+        {% endfor %}
+    </select>
+{% elif field_type == 'textarea' or field.field.widget.template_name == 'django/forms/widgets/textarea.html' %}
+    <textarea class="form-control{% if field.errors %} is-invalid{% endif %}"
+              id="{{ field.id_for_label }}"
+              name="{{ field.html_name }}"
+              rows="{{ field.field.widget.attrs.rows|default:3 }}"
+              {% if field.field.required %}required{% endif %}
+              placeholder="{{ field.field.widget.attrs.placeholder|default:field.label }}"
+              {% for attr, value in field.field.widget.attrs.items %}{% if attr != 'rows' and attr != 'placeholder' %}{{ attr }}="{{ value }}" {% endif %}{% endfor %}>{{ field.value|default:'' }}</textarea>
+{% else %}
+    <input type="{{ field_type|default:'text' }}"
+           class="form-control{% if field.errors %} is-invalid{% endif %}"
+           id="{{ field.id_for_label }}"
+           name="{{ field.html_name }}"
+           value="{{ field.value|default:'' }}"
+           {% if field.field.required %}required{% endif %}
+           placeholder="{{ field.field.widget.attrs.placeholder|default:field.label }}"
+           {% for attr, value in field.field.widget.attrs.items %}{% if attr != 'placeholder' %}{{ attr }}="{{ value }}" {% endif %}{% endfor %}>
+{% endif %}
+{% endwith %}
+
+{% if floating %}
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+</div>
+{% endif %}
+
+{% if icon %}
+</div>
+{% endif %}
+
+{% if field.errors %}
+<div class="invalid-feedback">
+    {% for error in field.errors %}{{ error }}{% if not forloop.last %} {% endif %}{% endfor %}
+</div>
+{% endif %}
+
+{% if field.help_text or help_text %}
+<small class="form-hint">{{ help_text|default:field.help_text }}</small>
+{% endif %}
+
+{% if horizontal %}
+    </div>
+</div>
+{% else %}
+</div>
+{% endif %}

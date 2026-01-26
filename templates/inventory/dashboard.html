@@ -1,324 +1,400 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Dashboard de Inventário - LATECME{% endblock %}
+{% block title %}Dashboard de Inventario - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item active">Inventário</li>
+<li class="breadcrumb-item active" aria-current="page">Inventario</li>
 {% endblock %}
 
-{% block page_title %}Dashboard de Inventário{% endblock %}
-{% block page_subtitle %}Visão Geral do Estoque{% endblock %}
+{% block page_title %}Dashboard de Inventario{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Visao Geral do Estoque</div>{% endblock %}
 
 {% block content_body %}
-<!-- begin statistics -->
-<div class="row">
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-blue text-white">
-            <div class="stats-icon"><i class="fa fa-building"></i></div>
-            <div class="stats-info">
-                <h4><i class="fa fa-building"></i> ARMAZÉNS</h4>
-                <p>{{ total_warehouses }}</p>
+<!-- Stats Cards Row -->
+<div class="row row-deck row-cards">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-primary text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Armazens</div>
+                        <div class="text-muted">{{ total_warehouses }} cadastrados</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-info text-white">
-            <div class="stats-icon"><i class="fa fa-cubes"></i></div>
-            <div class="stats-info">
-                <h4>MATERIAIS</h4>
-                <p>{{ total_materials }}</p>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-info text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Materiais</div>
+                        <div class="text-muted">{{ total_materials }} em estoque</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-orange text-white">
-            <div class="stats-icon"><i class="fa fa-money"></i></div>
-            <div class="stats-info">
-                <h4><i class="fa fa-money"></i> VALOR TOTAL</h4>
-                <p>R$ {{ total_stock_value|floatformat:2 }}</p>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-success text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-currency-real"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Valor Total</div>
+                        <div class="text-muted">R$ {{ total_stock_value|floatformat:2 }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-3">
-        <div class="widget widget-stats bg-red text-white">
-            <div class="stats-icon"><i class="fa fa-exclamation-triangle"></i></div>
-            <div class="stats-info">
-                <h4>ESTOQUE BAIXO</h4>
-                <p>{{ low_stock_items|length }}</p>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="bg-danger text-white avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="font-weight-medium">Estoque Baixo</div>
+                        <div class="text-muted">{{ low_stock_items|length }} itens</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<!-- end statistics -->
 
-<div class="row">
-    <!-- begin estoque baixo -->
-    <div class="col-xl-6">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-exclamation-triangle text-warning"></i>
+<!-- Stock Alerts Row -->
+<div class="row row-deck row-cards mt-3">
+    <!-- Low Stock -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-warning me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                    </svg>
                     Estoque Baixo
-                </h4>
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if low_stock_items %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Material</th>
-                                    <th>Armazém</th>
-                                    <th>Atual</th>
-                                    <th>Mínimo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for stock in low_stock_items %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ stock.material.code }}</strong>
-                                        <br><small class="text-muted">{{ stock.material.name|truncatechars:30 }}</small>
-                                    </td>
-                                    <td>{{ stock.warehouse.code }}</td>
-                                    <td>
-                                        <span class="badge badge-warning">{{ stock.current_quantity }} kg</span>
-                                    </td>
-                                    <td>{{ stock.minimum_stock }} kg</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'inventory:stock_list' %}?stock_status=low" class="btn btn-warning btn-sm">
-                            <i class="fa fa-eye"></i> Ver Todos
-                        </a>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Armazem</th>
+                                <th>Atual</th>
+                                <th>Minimo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in low_stock_items %}
+                            <tr>
+                                <td>
+                                    <div class="font-weight-medium">{{ stock.material.code }}</div>
+                                    <div class="text-muted small">{{ stock.material.name|truncatechars:30 }}</div>
+                                </td>
+                                <td>{{ stock.warehouse.code }}</td>
+                                <td><span class="badge bg-warning">{{ stock.current_quantity }} kg</span></td>
+                                <td>{{ stock.minimum_stock }} kg</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'inventory:stock_list' %}?stock_status=low" class="btn btn-warning btn-sm">
+                        Ver Todos
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted p-3">
-                        <i class="fa fa-check-circle fa-2x text-success"></i>
-                        <p class="mt-2">Nenhum material com estoque baixo</p>
+                <div class="empty">
+                    <div class="empty-icon text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
+                        </svg>
                     </div>
+                    <p class="empty-title">Nenhum material com estoque baixo</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <!-- end estoque baixo -->
 
-    <!-- begin sem estoque -->
-    <div class="col-xl-6">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-times-circle text-danger"></i>
+    <!-- Out of Stock -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler text-danger me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-x"></use>
+                    </svg>
                     Sem Estoque
-                </h4>
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if out_of_stock_items %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Material</th>
-                                    <th>Armazém</th>
-                                    <th>Última Movimentação</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for stock in out_of_stock_items %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ stock.material.code }}</strong>
-                                        <br><small class="text-muted">{{ stock.material.name|truncatechars:30 }}</small>
-                                    </td>
-                                    <td>{{ stock.warehouse.code }}</td>
-                                    <td>
-                                        {% if stock.last_movement_date %}
-                                            <small>{{ stock.last_movement_date|date:"d/m/Y" }}</small>
-                                        {% else %}
-                                            <small class="text-muted">Nunca</small>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'inventory:stock_list' %}?stock_status=out" class="btn btn-danger btn-sm">
-                            <i class="fa fa-eye"></i> Ver Todos
-                        </a>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Armazem</th>
+                                <th>Ultima Movimentacao</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in out_of_stock_items %}
+                            <tr>
+                                <td>
+                                    <div class="font-weight-medium">{{ stock.material.code }}</div>
+                                    <div class="text-muted small">{{ stock.material.name|truncatechars:30 }}</div>
+                                </td>
+                                <td>{{ stock.warehouse.code }}</td>
+                                <td>
+                                    {% if stock.last_movement_date %}
+                                    <span class="text-muted">{{ stock.last_movement_date|date:"d/m/Y" }}</span>
+                                    {% else %}
+                                    <span class="text-muted">Nunca</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'inventory:stock_list' %}?stock_status=out" class="btn btn-danger btn-sm">
+                        Ver Todos
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted p-3">
-                        <i class="fa fa-check-circle fa-2x text-success"></i>
-                        <p class="mt-2">Nenhum material sem estoque</p>
+                <div class="empty">
+                    <div class="empty-icon text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
+                        </svg>
                     </div>
+                    <p class="empty-title">Nenhum material sem estoque</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <!-- end sem estoque -->
 </div>
 
-<div class="row">
-    <!-- begin movimentações recentes -->
-    <div class="col-xl-8">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-exchange-alt"></i>
-                    Movimentações Recentes
-                </h4>
+<!-- Activity Row -->
+<div class="row row-deck row-cards mt-3">
+    <!-- Recent Movements -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
+                    </svg>
+                    Movimentacoes Recentes
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if recent_movements %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Tipo</th>
-                                    <th>Material</th>
-                                    <th>Armazém</th>
-                                    <th>Quantidade</th>
-                                    <th>Usuário</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for movement in recent_movements %}
-                                <tr>
-                                    <td>
-                                        <small>{{ movement.created_at|date:"d/m/Y H:i" }}</small>
-                                    </td>
-                                    <td>
-                                        {% if movement.movement_type == 'IN' %}
-                                            <span class="badge badge-success">{{ movement.get_movement_type_display }}</span>
-                                        {% elif movement.movement_type == 'OUT' %}
-                                            <span class="badge badge-danger">{{ movement.get_movement_type_display }}</span>
-                                        {% else %}
-                                            <span class="badge badge-info">{{ movement.get_movement_type_display }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <strong>{{ movement.material.code }}</strong>
-                                    </td>
-                                    <td>{{ movement.warehouse.code }}</td>
-                                    <td>{{ movement.quantity }} kg</td>
-                                    <td>
-                                        <small>{{ movement.user.get_full_name|default:movement.user.username }}</small>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'inventory:movements_list' %}" class="btn btn-primary btn-sm">
-                            <i class="fa fa-eye"></i> Ver Todas
-                        </a>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Material</th>
+                                <th>Armazem</th>
+                                <th>Quantidade</th>
+                                <th>Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for movement in recent_movements %}
+                            <tr>
+                                <td class="text-muted">{{ movement.created_at|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if movement.movement_type == 'IN' %}
+                                    <span class="badge bg-success">{{ movement.get_movement_type_display }}</span>
+                                    {% elif movement.movement_type == 'OUT' %}
+                                    <span class="badge bg-danger">{{ movement.get_movement_type_display }}</span>
+                                    {% else %}
+                                    <span class="badge bg-info">{{ movement.get_movement_type_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="font-weight-medium">{{ movement.material.code }}</td>
+                                <td>{{ movement.warehouse.code }}</td>
+                                <td>{{ movement.quantity }} kg</td>
+                                <td class="text-muted">{{ movement.user.get_full_name|default:movement.user.username }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'inventory:movements_list' %}" class="btn btn-primary btn-sm">
+                        Ver Todas
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted p-3">
-                        <i class="fa fa-exchange-alt fa-2x"></i>
-                        <p class="mt-2">Nenhuma movimentação recente</p>
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
+                        </svg>
                     </div>
+                    <p class="empty-title">Nenhuma movimentacao recente</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <!-- end movimentações recentes -->
 
-    <!-- begin reservas ativas -->
-    <div class="col-xl-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-lock"></i>
+    <!-- Active Reservations -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-lock"></use>
+                    </svg>
                     Reservas Ativas
-                </h4>
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {% if active_reservations %}
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Material</th>
-                                    <th>Qtd</th>
-                                    <th>Expira</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for reservation in active_reservations %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ reservation.material.code }}</strong>
-                                        <br><small class="text-muted">{{ reservation.warehouse.code }}</small>
-                                    </td>
-                                    <td>{{ reservation.quantity }} kg</td>
-                                    <td>
-                                        <small>{{ reservation.expiry_date|date:"d/m/Y" }}</small>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'inventory:reservations_list' %}" class="btn btn-info btn-sm">
-                            <i class="fa fa-eye"></i> Ver Todas
-                        </a>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Qtd</th>
+                                <th>Expira</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in active_reservations %}
+                            <tr>
+                                <td>
+                                    <div class="font-weight-medium">{{ reservation.material.code }}</div>
+                                    <div class="text-muted small">{{ reservation.warehouse.code }}</div>
+                                </td>
+                                <td>{{ reservation.quantity }} kg</td>
+                                <td class="text-muted">{{ reservation.expiry_date|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'inventory:reservations_list' %}" class="btn btn-info btn-sm">
+                        Ver Todas
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
                 {% else %}
-                    <div class="text-center text-muted p-3">
-                        <i class="fa fa-lock fa-2x"></i>
-                        <p class="mt-2">Nenhuma reserva ativa</p>
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-lock"></use>
+                        </svg>
                     </div>
+                    <p class="empty-title">Nenhuma reserva ativa</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <!-- end reservas ativas -->
 </div>
 
-<!-- begin actions -->
-<div class="row">
+<!-- Quick Actions -->
+<div class="row row-deck row-cards mt-3">
     <div class="col-12">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-cog"></i>
-                    Ações Rápidas
-                </h4>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
+                    </svg>
+                    Acoes Rapidas
+                </h3>
             </div>
-            <div class="panel-body">
-                <div class="row">
+            <div class="card-body">
+                <div class="row g-2">
                     <div class="col-md-3">
-                        <a href="{% url 'inventory:stock_list' %}" class="btn btn-primary btn-block">
-                            <i class="fa fa-cubes"></i><br>
+                        <a href="{% url 'inventory:stock_list' %}" class="btn btn-primary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                            </svg>
                             Consultar Estoque
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="{% url 'inventory:movements_list' %}" class="btn btn-success btn-block">
-                            <i class="fa fa-exchange"></i><br>
-                            Nova Movimentação
+                        <a href="{% url 'inventory:movements_list' %}" class="btn btn-success w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
+                            </svg>
+                            Nova Movimentacao
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-info btn-block">
-                            <i class="fa fa-building"></i><br>
-                            Gerenciar Armazéns
+                        <a href="{% url 'inventory:warehouse_list' %}" class="btn btn-info w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
+                            </svg>
+                            Gerenciar Armazens
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="{% url 'inventory:reports' %}" class="btn btn-warning btn-block">
-                            <i class="fa fa-bar-chart"></i><br>
-                            Relatórios
+                        <a href="{% url 'inventory:reports' %}" class="btn btn-warning w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
+                            </svg>
+                            Relatorios
                         </a>
                     </div>
                 </div>
@@ -326,5 +402,4 @@
         </div>
     </div>
 </div>
-<!-- end actions -->
 {% endblock %}

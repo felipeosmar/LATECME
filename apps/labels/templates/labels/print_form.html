@@ -4,106 +4,182 @@
 {% block title %}Imprimir Etiqueta - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'inventory:bin_list' %}">Contentores</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:bin_detail' bin.id %}">{{ bin.code }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:bin_list' %}">Contentores</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:bin_detail' bin.id %}">{{ bin.code }}</a></li>
 <li class="breadcrumb-item active">Imprimir Etiqueta</li>
 {% endblock %}
 
 {% block page_title %}Imprimir Etiqueta do Contentor{% endblock %}
-{% block page_subtitle %}{{ bin.code }}{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">{{ bin.code }}</div>{% endblock %}
 
 {% block content_body %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-print"></i> Configuração de Impressão
-                </h4>
+<div x-data="printFormManager()" class="row row-deck row-cards">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                    </svg>
+                    Configuracao de Impressao
+                </h3>
             </div>
-            <div class="panel-body">
-                <form method="post" id="printForm">
-                    {% csrf_token %}
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label required">Template de Etiqueta</label>
+                    <select class="form-select" x-model="templateId" required>
+                        {% for template in templates %}
+                        <option value="{{ template.id }}"
+                                {% if default_template and template.id == default_template.id %}selected{% endif %}>
+                            {{ template.name }} ({{ template.width_mm }}x{{ template.height_mm }}mm)
+                            {% if template.is_default %} - PADRAO{% endif %}
+                        </option>
+                        {% empty %}
+                        <option value="">Nenhum template disponivel</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label>Template de Etiqueta</label>
-                        <select class="form-control" id="templateSelect" name="template_id" required>
-                            {% for template in templates %}
-                                <option value="{{ template.id }}"
-                                        {% if default_template and template.id == default_template.id %}selected{% endif %}>
-                                    {{ template.name }} ({{ template.width_mm }}x{{ template.height_mm }}mm)
-                                    {% if template.is_default %} - PADRÃO{% endif %}
-                                </option>
-                            {% empty %}
-                                <option value="">Nenhum template disponível</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Impressora</label>
-                        <select class="form-control" id="printerSelect" name="printer_id" required>
-                            {% for printer in printers %}
-                                <option value="{{ printer.id }}"
-                                        {% if default_printer and printer.id == default_printer.id %}selected{% endif %}>
-                                    {{ printer.name }} ({{ printer.ip_address }}:{{ printer.port }})
-                                    {% if printer.is_default %} - PADRÃO{% endif %}
-                                </option>
-                            {% empty %}
-                                <option value="">Nenhuma impressora disponível</option>
-                            {% endfor %}
-                        </select>
-                        <small class="form-text text-muted">
-                            <a href="#" id="testPrinterBtn">Testar conexão com impressora</a>
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" id="previewBtn">
-                            <i class="fa fa-eye"></i> Visualizar Preview
-                        </button>
-                        <button type="button" class="btn btn-success" id="printBtn">
-                            <i class="fa fa-print"></i> Imprimir Agora
-                        </button>
-                        <a href="{% url 'inventory:bin_detail' bin.id %}" class="btn btn-secondary">
-                            <i class="fa fa-times"></i> Cancelar
+                <div class="mb-3">
+                    <label class="form-label required">Impressora</label>
+                    <select class="form-select" x-model="printerId" required>
+                        {% for printer in printers %}
+                        <option value="{{ printer.id }}"
+                                {% if default_printer and printer.id == default_printer.id %}selected{% endif %}>
+                            {{ printer.name }} ({{ printer.ip_address }}:{{ printer.port }})
+                            {% if printer.is_default %} - PADRAO{% endif %}
+                        </option>
+                        {% empty %}
+                        <option value="">Nenhuma impressora disponivel</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-hint">
+                        <a href="#" @click.prevent="testPrinter" class="text-info">
+                            <span x-show="!testing">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plug-connected"></use>
+                                </svg>
+                                Testar conexao com impressora
+                            </span>
+                            <span x-show="testing" x-cloak>
+                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                Testando...
+                            </span>
                         </a>
                     </div>
-                </form>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="btn-list">
+                    <button type="button" class="btn btn-primary" @click="previewLabel" :disabled="!templateId">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
+                        </svg>
+                        Visualizar Preview
+                    </button>
+                    <button type="button" class="btn btn-success" @click="printLabel" :disabled="!templateId || !printerId || printing">
+                        <span x-show="!printing">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                            </svg>
+                            Imprimir Agora
+                        </span>
+                        <span x-show="printing" x-cloak>
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Imprimindo...
+                        </span>
+                    </button>
+                    <a href="{% url 'production:bin_detail' bin.id %}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                        </svg>
+                        Cancelar
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <i class="fa fa-info-circle"></i> Informações do Contentor
-                </h4>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                    </svg>
+                    Informacoes do Contentor
+                </h3>
             </div>
-            <div class="panel-body">
-                <table class="table table-sm">
-                    <tr>
-                        <th>Código:</th>
-                        <td>{{ bin.code }}</td>
-                    </tr>
-                    <tr>
-                        <th>Armazém:</th>
-                        <td>{{ bin.warehouse.code }} - {{ bin.warehouse.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Localização:</th>
-                        <td>{{ bin.location_code|default:"—" }}</td>
-                    </tr>
-                    <tr>
-                        <th>Capacidade:</th>
-                        <td>{{ bin.capacity|default:"—" }} kg</td>
-                    </tr>
-                    <tr>
-                        <th>Status:</th>
-                        <td>{{ bin.get_status_display }}</td>
-                    </tr>
-                </table>
+            <div class="card-body">
+                <div class="datagrid">
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Codigo</div>
+                        <div class="datagrid-content">
+                            <strong>{{ bin.code }}</strong>
+                        </div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Armazem</div>
+                        <div class="datagrid-content">{{ bin.warehouse.code }} - {{ bin.warehouse.name }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Localizacao</div>
+                        <div class="datagrid-content">{{ bin.location_code|default:"-" }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Capacidade</div>
+                        <div class="datagrid-content">{{ bin.capacity|default:"-" }} kg</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">Status</div>
+                        <div class="datagrid-content">
+                            {% if bin.status == 'EMPTY' %}
+                            <span class="badge bg-secondary">Vazio</span>
+                            {% elif bin.status == 'LOADED' %}
+                            <span class="badge bg-success">Carregado</span>
+                            {% elif bin.status == 'IN_USE' %}
+                            <span class="badge bg-warning">Em Uso</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ bin.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Print Modal -->
+    <div class="modal modal-blur" x-show="confirmPrintOpen" x-cloak
+         @keydown.escape.window="confirmPrintOpen = false"
+         style="display: block; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-sm modal-dialog-centered" @click.outside="confirmPrintOpen = false">
+            <div class="modal-content">
+                <div class="modal-status bg-success"></div>
+                <div class="modal-body text-center py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                    </svg>
+                    <h3>Imprimir Etiqueta?</h3>
+                    <div class="text-muted">A etiqueta sera enviada para a impressora selecionada.</div>
+                </div>
+                <div class="modal-footer">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col">
+                                <button type="button" class="btn w-100" @click="confirmPrintOpen = false">Cancelar</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-success w-100" @click="executePrint">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-printer"></use>
+                                    </svg>
+                                    Imprimir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -112,111 +188,93 @@
 
 {% block extra_js %}
 <script>
-document.getElementById('previewBtn').addEventListener('click', function() {
-    const templateId = document.getElementById('templateSelect').value;
-    if (!templateId) {
-        alert('Por favor, selecione um template.');
-        return;
-    }
-    window.location.href = '/labels/print/preview/{{ bin.id }}/' + templateId + '/';
-});
+function printFormManager() {
+    return {
+        templateId: '{% if default_template %}{{ default_template.id }}{% endif %}',
+        printerId: '{% if default_printer %}{{ default_printer.id }}{% endif %}',
+        printing: false,
+        testing: false,
+        confirmPrintOpen: false,
 
-document.getElementById('printBtn').addEventListener('click', async function() {
-    const templateId = document.getElementById('templateSelect').value;
-    const printerId = document.getElementById('printerSelect').value;
-
-    if (!templateId || !printerId) {
-        alert('Por favor, selecione template e impressora.');
-        return;
-    }
-
-    if (!confirm('Deseja imprimir a etiqueta agora?')) {
-        return;
-    }
-
-    const btn = this;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Imprimindo...';
-
-    try {
-        const response = await fetch('/labels/print/execute/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({
-                bin_id: '{{ bin.id }}',
-                template_id: templateId,
-                printer_id: printerId
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Etiqueta impressa com sucesso!');
-            window.location.href = '{% url "inventory:bin_detail" bin.id %}';
-        } else {
-            alert('Erro ao imprimir: ' + result.message);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa fa-print"></i> Imprimir Agora';
-        }
-    } catch (error) {
-        alert('Erro ao imprimir: ' + error.message);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa fa-print"></i> Imprimir Agora';
-    }
-});
-
-document.getElementById('testPrinterBtn').addEventListener('click', async function(e) {
-    e.preventDefault();
-    const printerId = document.getElementById('printerSelect').value;
-
-    if (!printerId) {
-        alert('Por favor, selecione uma impressora.');
-        return;
-    }
-
-    const link = this;
-    link.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Testando...';
-
-    try {
-        const response = await fetch('/labels/printers/' + printerId + '/test/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
+        previewLabel() {
+            if (!this.templateId) {
+                alert('Por favor, selecione um template.');
+                return;
             }
-        });
+            window.location.href = '/labels/print/preview/{{ bin.id }}/' + this.templateId + '/';
+        },
 
-        const result = await response.json();
+        printLabel() {
+            if (!this.templateId || !this.printerId) {
+                alert('Por favor, selecione template e impressora.');
+                return;
+            }
+            this.confirmPrintOpen = true;
+        },
 
-        if (result.success) {
-            alert('✓ ' + result.message);
-        } else {
-            alert('✗ ' + result.message);
-        }
+        async executePrint() {
+            this.confirmPrintOpen = false;
+            this.printing = true;
 
-        link.innerHTML = 'Testar conexão com impressora';
-    } catch (error) {
-        alert('Erro ao testar: ' + error.message);
-        link.innerHTML = 'Testar conexão com impressora';
-    }
-});
+            try {
+                const response = await fetch('/labels/print/execute/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        bin_id: '{{ bin.id }}',
+                        template_id: this.templateId,
+                        printer_id: this.printerId
+                    })
+                });
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Etiqueta impressa com sucesso!');
+                    window.location.href = '{% url "production:bin_detail" bin.id %}';
+                } else {
+                    alert('Erro ao imprimir: ' + result.message);
+                }
+            } catch (error) {
+                alert('Erro ao imprimir: ' + error.message);
+            } finally {
+                this.printing = false;
+            }
+        },
+
+        async testPrinter() {
+            if (!this.printerId) {
+                alert('Por favor, selecione uma impressora.');
+                return;
+            }
+
+            this.testing = true;
+
+            try {
+                const response = await fetch('/labels/printers/' + this.printerId + '/test/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Conexao bem-sucedida: ' + result.message);
+                } else {
+                    alert('Falha na conexao: ' + result.message);
+                }
+            } catch (error) {
+                alert('Erro ao testar: ' + error.message);
+            } finally {
+                this.testing = false;
             }
         }
-    }
-    return cookieValue;
+    };
 }
 </script>
 {% endblock %}

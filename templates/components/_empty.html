@@ -1,0 +1,37 @@
+{% comment %}
+Empty State Component
+Usage:
+    {% include 'components/_empty.html' with title="Nenhum material encontrado" %}
+    {% include 'components/_empty.html' with title="Sem resultados" subtitle="Tente ajustar os filtros" action_url="/add/" action_text="Adicionar" %}
+
+Parameters:
+    - icon: Tabler icon name (default: mood-empty)
+    - title: Main message (required)
+    - subtitle: Secondary message (optional)
+    - action_url: URL for action button (optional)
+    - action_text: Text for action button (default: Adicionar)
+    - bordered: Add border around component (default: false)
+{% endcomment %}
+{% load static %}
+
+<div class="empty {% if bordered %}empty-bordered{% endif %}">
+    <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ icon|default:'mood-empty' }}"></use>
+        </svg>
+    </div>
+    <p class="empty-title">{{ title }}</p>
+    {% if subtitle %}
+    <p class="empty-subtitle text-muted">{{ subtitle }}</p>
+    {% endif %}
+    {% if action_url %}
+    <div class="empty-action">
+        <a href="{{ action_url }}" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+            </svg>
+            {{ action_text|default:"Adicionar" }}
+        </a>
+    </div>
+    {% endif %}
+</div>

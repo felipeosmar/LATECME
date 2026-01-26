@@ -1,0 +1,85 @@
+{% comment %}
+Table Component - Tabler styled
+Usage:
+    {% include 'components/_table.html' with headers=headers hover=True striped=True %}
+
+    Then define table body in your template using block or slot pattern.
+
+Parameters:
+    - headers: List of column headers
+    - hover: Enable row hover effect (default: true)
+    - striped: Enable striped rows (default: false)
+    - responsive: Wrap in responsive container (default: true)
+    - sortable: Enable sortable columns (default: false)
+    - empty_message: Message when table is empty
+    - table_id: Optional ID for the table
+{% endcomment %}
+
+{% if responsive|default:True %}
+<div class="table-responsive">
+{% endif %}
+
+<table class="table table-vcenter{% if hover|default:True %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if nowrap %} table-nowrap{% endif %}"
+       {% if table_id %}id="{{ table_id }}"{% endif %}>
+    {% if headers %}
+    <thead>
+        <tr>
+            {% for header in headers %}
+            <th{% if header.width %} style="width: {{ header.width }}"{% endif %}{% if header.class %} class="{{ header.class }}"{% endif %}>
+                {% if sortable and header.sortable %}
+                <a href="?sort={{ header.field }}{% if current_sort == header.field %}&order={% if current_order == 'asc' %}desc{% else %}asc{% endif %}{% endif %}"
+                   hx-get="?sort={{ header.field }}{% if current_sort == header.field %}&order={% if current_order == 'asc' %}desc{% else %}asc{% endif %}{% endif %}"
+                   hx-target="#results"
+                   hx-push-url="true"
+                   class="table-sort {% if current_sort == header.field %}{% if current_order == 'desc' %}desc{% else %}asc{% endif %}{% endif %}">
+                    {{ header.label|default:header }}
+                </a>
+                {% else %}
+                {{ header.label|default:header }}
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    {% endif %}
+
+    <tbody>
+        {% block table_body %}
+        {{ table_body }}
+        {% endblock %}
+    </tbody>
+
+    {% if show_footer %}
+    <tfoot>
+        {% block table_footer %}
+        {{ table_footer }}
+        {% endblock %}
+    </tfoot>
+    {% endif %}
+</table>
+
+{% if responsive|default:True %}
+</div>
+{% endif %}
+
+{% if empty_message and not has_rows %}
+<div class="empty">
+    <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+            <path d="M9 10l.01 0" />
+            <path d="M15 10l.01 0" />
+            <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
+        </svg>
+    </div>
+    <p class="empty-title">{{ empty_message }}</p>
+    {% if empty_action_url %}
+    <div class="empty-action">
+        <a href="{{ empty_action_url }}" class="btn btn-primary">
+            {{ empty_action_text|default:"Adicionar" }}
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endif %}

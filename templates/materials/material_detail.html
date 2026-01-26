@@ -6,254 +6,314 @@
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'materials:dashboard' %}">Materiais</a></li>
 <li class="breadcrumb-item"><a href="{% url 'materials:list' %}">Lista</a></li>
-<li class="breadcrumb-item active">{{ material.code }}</li>
+<li class="breadcrumb-item active" aria-current="page">{{ material.code }}</li>
 {% endblock %}
 
 {% block page_title %}Material {{ material.code }}{% endblock %}
-{% block page_subtitle %}{{ material.name }}{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">{{ material.name }}</div>{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'materials:edit' material.id %}" class="btn btn-warning">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+    </svg>
+    Editar
+</a>
+{% endblock %}
 
 {% block content_body %}
-<div class="row">
-    <!-- begin material info -->
+<div class="row row-deck row-cards">
+    <!-- Material Info -->
     <div class="col-lg-8">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <div class="panel-heading-btn">
-                    <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning btn-sm">
-                        <i class="fa fa-edit"></i> Editar
-                    </a>
-                </div>
-                <h4 class="panel-title">Informações do Material</h4>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
+                    </svg>
+                    Informacoes do Material
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-4">Código:</dt>
-                            <dd class="col-sm-8">
-                                <strong>{{ material.code }}</strong>
-                                {% if material.requires_certificate %}
-                                    <span class="badge badge-warning ml-2">
-                                        <i class="fa fa-certificate"></i> Certificado Requerido
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Codigo</div>
+                                <div class="datagrid-content">
+                                    <strong>{{ material.code }}</strong>
+                                    {% if material.requires_certificate %}
+                                    <span class="badge bg-warning ms-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-certificate"></use>
+                                        </svg>
+                                        Certificado Requerido
                                     </span>
-                                {% endif %}
-                            </dd>
-                            
-                            <dt class="col-sm-4">Nome:</dt>
-                            <dd class="col-sm-8">{{ material.name }}</dd>
-                            
-                            <dt class="col-sm-4">Tipo:</dt>
-                            <dd class="col-sm-8">
-                                <span class="badge badge-info">
-                                    {{ material.get_material_type_display }}
-                                </span>
-                            </dd>
-                            
-                            <dt class="col-sm-4">Categoria:</dt>
-                            <dd class="col-sm-8">
-                                {% if material.category %}
-                                    <span class="badge" style="background-color: {{ material.category.color }};">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Nome</div>
+                                <div class="datagrid-content">{{ material.name }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Tipo</div>
+                                <div class="datagrid-content">
+                                    <span class="badge bg-info-lt">{{ material.get_material_type_display }}</span>
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Categoria</div>
+                                <div class="datagrid-content">
+                                    {% if material.category %}
+                                    <span class="badge" style="background-color: {{ material.category.color }}; color: #fff;">
                                         {{ material.category.name }}
                                     </span>
-                                {% else %}
-                                    <span class="text-muted">Não definida</span>
-                                {% endif %}
-                            </dd>
-                        </dl>
-                    </div>
-                    <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-5">Densidade:</dt>
-                            <dd class="col-sm-7">{{ material.density }} g/cm³</dd>
-                            
-                            {% if material.melting_point %}
-                                <dt class="col-sm-5">Ponto de Fusão:</dt>
-                                <dd class="col-sm-7">{{ material.melting_point }}°C</dd>
-                            {% endif %}
-                            
-                            <dt class="col-sm-5">Criado em:</dt>
-                            <dd class="col-sm-7">{{ material.created_at|date:"d/m/Y H:i" }}</dd>
-                            
-                            {% if material.created_by %}
-                                <dt class="col-sm-5">Criado por:</dt>
-                                <dd class="col-sm-7">{{ material.created_by.get_full_name|default:material.created_by.username }}</dd>
-                            {% endif %}
-                        </dl>
-                    </div>
-                </div>
-                
-                <!-- begin composition -->
-                {% if material.compositions.exists %}
-                    <h5 class="mt-4">Composição Química</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Elemento</th>
-                                    <th>Percentual (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for composition in material.compositions.all %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ composition.element.symbol }}</strong>
-                                        <small class="text-muted">{{ composition.element.name }}</small>
-                                    </td>
-                                    <td>
-                                        {{ composition.percentage }}%
-                                        {% if composition.is_max %}
-                                            <span class="badge badge-info">máx</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-                <!-- end composition -->
-                
-                <!-- begin specifications -->
-                {% if material.specifications %}
-                    <h5 class="mt-4">Especificações Técnicas</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Propriedade</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for property, value in material.specifications.items %}
-                                <tr>
-                                    <td><strong>{{ property|title }}</strong></td>
-                                    <td>{{ value }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-                <!-- end specifications -->
-                
-                <!-- begin storage and safety -->
-                {% if material.storage_requirements or material.safety_notes %}
-                    <div class="row mt-4">
-                        {% if material.storage_requirements %}
-                            <div class="col-md-6">
-                                <h6><i class="fa fa-warehouse text-info"></i> Requisitos de Armazenamento</h6>
-                                <div class="alert alert-info">
-                                    {{ material.storage_requirements }}
-                                </div>
-                            </div>
-                        {% endif %}
-                        
-                        {% if material.safety_notes %}
-                            <div class="col-md-6">
-                                <h6><i class="fa fa-exclamation-triangle text-warning"></i> Notas de Segurança</h6>
-                                <div class="alert alert-warning">
-                                    {{ material.safety_notes }}
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-                <!-- end storage and safety -->
-            </div>
-        </div>
-    </div>
-    <!-- end material info -->
-    
-    <!-- begin suppliers -->
-    <div class="col-lg-4">
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    Fornecedores 
-                    <small class="text-muted">({{ suppliers.count }})</small>
-                </h4>
-            </div>
-            <div class="panel-body">
-                {% if suppliers %}
-                    {% for supplier_rel in suppliers %}
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    {{ supplier_rel.supplier.name }}
-                                    {% if not supplier_rel.available %}
-                                        <span class="badge badge-danger">Indisponível</span>
+                                    {% else %}
+                                    <span class="text-muted">Nao definida</span>
                                     {% endif %}
-                                </h6>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <small class="text-muted">Código Fornecedor:</small><br>
-                                        <strong>{{ supplier_rel.supplier_code }}</strong>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <small class="text-muted">Preço:</small><br>
-                                        <strong class="text-success">R$ {{ supplier_rel.price_per_kg|floatformat:2 }}/kg</strong>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-sm-6">
-                                        <small class="text-muted">Pedido Mínimo:</small><br>
-                                        {{ supplier_rel.minimum_order }} kg
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <small class="text-muted">Prazo:</small><br>
-                                        {{ supplier_rel.lead_time_days }} dias
-                                    </div>
-                                </div>
-                                {% if supplier_rel.notes %}
-                                    <div class="mt-2">
-                                        <small class="text-muted">Observações:</small><br>
-                                        <small>{{ supplier_rel.notes }}</small>
-                                    </div>
-                                {% endif %}
-                                <div class="mt-2">
-                                    <a href="{% url 'materials:supplier_detail' supplier_rel.supplier.id %}" 
-                                       class="btn btn-sm btn-outline-primary">
-                                        Ver Fornecedor
-                                    </a>
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center text-muted">
-                        <i class="fa fa-truck fa-2x"></i>
-                        <p class="mt-2">Nenhum fornecedor cadastrado para este material.</p>
                     </div>
+                    <div class="col-md-6">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Densidade</div>
+                                <div class="datagrid-content">{{ material.density }} g/cm3</div>
+                            </div>
+                            {% if material.melting_point %}
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Ponto de Fusao</div>
+                                <div class="datagrid-content">{{ material.melting_point }}C</div>
+                            </div>
+                            {% endif %}
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Criado em</div>
+                                <div class="datagrid-content">{{ material.created_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                            {% if material.created_by %}
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Criado por</div>
+                                <div class="datagrid-content">{{ material.created_by.get_full_name|default:material.created_by.username }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chemical Composition -->
+                {% if material.compositions.exists %}
+                <hr class="my-4">
+                <h4>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-atom"></use>
+                    </svg>
+                    Composicao Quimica
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Elemento</th>
+                                <th>Percentual (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for composition in material.compositions.all %}
+                            <tr>
+                                <td>
+                                    <strong>{{ composition.element.symbol }}</strong>
+                                    <small class="text-muted ms-1">{{ composition.element.name }}</small>
+                                </td>
+                                <td>
+                                    {{ composition.percentage }}%
+                                    {% if composition.is_max %}
+                                    <span class="badge bg-info-lt ms-1">max</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Technical Specifications -->
+                {% if material.specifications %}
+                <hr class="my-4">
+                <h4>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-settings"></use>
+                    </svg>
+                    Especificacoes Tecnicas
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Propriedade</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for property, value in material.specifications.items %}
+                            <tr>
+                                <td><strong>{{ property|title }}</strong></td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Storage and Safety -->
+                {% if material.storage_requirements or material.safety_notes %}
+                <hr class="my-4">
+                <div class="row">
+                    {% if material.storage_requirements %}
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <h4 class="alert-title">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
+                                </svg>
+                                Requisitos de Armazenamento
+                            </h4>
+                            <p class="mb-0">{{ material.storage_requirements }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if material.safety_notes %}
+                    <div class="col-md-6">
+                        <div class="alert alert-warning">
+                            <h4 class="alert-title">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
+                                </svg>
+                                Notas de Seguranca
+                            </h4>
+                            <p class="mb-0">{{ material.safety_notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
         </div>
-        
-        <!-- begin quick actions -->
-        <div class="panel panel-inverse">
-            <div class="panel-heading">
-                <h4 class="panel-title">Ações Rápidas</h4>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Suppliers Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                    </svg>
+                    Fornecedores
+                    <span class="badge bg-secondary ms-2">{{ suppliers.count }}</span>
+                </h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
+                {% if suppliers %}
+                {% for supplier_rel in suppliers %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            {{ supplier_rel.supplier.name }}
+                            {% if not supplier_rel.available %}
+                            <span class="badge bg-danger ms-1">Indisponivel</span>
+                            {% endif %}
+                        </h4>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Codigo Fornecedor:</small>
+                                <strong>{{ supplier_rel.supplier_code }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Preco:</small>
+                                <strong class="text-success">R$ {{ supplier_rel.price_per_kg|floatformat:2 }}/kg</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Pedido Minimo:</small>
+                                {{ supplier_rel.minimum_order }} kg
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Prazo:</small>
+                                {{ supplier_rel.lead_time_days }} dias
+                            </div>
+                        </div>
+                        {% if supplier_rel.notes %}
+                        <div class="mt-2">
+                            <small class="text-muted d-block">Observacoes:</small>
+                            <small>{{ supplier_rel.notes }}</small>
+                        </div>
+                        {% endif %}
+                        <div class="mt-3">
+                            <a href="{% url 'materials:supplier_detail' supplier_rel.supplier.id %}" class="btn btn-sm btn-outline-primary">
+                                Ver Fornecedor
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-truck"></use>
+                        </svg>
+                    </div>
+                    <p class="empty-title">Nenhum fornecedor</p>
+                    <p class="empty-subtitle text-muted">Nenhum fornecedor cadastrado para este material.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
+                    </svg>
+                    Acoes Rapidas
+                </h3>
+            </div>
+            <div class="card-body">
                 <div class="d-grid gap-2">
                     <a href="{% url 'materials:edit' material.id %}" class="btn btn-warning">
-                        <i class="fa fa-edit"></i> Editar Material
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
+                        </svg>
+                        Editar Material
                     </a>
-                    <a href="javascript:;" class="btn btn-info">
-                        <i class="fa fa-plus"></i> Adicionar Fornecedor
+                    <a href="#" class="btn btn-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
+                        </svg>
+                        Adicionar Fornecedor
                     </a>
-                    <a href="javascript:;" class="btn btn-success">
-                        <i class="fa fa-shopping-cart"></i> Novo Pedido
+                    <a href="#" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-shopping-cart"></use>
+                        </svg>
+                        Novo Pedido
                     </a>
                     <a href="{% url 'materials:list' %}" class="btn btn-secondary">
-                        <i class="fa fa-arrow-left"></i> Voltar à Lista
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-left"></use>
+                        </svg>
+                        Voltar a Lista
                     </a>
                 </div>
             </div>
         </div>
-        <!-- end quick actions -->
     </div>
-    <!-- end suppliers -->
 </div>
 {% endblock %}
