@@ -35,7 +35,7 @@
               hx-target="#materials-table"
               hx-push-url="true"
               hx-trigger="submit">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="input-icon">
                     <span class="input-icon-addon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -45,7 +45,7 @@
                     <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por codigo ou nome...">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="type" class="form-select">
                     <option value="">Todos os Tipos</option>
                     {% for value, label in material_types %}
@@ -53,7 +53,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="category" class="form-select">
                     <option value="">Todas as Categorias</option>
                     {% for category in categories %}
@@ -62,21 +62,27 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <div class="btn-group w-100">
-                    <button type="submit" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
-                        </svg>
-                        Filtrar
-                    </button>
-                    <a href="{% url 'materials:list' %}" class="btn btn-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
-                        </svg>
-                    </a>
-                </div>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from }}" placeholder="Data Inicio">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="date_to" class="form-control" value="{{ date_to }}" placeholder="Data Fim">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
+                    </svg>
+                </button>
             </div>
         </form>
+        <div class="mt-2">
+            <a href="{% url 'materials:list' %}" class="btn btn-secondary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                </svg>
+                Limpar Filtros
+            </a>
+        </div>
     </div>
 
     <div id="materials-table">
@@ -169,8 +175,8 @@
             <ul class="pagination m-0 ms-auto">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
-                       hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
+                       hx-get="?page={{ page_obj.previous_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
                        hx-target="#materials-table"
                        hx-push-url="true">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -185,8 +191,8 @@
                 <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
-                       hx-get="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                    <a class="page-link" href="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
+                       hx-get="?page={{ num }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
                        hx-target="#materials-table"
                        hx-push-url="true">{{ num }}</a>
                 </li>
@@ -195,8 +201,8 @@
 
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
-                       hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}"
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
+                       hx-get="?page={{ page_obj.next_page_number }}&search={{ search }}&type={{ material_type }}&category={{ category_id }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}"
                        hx-target="#materials-table"
                        hx-push-url="true">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -218,7 +224,7 @@
                     </svg>
                 </div>
                 <p class="empty-title">Nenhum material encontrado</p>
-                {% if search or material_type or category_id %}
+                {% if search or material_type or category_id or date_from or date_to %}
                 <p class="empty-subtitle text-muted">Tente ajustar os filtros de busca.</p>
                 <div class="empty-action">
                     <a href="{% url 'materials:list' %}" class="btn btn-primary">
