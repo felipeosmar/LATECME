@@ -164,27 +164,46 @@ def supplier_list(request):
     suppliers = Supplier.objects.filter(is_active=True).annotate(
         material_count=Count('materials')
     )
-    
-    # Busca
+
+    # Filtros
     search = request.GET.get('search', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
     if search:
         suppliers = suppliers.filter(
-            Q(name__icontains=search) | 
+            Q(name__icontains=search) |
             Q(code__icontains=search) |
             Q(cnpj__icontains=search)
         )
-    
+
+    if date_from:
+        try:
+            date_from_parsed = datetime.strptime(date_from, '%Y-%m-%d').date()
+            suppliers = suppliers.filter(created_at__date__gte=date_from_parsed)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            date_to_parsed = datetime.strptime(date_to, '%Y-%m-%d').date()
+            suppliers = suppliers.filter(created_at__date__lte=date_to_parsed)
+        except ValueError:
+            pass
+
     # Paginação
     paginator = Paginator(suppliers, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'page_obj': page_obj,
         'search': search,
         'total_suppliers': suppliers.count(),
+        'date_from': date_from,
+        'date_to': date_to,
     }
-    
+
     return render(request, 'materials/supplier_list.html', context)
 
 
