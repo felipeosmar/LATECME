@@ -6,6 +6,7 @@ from django.db.models import Q, Sum, Count, F
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page
 from .models import (
     Warehouse, MaterialStock, StockMovement,
     StockReservation, InventoryCount, InventoryCountItem
@@ -16,6 +17,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 
+@cache_page(300)
 @login_required
 def dashboard(request):
     """Dashboard principal do inventário"""
