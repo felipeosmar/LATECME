@@ -163,7 +163,7 @@ def supplier_list(request):
     context = {
         'page_obj': page_obj,
         'search': search,
-        'total_suppliers': suppliers.count(),
+        'total_suppliers': paginator.count,
     }
     
     return render(request, 'materials/supplier_list.html', context)
