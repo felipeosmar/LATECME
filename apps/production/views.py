@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from decimal import Decimal
+from datetime import datetime, timedelta
 
 from .models import ProductionOrder, Bin, BinHistory, Batch, BatchItem
 from .forms import ProductionOrderForm, BinForm, BinLoadForm, BatchForm
@@ -780,6 +781,77 @@ def bin_batch_print(request):
             'message': f'Erro ao imprimir: {str(e)}'
         }, status=500)
 
+
+# =====================================================
+# VIEWS PARA RELATÓRIOS
+# =====================================================
+
+@login_required
+def reports(request):
+    """Relatórios de produção"""
+    from datetime import timedelta
+
+    # Período
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+
+    if not date_from:
+        date_from = (timezone.now() - timedelta(days=30)).date()
+    else:
+        date_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+
+    if not date_to:
+        date_to = timezone.now().date()
+    else:
+        date_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+
+    # Ordens de produção por status
+    orders_by_status = ProductionOrder.objects.filter(
+        created_at__date__range=[date_from, date_to]
+    ).values('status').annotate(
+        count=Count('id')
+    ).order_by('status')
+
+    # Bateladas por status
+    batches_by_status = Batch.objects.filter(
+        created_at__date__range=[date_from, date_to]
+    ).values('status').annotate(
+        count=Count('id'),
+        total_target=Sum('target_quantity'),
+        total_actual=Sum('actual_quantity')
+    ).order_by('status')
+
+    # Materiais mais produzidos
+    top_materials = Batch.objects.filter(
+        created_at__date__range=[date_from, date_to]
+    ).values('material__code', 'material__name').annotate(
+        total_batches=Count('id'),
+        total_quantity=Sum('actual_quantity')
+    ).order_by('-total_batches')[:10]
+
+    # Utilização de contentores
+    bin_movements = BinHistory.objects.filter(
+        created_at__date__range=[date_from, date_to]
+    ).values('movement_type').annotate(
+        count=Count('id'),
+        total_quantity=Sum('quantity_change')
+    ).order_by('movement_type')
+
+    context = {
+        'date_from': date_from,
+        'date_to': date_to,
+        'orders_by_status': orders_by_status,
+        'batches_by_status': batches_by_status,
+        'top_materials': top_materials,
+        'bin_movements': bin_movements,
+    }
+
+    return render(request, 'production/reports.html', context)
+
+
+# =====================================================
+# FUNÇÕES AUXILIARES
+# =====================================================
 
 def _print_bin_labels(bin_ids, printer_id, template_id, user):
     """
