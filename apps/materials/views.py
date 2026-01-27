@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Q, Count, Min, Avg
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
 from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition
 from .forms import MaterialForm, SupplierForm, MaterialCompositionFormSet
 
@@ -239,6 +240,7 @@ def supplier_edit(request, supplier_id):
     })
 
 
+@cache_page(300)
 @login_required
 def dashboard_materials(request):
     """Dashboard do módulo de materiais"""
