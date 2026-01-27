@@ -809,7 +809,9 @@ def reports(request):
     orders_by_status = ProductionOrder.objects.filter(
         created_at__date__range=[date_from, date_to]
     ).values('status').annotate(
-        count=Count('id')
+        count=Count('id'),
+        total_planned=Sum('planned_quantity'),
+        total_produced=Sum('produced_quantity')
     ).order_by('status')
 
     # Bateladas por status
@@ -817,8 +819,7 @@ def reports(request):
         created_at__date__range=[date_from, date_to]
     ).values('status').annotate(
         count=Count('id'),
-        total_target=Sum('target_quantity'),
-        total_actual=Sum('actual_quantity')
+        total_quantity=Sum('actual_quantity')
     ).order_by('status')
 
     # Materiais mais produzidos
@@ -834,8 +835,17 @@ def reports(request):
         created_at__date__range=[date_from, date_to]
     ).values('movement_type').annotate(
         count=Count('id'),
-        total_quantity=Sum('quantity_change')
+        total_quantity=Sum('quantity')
     ).order_by('movement_type')
+
+    # Estatísticas de utilização de bins
+    bin_utilization = Bin.objects.aggregate(
+        total_bins=Count('id'),
+        loaded_bins=Count('id', filter=Q(status='LOADED')),
+        empty_bins=Count('id', filter=Q(status='EMPTY')),
+        total_capacity=Sum('capacity'),
+        total_current=Sum('current_quantity')
+    )
 
     context = {
         'date_from': date_from,
@@ -844,6 +854,7 @@ def reports(request):
         'batches_by_status': batches_by_status,
         'top_materials': top_materials,
         'bin_movements': bin_movements,
+        'bin_utilization': bin_utilization,
     }
 
     return render(request, 'production/reports.html', context)
