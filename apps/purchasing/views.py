@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -17,6 +18,7 @@ from apps.materials.models import Material, Supplier
 from apps.inventory.models import Warehouse, MaterialStock, StockMovement
 
 
+@cache_page(300)
 @login_required
 def dashboard(request):
     """Dashboard de compras"""
