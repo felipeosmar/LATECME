@@ -968,3 +968,654 @@ class BinHistoryTestCase(TestCase):
         self.assertEqual(histories[0].id, history3.id)
         self.assertEqual(histories[1].id, history2.id)
         self.assertEqual(histories[2].id, history1.id)
+
+
+class BatchTestCase(TestCase):
+    """Testes para o model Batch"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user.status = 'approved'
+        self.user.save()
+
+        self.category = MaterialCategory.objects.create(
+            name='Ligas de Alumínio',
+            color='#3498db',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.material = Material.objects.create(
+            code='AL7075',
+            name='Alumínio 7075-T6',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.810'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.warehouse = Warehouse.objects.create(
+            code='WH001',
+            name='Armazém Principal',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.production_order = ProductionOrder.objects.create(
+            material=self.material,
+            planned_quantity=Decimal('100.0'),
+            status='PLANNED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.bin = Bin.objects.create(
+            code='BIN001',
+            warehouse=self.warehouse,
+            current_material=self.material,
+            current_quantity=Decimal('50.0'),
+            current_supplier_batch='LOT123',
+            current_certificate='CERT456',
+            status='LOADED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+    def test_create_batch(self):
+        """Testa a criação de uma batelada"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(batch.production_order, self.production_order)
+        self.assertEqual(batch.material, self.material)
+        self.assertEqual(batch.target_quantity, Decimal('30.0'))
+        self.assertEqual(batch.actual_quantity, Decimal('0.0'))
+        self.assertEqual(batch.status, 'PREPARATION')
+        self.assertIsNotNone(batch.batch_number)
+        self.assertTrue(batch.batch_number.startswith('BAT-'))
+        self.assertTrue(batch.is_active)
+
+    def test_batch_auto_number_generation(self):
+        """Testa a geração automática do número da batelada"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        today = timezone.now().date()
+        expected_prefix = f"BAT-{today.strftime('%Y%m%d')}-"
+        self.assertTrue(batch.batch_number.startswith(expected_prefix))
+
+    def test_batch_str_method(self):
+        """Testa o método __str__ da batelada"""
+        batch = Batch.objects.create(
+            batch_number='BAT-20240101-001',
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            actual_quantity=Decimal('25.5'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        expected_str = f'BAT-20240101-001 - {self.material.code} (25.5 kg)'
+        self.assertEqual(str(batch), expected_str)
+
+    def test_batch_unique_batch_number(self):
+        """Testa a unicidade do número da batelada"""
+        Batch.objects.create(
+            batch_number='BAT-20240101-001',
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(Exception):
+            Batch.objects.create(
+                batch_number='BAT-20240101-001',  # Número duplicado
+                production_order=self.production_order,
+                material=self.material,
+                target_quantity=Decimal('20.0'),
+                created_by=self.user,
+                updated_by=self.user
+            )
+
+    def test_batch_auto_set_material_from_production_order(self):
+        """Testa definição automática do material da ordem de produção"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            target_quantity=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(batch.material, self.production_order.material)
+
+    def test_batch_material_validation(self):
+        """Testa validação de material diferente da ordem de produção"""
+        # Criar outro material
+        other_material = Material.objects.create(
+            code='AL6061',
+            name='Alumínio 6061',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.700'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        batch = Batch(
+            production_order=self.production_order,
+            material=other_material,  # Material diferente
+            target_quantity=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.full_clean()
+
+    def test_quantity_variance_property(self):
+        """Testa a propriedade quantity_variance"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            actual_quantity=Decimal('32.5'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(batch.quantity_variance, Decimal('2.5'))
+
+    def test_quantity_variance_negative(self):
+        """Testa quantity_variance quando real é menor que alvo"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            actual_quantity=Decimal('28.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(batch.quantity_variance, Decimal('-2.0'))
+
+    def test_is_complete_property_when_complete(self):
+        """Testa is_complete quando quantidade real >= alvo"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            actual_quantity=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertTrue(batch.is_complete)
+
+    def test_is_complete_property_when_not_complete(self):
+        """Testa is_complete quando quantidade real < alvo"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            actual_quantity=Decimal('25.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertFalse(batch.is_complete)
+
+    def test_add_bin_material(self):
+        """Testa adicionar material de um contentor à batelada"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        batch_item = batch.add_bin_material(
+            bin_obj=self.bin,
+            quantity=Decimal('20.0'),
+            user=self.user
+        )
+
+        # Verificar que o item foi criado
+        self.assertIsNotNone(batch_item)
+        self.assertEqual(batch_item.batch, batch)
+        self.assertEqual(batch_item.bin, self.bin)
+        self.assertEqual(batch_item.quantity, Decimal('20.0'))
+
+        # Verificar que a quantidade foi atualizada na batelada
+        batch.refresh_from_db()
+        self.assertEqual(batch.actual_quantity, Decimal('20.0'))
+
+        # Verificar que o contentor foi descarregado
+        self.bin.refresh_from_db()
+        self.assertEqual(self.bin.current_quantity, Decimal('30.0'))
+
+    def test_add_bin_material_wrong_status(self):
+        """Testa adicionar material quando batelada não está em preparação"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='COMPLETED',  # Status errado
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.add_bin_material(
+                bin_obj=self.bin,
+                quantity=Decimal('20.0'),
+                user=self.user
+            )
+
+    def test_add_bin_material_empty_bin(self):
+        """Testa adicionar material de contentor vazio"""
+        empty_bin = Bin.objects.create(
+            code='BIN002',
+            warehouse=self.warehouse,
+            status='EMPTY',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.add_bin_material(
+                bin_obj=empty_bin,
+                quantity=Decimal('20.0'),
+                user=self.user
+            )
+
+    def test_add_bin_material_wrong_material(self):
+        """Testa adicionar material de contentor com material diferente"""
+        # Criar outro material
+        other_material = Material.objects.create(
+            code='AL6061',
+            name='Alumínio 6061',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.700'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Contentor com material diferente
+        other_bin = Bin.objects.create(
+            code='BIN002',
+            warehouse=self.warehouse,
+            current_material=other_material,
+            current_quantity=Decimal('40.0'),
+            status='LOADED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.add_bin_material(
+                bin_obj=other_bin,
+                quantity=Decimal('20.0'),
+                user=self.user
+            )
+
+    def test_add_bin_material_insufficient_quantity(self):
+        """Testa adicionar quantidade maior que disponível no contentor"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.add_bin_material(
+                bin_obj=self.bin,
+                quantity=Decimal('100.0'),  # Mais que disponível
+                user=self.user
+            )
+
+    def test_mark_ready(self):
+        """Testa marcar batelada como pronta"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Adicionar material primeiro
+        batch.add_bin_material(
+            bin_obj=self.bin,
+            quantity=Decimal('25.0'),
+            user=self.user
+        )
+
+        result = batch.mark_ready(user=self.user)
+
+        self.assertTrue(result)
+        batch.refresh_from_db()
+        self.assertEqual(batch.status, 'READY')
+        self.assertIsNotNone(batch.preparation_date)
+        self.assertEqual(batch.prepared_by, self.user)
+
+    def test_mark_ready_wrong_status(self):
+        """Testa mark_ready quando status não é PREPARATION"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='READY',  # Status errado
+            actual_quantity=Decimal('25.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.mark_ready(user=self.user)
+
+    def test_mark_ready_no_material(self):
+        """Testa mark_ready quando não há material coletado"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.mark_ready(user=self.user)
+
+    def test_start_production(self):
+        """Testa iniciar produção com a batelada"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='READY',
+            actual_quantity=Decimal('25.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        result = batch.start_production(user=self.user)
+
+        self.assertTrue(result)
+        batch.refresh_from_db()
+        self.assertEqual(batch.status, 'IN_PRODUCTION')
+        self.assertIsNotNone(batch.production_start_date)
+
+        # Verificar se a ordem de produção foi iniciada
+        self.production_order.refresh_from_db()
+        self.assertEqual(self.production_order.status, 'IN_PROGRESS')
+
+    def test_start_production_wrong_status(self):
+        """Testa start_production quando status não é READY"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',  # Status errado
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.start_production(user=self.user)
+
+    def test_complete_batch(self):
+        """Testa concluir a batelada"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='IN_PRODUCTION',
+            actual_quantity=Decimal('28.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        initial_produced = self.production_order.produced_quantity
+
+        result = batch.complete(user=self.user)
+
+        self.assertTrue(result)
+        batch.refresh_from_db()
+        self.assertEqual(batch.status, 'COMPLETED')
+        self.assertIsNotNone(batch.completion_date)
+
+        # Verificar se a quantidade produzida foi atualizada na ordem
+        self.production_order.refresh_from_db()
+        expected_produced = initial_produced + Decimal('28.0')
+        self.assertEqual(self.production_order.produced_quantity, expected_produced)
+
+    def test_complete_batch_wrong_status(self):
+        """Testa complete quando status não é IN_PRODUCTION"""
+        batch = Batch.objects.create(
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='READY',  # Status errado
+            actual_quantity=Decimal('28.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            batch.complete(user=self.user)
+
+
+class BatchItemTestCase(TestCase):
+    """Testes para o model BatchItem"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user.status = 'approved'
+        self.user.save()
+
+        self.category = MaterialCategory.objects.create(
+            name='Ligas de Alumínio',
+            color='#3498db',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.material = Material.objects.create(
+            code='AL7075',
+            name='Alumínio 7075-T6',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.810'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.warehouse = Warehouse.objects.create(
+            code='WH001',
+            name='Armazém Principal',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.production_order = ProductionOrder.objects.create(
+            material=self.material,
+            planned_quantity=Decimal('100.0'),
+            status='PLANNED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.batch = Batch.objects.create(
+            batch_number='BAT-20240101-001',
+            production_order=self.production_order,
+            material=self.material,
+            target_quantity=Decimal('30.0'),
+            status='PREPARATION',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.bin = Bin.objects.create(
+            code='BIN001',
+            warehouse=self.warehouse,
+            current_material=self.material,
+            current_quantity=Decimal('50.0'),
+            current_supplier_batch='LOT123',
+            current_certificate='CERT456',
+            status='LOADED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+    def test_create_batch_item(self):
+        """Testa a criação de um item da batelada"""
+        batch_item = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('20.0'),
+            supplier_batch='LOT123',
+            certificate='CERT456',
+            collected_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(batch_item.batch, self.batch)
+        self.assertEqual(batch_item.bin, self.bin)
+        self.assertEqual(batch_item.material, self.material)
+        self.assertEqual(batch_item.quantity, Decimal('20.0'))
+        self.assertEqual(batch_item.supplier_batch, 'LOT123')
+        self.assertEqual(batch_item.certificate, 'CERT456')
+        self.assertEqual(batch_item.collected_by, self.user)
+        self.assertIsNotNone(batch_item.collected_at)
+        self.assertTrue(batch_item.is_active)
+
+    def test_batch_item_str_method(self):
+        """Testa o método __str__ do item da batelada"""
+        batch_item = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('20.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        expected_str = f"{self.batch.batch_number} - {self.bin.code} - 20.0 kg"
+        self.assertEqual(str(batch_item), expected_str)
+
+    def test_batch_item_str_method_no_bin(self):
+        """Testa __str__ quando bin é None"""
+        batch_item = BatchItem.objects.create(
+            batch=self.batch,
+            bin=None,
+            material=self.material,
+            quantity=Decimal('20.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        expected_str = f"{self.batch.batch_number} - N/A - 20.0 kg"
+        self.assertEqual(str(batch_item), expected_str)
+
+    def test_batch_item_ordering(self):
+        """Testa ordenação dos itens por data de coleta"""
+        item1 = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('10.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        item2 = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('15.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        items = list(BatchItem.objects.all())
+        self.assertEqual(items[0], item1)  # Mais antigo primeiro
+        self.assertEqual(items[1], item2)
+
+    def test_batch_item_relationship_with_batch(self):
+        """Testa relacionamento com Batch"""
+        batch_item = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('20.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(self.batch.items.count(), 1)
+        self.assertEqual(self.batch.items.first(), batch_item)
+
+    def test_batch_item_relationship_with_bin(self):
+        """Testa relacionamento com Bin"""
+        batch_item = BatchItem.objects.create(
+            batch=self.batch,
+            bin=self.bin,
+            material=self.material,
+            quantity=Decimal('20.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(self.bin.batch_items.count(), 1)
+        self.assertEqual(self.bin.batch_items.first(), batch_item)
