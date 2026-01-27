@@ -46,7 +46,7 @@ def material_list(request):
         'category_id': int(category_id) if category_id else '',
         'categories': categories,
         'material_types': material_types,
-        'total_materials': materials.count(),
+        'total_materials': paginator.count,
     }
     
     return render(request, 'materials/material_list.html', context)
