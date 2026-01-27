@@ -14,6 +14,7 @@ urlpatterns = [
     path('orders/<uuid:order_id>/start/', views.production_order_start, name='order_start'),
     path('orders/<uuid:order_id>/complete/', views.production_order_complete, name='order_complete'),
     path('orders/batch-start/', views.production_order_batch_start, name='order_batch_start'),
+    path('orders/batch-complete/', views.production_order_batch_complete, name='order_batch_complete'),
 
     # Contentores (Bins)
     path('bins/', views.bin_list, name='bin_list'),
