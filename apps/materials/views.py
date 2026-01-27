@@ -288,7 +288,10 @@ def material_search_api(request):
         Q(code__icontains=query) | Q(name__icontains=query),
         is_active=True
     ).annotate(
-        best_price=Min('materialsupplier__price_per_kg')
+        best_price=Min(
+            'materialsupplier__price_per_kg',
+            filter=Q(materialsupplier__supplier__is_active=True)
+        )
     )[:10]
 
     results = []
