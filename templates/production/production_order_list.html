@@ -472,6 +472,46 @@
     </div>
     <div class="modal-backdrop fade show" x-show="createModalOpen" x-cloak></div>
 
+    <!-- Bulk Status Change Modal -->
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="bulkStatusModalOpen"
+         :class="{ 'show d-block': bulkStatusModalOpen }"
+         x-cloak
+         @keydown.escape.window="bulkStatusModalOpen = false">
+        <div class="modal-dialog modal-sm" @click.outside="bulkStatusModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar Status em Lote</h5>
+                    <button type="button" class="btn-close" @click="bulkStatusModalOpen = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong x-text="selectedOrders.length"></strong> ordem(ns) selecionada(s).
+                    </p>
+                    <p class="text-muted">Escolha a acao desejada:</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-warning" @click="bulkStartOrders()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
+                            </svg>
+                            Iniciar Producao
+                        </button>
+                        <button type="button" class="btn btn-success" @click="bulkCompleteOrders()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
+                            </svg>
+                            Marcar como Concluida
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" @click="bulkStatusModalOpen = false">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="bulkStatusModalOpen" x-cloak></div>
+
     <!-- Confirm Action Modal -->
     <div class="modal modal-blur fade" tabindex="-1"
          x-show="confirmModalOpen"
@@ -492,8 +532,15 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                         </svg>
                     </template>
-                    <h3 x-text="confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?'"></h3>
-                    <div class="text-muted" x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'"></div>
+                    <h3 x-text="isBulkOperation ? (confirmAction === 'start' ? 'Iniciar Producao em Lote?' : 'Marcar como Concluidas?') : (confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?')"></h3>
+                    <div class="text-muted">
+                        <template x-if="isBulkOperation">
+                            <span x-text="selectedOrders.length + (confirmAction === 'start' ? ' ordem(ns) serao marcadas como em andamento.' : ' ordem(ns) serao marcadas como concluidas.')"></span>
+                        </template>
+                        <template x-if="!isBulkOperation">
+                            <span x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'"></span>
+                        </template>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="w-100">
@@ -525,10 +572,12 @@ function orderManager() {
     return {
         createModalOpen: false,
         confirmModalOpen: false,
+        bulkStatusModalOpen: false,
         confirmAction: '',
         selectedOrderId: null,
         selectedOrders: [],
         submitting: false,
+        isBulkOperation: false,
         formData: {
             material: '',
             planned_quantity: '',
@@ -567,23 +616,45 @@ function orderManager() {
                 alert('Selecione pelo menos uma ordem para alterar o status.');
                 return;
             }
-            // TODO: Open bulk status change modal
-            alert('Funcionalidade em desenvolvimento: Alterar status de ' + this.selectedOrders.length + ' ordem(ns)');
+            this.bulkStatusModalOpen = true;
+        },
+
+        bulkStartOrders() {
+            this.isBulkOperation = true;
+            this.confirmAction = 'start';
+            this.bulkStatusModalOpen = false;
+            this.confirmModalOpen = true;
+        },
+
+        bulkCompleteOrders() {
+            this.isBulkOperation = true;
+            this.confirmAction = 'complete';
+            this.bulkStatusModalOpen = false;
+            this.confirmModalOpen = true;
         },
 
         startOrder(orderId) {
             this.selectedOrderId = orderId;
+            this.isBulkOperation = false;
             this.confirmAction = 'start';
             this.confirmModalOpen = true;
         },
 
         completeOrder(orderId) {
             this.selectedOrderId = orderId;
+            this.isBulkOperation = false;
             this.confirmAction = 'complete';
             this.confirmModalOpen = true;
         },
 
         async executeAction() {
+            // Handle bulk operations
+            if (this.isBulkOperation) {
+                await this.executeBulkAction();
+                return;
+            }
+
+            // Handle single order operations
             if (!this.selectedOrderId) return;
 
             this.submitting = true;
@@ -608,11 +679,58 @@ function orderManager() {
                     alert(data.message || 'Erro ao executar acao');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao executar acao');
+                alert('Erro ao executar acao: ' + error.message);
             } finally {
                 this.submitting = false;
                 this.confirmModalOpen = false;
+            }
+        },
+
+        async executeBulkAction() {
+            if (this.selectedOrders.length === 0) return;
+
+            this.submitting = true;
+            const url = this.confirmAction === 'start'
+                ? '{% url "production:order_batch_start" %}'
+                : '{% url "production:order_batch_complete" %}';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_ids: this.selectedOrders
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const actionLabel = this.confirmAction === 'start' ? 'iniciada(s)' : 'concluida(s)';
+                    const successCount = this.confirmAction === 'start' ? data.started : data.completed;
+                    let message = `${successCount} ordem(ns) ${actionLabel} com sucesso.`;
+
+                    if (data.failed > 0) {
+                        message += ` ${data.failed} falharam.`;
+                        if (data.errors && data.errors.length > 0) {
+                            message += '\n\nErros:\n' + data.errors.join('\n');
+                        }
+                    }
+
+                    alert(message);
+                    this.clearSelection();
+                    window.location.reload();
+                } else {
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao executar operacao em lote: ' + error.message);
+            } finally {
+                this.submitting = false;
+                this.confirmModalOpen = false;
+                this.isBulkOperation = false;
             }
         },
 
