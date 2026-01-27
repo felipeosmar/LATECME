@@ -7,6 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page
 from decimal import Decimal
 
 from .models import ProductionOrder, Bin, BinHistory, Batch, BatchItem
@@ -20,6 +21,7 @@ from apps.inventory.models import Warehouse
 # VIEWS PARA ORDENS DE PRODUÇÃO
 # =====================================================
 
+@cache_page(300)
 @login_required
 def production_order_list(request):
     """Lista de ordens de produção"""
