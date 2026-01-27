@@ -283,12 +283,14 @@ def material_search_api(request):
     query = request.GET.get('q', '')
     if len(query) < 2:
         return JsonResponse({'results': []})
-    
+
     materials = Material.objects.filter(
         Q(code__icontains=query) | Q(name__icontains=query),
         is_active=True
+    ).annotate(
+        best_price=Min('materialsupplier__price_per_kg')
     )[:10]
-    
+
     results = []
     for material in materials:
         results.append({
@@ -296,7 +298,7 @@ def material_search_api(request):
             'code': material.code,
             'name': material.name,
             'type': material.get_material_type_display(),
-            'best_price': float(material.get_best_price()) if material.get_best_price() else None
+            'best_price': float(material.best_price) if material.best_price else None
         })
-    
+
     return JsonResponse({'results': results})
