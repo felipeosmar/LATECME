@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import Q, Count, Min, Avg
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from datetime import datetime
 from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition
 from .forms import MaterialForm, SupplierForm, MaterialCompositionFormSet
 
@@ -17,18 +18,34 @@ def material_list(request):
     search = request.GET.get('search', '')
     material_type = request.GET.get('type', '')
     category_id = request.GET.get('category', '')
-    
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
     if search:
         materials = materials.filter(
-            Q(code__icontains=search) | 
+            Q(code__icontains=search) |
             Q(name__icontains=search)
         )
-    
+
     if material_type:
         materials = materials.filter(material_type=material_type)
-    
+
     if category_id:
         materials = materials.filter(category_id=category_id)
+
+    if date_from:
+        try:
+            date_from_parsed = datetime.strptime(date_from, '%Y-%m-%d').date()
+            materials = materials.filter(created_at__date__gte=date_from_parsed)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            date_to_parsed = datetime.strptime(date_to, '%Y-%m-%d').date()
+            materials = materials.filter(created_at__date__lte=date_to_parsed)
+        except ValueError:
+            pass
     
     # Paginação
     paginator = Paginator(materials, 20)
@@ -47,6 +64,8 @@ def material_list(request):
         'categories': categories,
         'material_types': material_types,
         'total_materials': materials.count(),
+        'date_from': date_from,
+        'date_to': date_to,
     }
     
     return render(request, 'materials/material_list.html', context)
