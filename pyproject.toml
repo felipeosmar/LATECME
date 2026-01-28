@@ -168,3 +168,26 @@ strict_optional = true
 
 [tool.django-stubs]
 django_settings_module = "config.settings"
+
+[tool.bandit]
+# Exclude directories from security scanning
+exclude_dirs = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/migrations/*",
+    ".venv",
+    "venv",
+    "staticfiles",
+    "static",
+    "media",
+]
+
+# Skip specific tests that are common false positives in Django projects
+skips = [
+    "B308",  # Use of mark_safe - common and necessary in Django templates
+    "B703",  # Use of django.utils.safestring - Django internal utility
+]
+
+# Severity level to report (LOW, MEDIUM, HIGH)
+# Set to MEDIUM to focus on more serious issues
+severity = "MEDIUM"
