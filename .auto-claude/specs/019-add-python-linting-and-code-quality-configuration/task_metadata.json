@@ -1,0 +1,9 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_quality",
+  "ideaId": "cq-004",
+  "rationale": "Linting tools catch common bugs, enforce consistent code style, and improve code readability. They are especially valuable in team environments and CI/CD pipelines. The project already uses pyproject.toml which can host most linting configuration.",
+  "category": "refactoring",
+  "codeQualitySeverity": "minor",
+  "priority": "medium"
+}

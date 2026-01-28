@@ -1,0 +1,29 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/materials/views.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/materials/views.py",
+    "apps/materials/models.py",
+    "apps/materials/test_views.py"
+  ],
+  "patterns": {
+    "query_optimization": "The codebase uses select_related() for single-valued relationships (ForeignKey) and prefetch_related() for multi-valued relationships (ManyToMany, reverse ForeignKey). See material_list view (line 14) and material_detail view (line 59) for examples.",
+    "testing_pattern": "Tests use Django's TestCase with setUp() creating test data. API tests check response.status_code and response.json(). See MaterialViewsTestCase.test_material_search_api_view (line 202-212)."
+  },
+  "existing_implementations": {
+    "description": "Found existing query optimization in apps/materials/views.py using prefetch_related and select_related",
+    "relevant_files": [
+      "apps/materials/views.py (lines 14, 59-60, 176-177)",
+      "apps/materials/models.py (lines 154-159: get_best_price method)",
+      "apps/materials/test_views.py (lines 202-220: test_material_search_api_view)"
+    ]
+  },
+  "n_plus_1_details": {
+    "location": "apps/materials/views.py, material_search_api function (lines 281-302)",
+    "problem": "Line 299 calls material.get_best_price() in a loop, which queries materialsupplier_set for each material",
+    "solution_approach": "Use Django's annotate() with Min() to calculate best_price in the database query, avoiding the N+1 pattern"
+  }
+}

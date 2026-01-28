@@ -1,0 +1,545 @@
+{
+  "id": "ideation-20260127-103300",
+  "project_id": "/home/felipe/work/LATECME",
+  "config": {
+    "enabled_types": [
+      "performance_optimizations",
+      "code_quality"
+    ],
+    "include_roadmap_context": true,
+    "include_kanban_context": true,
+    "max_ideas_per_type": 5
+  },
+  "ideas": [
+    {
+      "id": "uiux-001",
+      "type": "ui_ux_improvements",
+      "title": "Add skeleton loading states for data tables",
+      "description": "Implement skeleton placeholder loading states that match the layout of data tables during HTMX requests and page loads",
+      "rationale": "Currently, data tables show no visual feedback during loading except a small spinner. Skeleton screens reduce perceived load time and prevent layout shifts, improving user experience during navigation and filtering",
+      "category": "performance",
+      "affected_components": [
+        "templates/components/_loading.html",
+        "templates/components/_table.html",
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "When filtering/paginating tables via HTMX, users see either nothing or a small spinner. The table content disappears briefly, causing layout shift.",
+      "proposed_change": "Create a new _table_skeleton.html component with Tabler's placeholder-glow animation. Apply skeleton states during hx-request class. Example: Add '.htmx-request .table tbody { display: none; } .htmx-request .table-skeleton { display: block; }' pattern with 5-row skeleton placeholder showing loading animation for each column.",
+      "user_benefit": "Users see a meaningful loading state that matches the expected content layout, reducing confusion about whether the app is responding and preventing jarring content jumps",
+      "status": "archived",
+      "created_at": "2026-01-27T10:31:00.000Z",
+      "linked_task_id": "001-add-skeleton-loading-states-for-data-tables"
+    },
+    {
+      "id": "uiux-002",
+      "type": "ui_ux_improvements",
+      "title": "Enhance keyboard accessibility for modal dialogs",
+      "description": "Add proper focus trapping, focus restoration, and keyboard navigation to all Alpine.js modals",
+      "rationale": "Current modals (like the movement modal in stock_list.html) lack focus trapping - users can tab out of the modal while it's open. This is both an accessibility issue (WCAG 2.1 Level A) and a usability problem",
+      "category": "accessibility",
+      "affected_components": [
+        "templates/inventory/stock_list.html",
+        "templates/components/_modal.html",
+        "static/js/app.js"
+      ],
+      "screenshots": [],
+      "current_state": "Modals open without moving focus to the modal content. Tab key allows focus to escape to elements behind the modal overlay. No focus restoration when modal closes. Escape key works but isn't consistently implemented.",
+      "proposed_change": "1. Update Alpine.js modal data function in app.js to include focusTrap logic: store previous active element on open, set focus to first focusable element in modal, trap Tab/Shift+Tab within modal bounds, restore focus on close. 2. Add aria-modal='true' and role='dialog' attributes to modal containers. 3. Add aria-hidden='true' to .page wrapper when modal is open. Example: x-init=\"$el.querySelectorAll('button, input, select, textarea')[0]?.focus()\" on modal open.",
+      "user_benefit": "Keyboard-only users and screen reader users can navigate modals correctly. Focus returns to the trigger button after closing, maintaining navigation context",
+      "status": "archived",
+      "created_at": "2026-01-27T10:31:00.000Z",
+      "linked_task_id": "002-enhance-keyboard-accessibility-for-modal-dialogs"
+    },
+    {
+      "id": "uiux-003",
+      "type": "ui_ux_improvements",
+      "title": "Add search input debouncing with visual feedback",
+      "description": "Implement debounced search with a visual typing indicator for all search/filter forms",
+      "rationale": "Search forms like in material_list.html trigger on form submit, requiring manual button clicks. For better UX, debounced auto-search with visual feedback would reduce friction. The debounce function exists in app.js but isn't being used.",
+      "category": "usability",
+      "affected_components": [
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "templates/production/production_order_list.html",
+        "static/js/app.js",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "Search inputs require clicking the 'Filtrar' button or pressing Enter. No auto-search functionality. No visual indication that typing will trigger a search after a delay.",
+      "proposed_change": "1. Add hx-trigger='keyup changed delay:400ms' to search inputs for debounced search. 2. Add a typing indicator CSS class that shows '...' or a subtle pulse animation when user is typing. 3. Update search input pattern: <input type='text' name='search' class='form-control' hx-get='...' hx-trigger='keyup changed delay:400ms, search' hx-target='#results' hx-indicator='#search-indicator'>. 4. Add CSS: '.search-typing::after { content: \"...\"; animation: pulse 1s infinite; }'",
+      "user_benefit": "Users get instant feedback as they type, reducing clicks needed to search. Visual indicator shows the system is responding to their input, improving perceived responsiveness",
+      "status": "archived",
+      "created_at": "2026-01-27T10:31:00.000Z",
+      "linked_task_id": "003-add-search-input-debouncing-with-visual-feedback"
+    },
+    {
+      "id": "uiux-004",
+      "type": "ui_ux_improvements",
+      "title": "Add ARIA labels to icon-only action buttons",
+      "description": "Add descriptive aria-label attributes to all icon-only buttons and links in data tables and navigation",
+      "rationale": "Action buttons in tables (view, edit, delete) use only icons without text or aria-labels. Screen readers announce these as 'button' or 'link' without context, making the interface inaccessible to visually impaired users",
+      "category": "accessibility",
+      "affected_components": [
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "templates/production/production_order_list.html",
+        "templates/production/batch_list.html",
+        "templates/base/internal.html"
+      ],
+      "screenshots": [],
+      "current_state": "Icon buttons like <a href='...' class='btn btn-icon btn-sm btn-primary' title='Ver Detalhes'> lack aria-label. The title attribute provides hover tooltips but is not announced by screen readers by default.",
+      "proposed_change": "Add aria-label matching the title to all icon-only buttons. Example: <a href='{% url \"materials:detail\" material.id %}' class='btn btn-icon btn-sm btn-primary' title='Ver Detalhes' aria-label='Ver detalhes do material {{ material.code }}'> For the sidebar toggle: add aria-label='Abrir menu de navegacao' and aria-expanded state. For pagination: aria-label='Pagina {{ num }}' and aria-current='page' for active page.",
+      "user_benefit": "Screen reader users hear meaningful descriptions like 'Ver detalhes do material AL7075' instead of just 'link'. Complies with WCAG 2.1 Level A Success Criterion 1.1.1 (Non-text Content)",
+      "status": "archived",
+      "created_at": "2026-01-27T10:31:00.000Z",
+      "linked_task_id": "004-add-aria-labels-to-icon-only-action-buttons"
+    },
+    {
+      "id": "uiux-005",
+      "type": "ui_ux_improvements",
+      "title": "Add autofocus and enhanced form field interactions",
+      "description": "Auto-focus the primary input field on form pages and add subtle interaction enhancements to form inputs",
+      "rationale": "Forms like material_form.html don't focus the first input field on load, requiring users to manually click or tab to start typing. This adds unnecessary friction to data entry workflows.",
+      "category": "usability",
+      "affected_components": [
+        "templates/materials/material_form.html",
+        "templates/materials/supplier_form.html",
+        "templates/accounts/login.html",
+        "templates/inventory/stock_list.html",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "Form pages load without focusing any input. Users must click the first field to begin typing. The login page has 'autocomplete=off' which hinders password managers. Search inputs don't have autofocus.",
+      "proposed_change": "1. Add autofocus attribute to primary input: <input type='text' name='code' id='...' autofocus ...>. 2. Remove 'autocomplete=off' from login form and use 'autocomplete=username'/'autocomplete=current-password' (already correct in login.html but form tag has autocomplete=off). 3. Add focus-visible ring styling for better keyboard navigation visibility: '.form-control:focus-visible { outline: 2px solid var(--tblr-primary); outline-offset: 2px; }'. 4. For modals, use x-init to focus first input when opened.",
+      "user_benefit": "Users can immediately start typing without clicking. Keyboard users see clear focus indicators. Password managers work correctly on the login page. Data entry is faster and more efficient",
+      "status": "archived",
+      "created_at": "2026-01-27T10:31:00.000Z",
+      "linked_task_id": "005-add-autofocus-and-enhanced-form-field-interactions"
+    },
+    {
+      "id": "ci-001",
+      "type": "code_improvements",
+      "title": "Add Production Module Dashboard",
+      "description": "Create a dashboard view for the Production module with statistics about production orders, batches, bins, and recent activity - similar to the existing inventory and purchasing dashboards.",
+      "rationale": "The code reveals this opportunity because: 1) Dashboard pattern already exists in inventory/views.py dashboard() and purchasing/views.py dashboard(), 2) Production module has all the necessary models (ProductionOrder, Batch, Bin) with status fields and timestamps, 3) Statistics queries using Count, Sum, and aggregations are well-established patterns in the codebase, 4) Template structure exists (templates/dashboard/index.html, templates/inventory/dashboard.html) that can be followed.",
+      "builds_upon": [
+        "Inventory Dashboard (apps/inventory/views.py)",
+        "Purchasing Dashboard (apps/purchasing/views.py)",
+        "Materials Dashboard (apps/materials/views.py)"
+      ],
+      "estimated_effort": "medium",
+      "affected_files": [
+        "apps/production/views.py",
+        "apps/production/urls.py",
+        "templates/production/dashboard.html"
+      ],
+      "existing_patterns": [
+        "Dashboard view with stats dict (inventory/views.py:dashboard)",
+        "Status-based counts using Count() aggregation",
+        "Recent items queries with select_related",
+        "Base internal template extension"
+      ],
+      "implementation_approach": "1. Create dashboard() view in apps/production/views.py following the exact pattern from inventory/views.py:dashboard() - stats dict with order counts by status, batch counts by status, total bins, recent movements. 2. Add URL route in apps/production/urls.py. 3. Create templates/production/dashboard.html extending base/internal.html with stat cards and recent activity tables following templates/inventory/dashboard.html structure.",
+      "status": "archived",
+      "created_at": "2026-01-27T10:30:42.678049",
+      "linked_task_id": "006-add-production-module-dashboard"
+    },
+    {
+      "id": "ci-002",
+      "type": "code_improvements",
+      "title": "Add Supplier Search API Endpoint",
+      "description": "Create an AJAX search API endpoint for suppliers, allowing typeahead/autocomplete functionality when selecting suppliers in forms - similar to the existing material_search_api.",
+      "rationale": "The code reveals this opportunity because: 1) material_search_api() exists in materials/views.py and returns JSON for autocomplete, 2) Supplier model is fully defined with searchable fields (name, code, cnpj), 3) api_materials_with_stock() and api_warehouses() show the API endpoint pattern is well-established, 4) Several forms require supplier selection (purchase requests, purchase orders) that would benefit from search.",
+      "builds_upon": [
+        "Material Search API (apps/materials/views.py:material_search_api)",
+        "API patterns in inventory/views.py"
+      ],
+      "estimated_effort": "trivial",
+      "affected_files": [
+        "apps/materials/views.py",
+        "apps/materials/urls.py"
+      ],
+      "existing_patterns": [
+        "material_search_api() with Q filter on multiple fields",
+        "JsonResponse returning list of dicts",
+        "Minimum query length check (len(query) < 2)",
+        "[:10] result limiting"
+      ],
+      "implementation_approach": "1. Copy material_search_api() function in materials/views.py, rename to supplier_search_api(). 2. Modify query to filter Supplier model on Q(name__icontains=query) | Q(code__icontains=query) | Q(cnpj__icontains=query). 3. Return id, code, name, contact_email fields in results. 4. Add URL path in materials/urls.py: path('api/suppliers/search/', views.supplier_search_api, name='supplier_search_api').",
+      "status": "archived",
+      "created_at": "2026-01-27T10:30:42.678049",
+      "linked_task_id": "007-add-supplier-search-api-endpoint"
+    },
+    {
+      "id": "ci-003",
+      "type": "code_improvements",
+      "title": "Add Reports View to Production Module",
+      "description": "Create a reports view for the Production module showing production order statistics, batch throughput, bin utilization, and material consumption over configurable time periods - following the existing inventory reports pattern.",
+      "rationale": "The code reveals this opportunity because: 1) Reports view pattern exists in inventory/views.py reports() with date range filtering, 2) Production models have all necessary data fields (status, dates, quantities) for meaningful reports, 3) Aggregation queries using Sum, Count, values() are well-established, 4) templates/inventory/reports.html provides the template structure to follow.",
+      "builds_upon": [
+        "Inventory Reports (apps/inventory/views.py:reports)",
+        "Dashboard statistics patterns"
+      ],
+      "estimated_effort": "medium",
+      "affected_files": [
+        "apps/production/views.py",
+        "apps/production/urls.py",
+        "templates/production/reports.html"
+      ],
+      "existing_patterns": [
+        "Date range filtering with date_from/date_to GET params",
+        "Default to last 30 days if no date specified",
+        "Aggregation with values().annotate(count=Count(), total=Sum())",
+        "Top N queries with order_by('-field')[:10]"
+      ],
+      "implementation_approach": "1. Create reports() view in apps/production/views.py following inventory/views.py:reports() - accept date_from/date_to params, default to 30 days. 2. Query ProductionOrder for orders_by_status, completed orders count, avg completion time. 3. Query Batch for batches by status, total quantity produced. 4. Query BinHistory for material flow statistics. 5. Add URL and create template extending base/internal.html with charts/tables.",
+      "status": "archived",
+      "created_at": "2026-01-27T10:30:42.678049",
+      "linked_task_id": "008-add-reports-view-to-production-module"
+    },
+    {
+      "id": "ci-004",
+      "type": "code_improvements",
+      "title": "Add Date Range Filter to Material and Supplier Lists",
+      "description": "Add date range filtering (date_from, date_to) to material_list and supplier_list views, allowing users to filter by creation date - extending the existing date filter pattern from inventory movements.",
+      "rationale": "The code reveals this opportunity because: 1) Date range filter pattern exists in inventory/views.py movements_list() and production/views.py bin_list(), 2) Material and Supplier models have created_at field from BaseModel, 3) The filter UI pattern is established in the codebase, 4) material_list and supplier_list already have search and type filters, just missing date range.",
+      "builds_upon": [
+        "Date filter in inventory movements_list",
+        "Date filter in production bin_list"
+      ],
+      "estimated_effort": "small",
+      "affected_files": [
+        "apps/materials/views.py",
+        "templates/materials/material_list.html",
+        "templates/materials/supplier_list.html"
+      ],
+      "existing_patterns": [
+        "date_from = request.GET.get('date_from', '')",
+        "datetime.strptime(date_from, '%Y-%m-%d').date() with try/except",
+        "queryset.filter(created_at__date__gte=date_from)",
+        "Passing date_from/date_to to template context"
+      ],
+      "implementation_approach": "1. In materials/views.py material_list(), add date_from/date_to GET params following movements_list pattern. 2. Add filter: if date_from: materials = materials.filter(created_at__date__gte=date_from). 3. Same for date_to with __lte. 4. Add to context dict. 5. Update template to include date input fields in filter form. 6. Repeat for supplier_list().",
+      "status": "archived",
+      "created_at": "2026-01-27T10:30:42.678049",
+      "linked_task_id": "009-add-date-range-filter-to-material-and-supplier-lis"
+    },
+    {
+      "id": "ci-005",
+      "type": "code_improvements",
+      "title": "Add Bulk Status Change for Production Orders",
+      "description": "Add bulk operations capability to change status of multiple production orders at once (start multiple, complete multiple) - extending the existing bulk operations pattern from bin batch printing.",
+      "rationale": "The code reveals this opportunity because: 1) Bulk operations pattern exists in production/views.py bin_batch_create() and bin_batch_print() with transaction.atomic(), 2) ProductionOrder has start() and complete() methods that can be called in a loop, 3) AJAX endpoint pattern with JsonResponse for bulk ops is established, 4) The list view already shows multiple orders that could be selected.",
+      "builds_upon": [
+        "Bulk Bin Operations (apps/production/views.py:bin_batch_create, bin_batch_print)",
+        "Production Order status methods"
+      ],
+      "estimated_effort": "medium",
+      "affected_files": [
+        "apps/production/views.py",
+        "apps/production/urls.py",
+        "templates/production/production_order_list.html"
+      ],
+      "existing_patterns": [
+        "bin_batch_print with json.loads(request.body) for IDs list",
+        "transaction.atomic() for bulk operations",
+        "Result tracking dict with success count and errors list",
+        "Checkbox selection in list template for bulk ops"
+      ],
+      "implementation_approach": "1. Create production_order_bulk_start(request) in views.py accepting order_ids JSON array. 2. Use transaction.atomic() to iterate orders, call order.start(request.user), track success/errors. 3. Return JsonResponse with counts. 4. Create production_order_bulk_complete() similarly. 5. Add URL paths. 6. Update production_order_list.html to add checkbox selection column and bulk action buttons following bin_list.html pattern.",
+      "status": "archived",
+      "created_at": "2026-01-27T10:30:42.678049",
+      "linked_task_id": "010-add-bulk-status-change-for-production-orders"
+    },
+    {
+      "id": "perf-001",
+      "type": "performance_optimizations",
+      "title": "Fix N+1 Query in Material Search API",
+      "description": "The `material_search_api()` endpoint iterates through materials and calls `material.get_best_price()` for each one, triggering a separate database query per material. This creates an N+1 query pattern where 10 search results generate 11 queries (1 main + 10 per-material).",
+      "rationale": "This API endpoint is called on every keystroke for material autocomplete searches. With typical usage patterns of 2-3 searches per form interaction, this could generate 30+ database queries per user action. The fix is straightforward with `Prefetch` and annotation.",
+      "category": "database",
+      "impact": "high",
+      "affectedAreas": [
+        "apps/materials/views.py (material_search_api function)",
+        "apps/materials/models.py (get_best_price method)"
+      ],
+      "currentMetric": "N+1 queries: 11 queries for 10 results, ~100ms response time under load",
+      "expectedImprovement": "Single query with annotation, reduce to 1 query, ~10ms response time",
+      "implementation": "1. Use Django's annotate() with Min() to get best price in the main query\n2. Replace: `materials = Material.objects.filter(...)` with `materials = Material.objects.filter(...).annotate(best_price=Min('materialsupplier__price_per_kg', filter=Q(materialsupplier__supplier__is_active=True)))`\n3. Access `material.best_price` instead of calling `material.get_best_price()`",
+      "tradeoffs": "Slight increase in main query complexity, but net reduction in total query time",
+      "estimatedEffort": "small",
+      "status": "archived",
+      "linked_task_id": "011-fix-n-1-query-in-material-search-api"
+    },
+    {
+      "id": "perf-002",
+      "type": "performance_optimizations",
+      "title": "Add Redis Caching for Dashboard Statistics",
+      "description": "Dashboard views (materials/dashboard, inventory/dashboard, production stats) compute aggregate statistics on every page load using COUNT, SUM, and other aggregations. These queries run on potentially large tables without any caching.",
+      "rationale": "Redis is already configured in docker-compose but not utilized in Django. Dashboard statistics rarely change and are perfect candidates for caching. Multiple users viewing dashboards amplify the database load unnecessarily.",
+      "category": "caching",
+      "impact": "high",
+      "affectedAreas": [
+        "apps/materials/views.py (dashboard_materials function)",
+        "apps/inventory/views.py (dashboard function)",
+        "apps/production/views.py (production_order_list stats)",
+        "config/settings.py (CACHES configuration)"
+      ],
+      "currentMetric": "6-8 aggregate queries per dashboard load, ~200-400ms per request",
+      "expectedImprovement": "0 queries for cached requests, ~5ms cache lookup, 95%+ cache hit rate",
+      "implementation": "1. Add Django cache configuration for Redis in settings.py\n2. Import cache: `from django.core.cache import cache`\n3. Wrap stats computation: `stats = cache.get('dashboard_stats') or compute_and_cache()`\n4. Set 60-second TTL for stats\n5. Invalidate cache on relevant model signals (post_save, post_delete)",
+      "tradeoffs": "Stats may be up to 60 seconds stale; requires cache invalidation strategy",
+      "estimatedEffort": "medium",
+      "status": "archived",
+      "linked_task_id": "012-add-redis-caching-for-dashboard-statistics"
+    },
+    {
+      "id": "perf-003",
+      "type": "performance_optimizations",
+      "title": "Remove Unused Static File Plugins to Reduce Deployment Size",
+      "description": "The staticfiles/plugins directory contains ~50MB of unused JavaScript libraries (DataTables extensions, CKEditor, Flot charts, etc.) that were likely part of an admin template. The actual application only uses Tabler, HTMX, and Alpine.js which are in static/vendor/.",
+      "rationale": "Large static file directories slow down `collectstatic`, increase deployment image size, and waste storage. The unused plugins also pose security risks if they contain outdated vulnerable code. The base template confirms only Tabler/HTMX/Alpine are loaded.",
+      "category": "bundle_size",
+      "impact": "medium",
+      "affectedAreas": [
+        "staticfiles/plugins/ (entire directory)",
+        "staticfiles/js/*.demo.min.js (demo files)",
+        "staticfiles/crossbrowserjs/ (IE compatibility)"
+      ],
+      "currentMetric": "~50MB of static files, ~30 unused JavaScript plugins",
+      "expectedImprovement": "~45MB reduction, faster deployments, smaller Docker images",
+      "implementation": "1. Audit staticfiles/ vs static/ to confirm which are used\n2. Create backup of staticfiles/plugins/\n3. Remove unused plugins: DataTables, CKEditor, Flot, Morris charts, etc.\n4. Remove legacy IE compatibility files (html5shiv, respond.js, excanvas)\n5. Remove *.demo.min.js files\n6. Run collectstatic to verify no missing assets",
+      "tradeoffs": "Need to verify no templates reference these files before removal",
+      "estimatedEffort": "small",
+      "status": "archived",
+      "linked_task_id": "013-remove-unused-static-file-plugins-to-reduce-deploy"
+    },
+    {
+      "id": "perf-004",
+      "type": "performance_optimizations",
+      "title": "Add Database Indexes for Frequently Filtered Fields",
+      "description": "Several Django models filter on fields that lack explicit database indexes. Fields like `status`, `movement_type`, `is_active`, and date fields are used in WHERE clauses and ordering but rely on implicit indexing or full table scans.",
+      "rationale": "List views filter by status (DRAFT, IN_PROGRESS, COMPLETED), movement_type (IN, OUT, TRANSFER), and date ranges. As data grows, these queries will become slower without proper indexes. PostgreSQL's query planner needs hints for optimal paths.",
+      "category": "database",
+      "impact": "medium",
+      "affectedAreas": [
+        "apps/production/models.py (ProductionOrder.status, Batch.status)",
+        "apps/inventory/models.py (StockMovement.movement_type, InventoryCount.status)",
+        "apps/materials/models.py (Material.material_type)"
+      ],
+      "currentMetric": "Sequential scans on status/type filters with large datasets",
+      "expectedImprovement": "Index-only scans, 10-100x faster filtering on 10k+ records",
+      "implementation": "1. Add db_index=True to frequently filtered fields:\n   - ProductionOrder.status\n   - Batch.status\n   - StockMovement.movement_type\n   - StockMovement.created_at\n   - InventoryCount.status\n2. Create migration with `python manage.py makemigrations`\n3. Apply migration with `python manage.py migrate`\n4. Consider composite indexes for common filter combinations",
+      "tradeoffs": "Indexes add write overhead and storage; only add for truly hot paths",
+      "estimatedEffort": "small",
+      "status": "archived",
+      "linked_task_id": "014-add-database-indexes-for-frequently-filtered-field"
+    },
+    {
+      "id": "perf-005",
+      "type": "performance_optimizations",
+      "title": "Avoid Duplicate .count() Queries in List Views",
+      "description": "List views like `material_list()`, `supplier_list()`, and `stock_list()` call `.count()` on filtered querysets and also pass the same queryset to Paginator. Django's Paginator internally calls `.count()` again, resulting in duplicate COUNT queries.",
+      "rationale": "Each duplicate COUNT query adds 50-100ms on large tables. This pattern appears in at least 5 list views. The fix is simple: use paginator.count instead of calling queryset.count() separately.",
+      "category": "database",
+      "impact": "medium",
+      "affectedAreas": [
+        "apps/materials/views.py (material_list, supplier_list)",
+        "apps/inventory/views.py (stock_list, movements_list, warehouse_list)",
+        "apps/production/views.py (production_order_list, bin_list, batch_list)"
+      ],
+      "currentMetric": "2 COUNT queries per list page load instead of 1",
+      "expectedImprovement": "50% reduction in COUNT queries, ~50ms saved per page load",
+      "implementation": "1. Remove standalone `.count()` calls like `'total_materials': materials.count()`\n2. Use paginator properties instead:\n   ```python\n   paginator = Paginator(materials, 20)\n   page_obj = paginator.get_page(page_number)\n   # Instead of materials.count(), use:\n   context['total_materials'] = paginator.count\n   ```\n3. Apply pattern across all list views",
+      "tradeoffs": "None - purely beneficial change with no downsides",
+      "estimatedEffort": "trivial",
+      "status": "archived",
+      "linked_task_id": "015-avoid-duplicate-count-queries-in-list-views"
+    },
+    {
+      "id": "cq-001",
+      "type": "code_quality",
+      "title": "Split large inventory views.py into domain-specific modules",
+      "description": "The file apps/inventory/views.py has grown to 1251 lines and handles multiple unrelated concerns: stock management, movements, warehouses, reservations, and inventory counts. This violates single responsibility and makes the code hard to navigate, test, and maintain.",
+      "rationale": "Very large files increase cognitive load, make code reviews harder, and often lead to merge conflicts. The inventory app handles 5 distinct domains (stocks, movements, warehouses, reservations, counts) that each deserve their own view module. Smaller, focused modules are easier to test, maintain, and reason about.",
+      "category": "large_files",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/inventory/views.py"
+      ],
+      "currentState": "Single 1251-line file containing 30+ view functions handling stocks, movements, warehouses, reservations, and inventory counts",
+      "proposedChange": "Split into domain-specific view modules:\n- apps/inventory/views/__init__.py (re-exports)\n- apps/inventory/views/dashboard.py (dashboard view)\n- apps/inventory/views/stocks.py (stock_list, stock_detail)\n- apps/inventory/views/movements.py (movements_list, create_movement)\n- apps/inventory/views/warehouses.py (warehouse_list, warehouse_detail, warehouse_create, warehouse_update)\n- apps/inventory/views/reservations.py (reservations_list, reservation_create, etc.)\n- apps/inventory/views/counts.py (inventory_count_list, inventory_count_create, etc.)",
+      "codeExample": "# Current structure:\n# apps/inventory/views.py (1251 lines, all domains mixed)\n\n# Proposed structure:\n# apps/inventory/views/__init__.py\nfrom .dashboard import dashboard\nfrom .stocks import stock_list, stock_detail\nfrom .movements import movements_list, create_movement\nfrom .warehouses import warehouse_list, warehouse_detail, warehouse_create, warehouse_update\nfrom .reservations import reservations_list, reservation_create\nfrom .counts import inventory_count_list, inventory_count_create",
+      "bestPractice": "Single Responsibility Principle - each module should have one reason to change. Django best practice is to organize views by domain/resource when they grow beyond ~300 lines.",
+      "metrics": {
+        "lineCount": 1251,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Ensure test coverage for inventory views before refactoring",
+        "Update URL imports after splitting"
+      ],
+      "status": "archived",
+      "linked_task_id": "016-split-large-inventory-views-py-into-domain-specifi"
+    },
+    {
+      "id": "cq-002",
+      "type": "code_quality",
+      "title": "Add tests for production and purchasing apps",
+      "description": "The production (869 lines in views.py) and purchasing (1084 lines in views.py) apps have no test files, while other apps like inventory, materials, and accounts have comprehensive test coverage. This leaves critical business logic untested.",
+      "rationale": "Production orders and purchasing workflows are core business functionality that should have thorough test coverage. Without tests, refactoring becomes risky, bugs may go undetected, and there's no documentation of expected behavior. The existing test patterns in apps/inventory/tests.py and apps/materials/tests.py can serve as templates.",
+      "category": "testing",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/production/views.py",
+        "apps/production/models.py",
+        "apps/purchasing/views.py",
+        "apps/purchasing/models.py"
+      ],
+      "currentState": "No test files exist in apps/production/ or apps/purchasing/ directories. These apps contain:\n- Production: ProductionOrder, Bin, BinHistory, Batch, BatchItem models with 869 lines of view logic\n- Purchasing: PurchaseRequest, PurchaseOrder, Receiving models with 1084 lines of view logic",
+      "proposedChange": "Create comprehensive test files:\n- apps/production/tests.py (model tests for ProductionOrder, Bin, Batch)\n- apps/production/test_views.py (view tests for CRUD operations, status transitions)\n- apps/purchasing/tests.py (model tests for PurchaseRequest, PurchaseOrder, Receiving)\n- apps/purchasing/test_views.py (view tests for request/order workflow)",
+      "codeExample": "# apps/production/tests.py (following existing patterns from apps/inventory/tests.py)\nfrom django.test import TestCase\nfrom django.urls import reverse\nfrom apps.production.models import ProductionOrder, Batch\nfrom apps.materials.models import Material\nfrom apps.accounts.models import CustomUser\n\nclass ProductionOrderModelTests(TestCase):\n    def setUp(self):\n        self.user = CustomUser.objects.create_user(...)\n        self.material = Material.objects.create(...)\n    \n    def test_order_number_auto_generated(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100\n        )\n        self.assertTrue(order.order_number.startswith('OP'))\n    \n    def test_completion_percentage(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100,\n            produced_quantity=50\n        )\n        self.assertEqual(order.completion_percentage, 50)",
+      "bestPractice": "All business-critical functionality should have unit tests. Django's TestCase class provides database transactions that are rolled back after each test.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": 0
+      },
+      "estimatedEffort": "large",
+      "breakingChange": false,
+      "prerequisites": [],
+      "status": "archived",
+      "linked_task_id": "017-add-tests-for-production-and-purchasing-apps"
+    },
+    {
+      "id": "cq-003",
+      "type": "code_quality",
+      "title": "Extract duplicated list view pagination/filtering into reusable mixin or utility",
+      "description": "The codebase contains 14+ list views that all follow the same pattern: get filters from request.GET, apply filters to queryset, paginate results, and render template. This pattern is duplicated across inventory, purchasing, production, materials, and labels apps.",
+      "rationale": "Code duplication leads to inconsistencies when fixes are applied unevenly and increases maintenance burden. A reusable mixin or utility function would ensure consistent behavior, reduce boilerplate, and make adding new list views faster and less error-prone.",
+      "category": "duplication",
+      "severity": "minor",
+      "affectedFiles": [
+        "apps/inventory/views.py",
+        "apps/purchasing/views.py",
+        "apps/production/views.py",
+        "apps/materials/views.py",
+        "apps/labels/views.py"
+      ],
+      "currentState": "Each list view manually implements:\n1. Extract search/filter params from request.GET\n2. Build queryset with select_related/prefetch_related\n3. Apply search filter with Q objects\n4. Apply additional filters\n5. Create Paginator with hardcoded page size (20-50)\n6. Get paginated page\n7. Build context dict\n8. Render template\n\nThis pattern appears in: stock_list, movements_list, warehouse_list, reservations_list, inventory_count_list, request_list, order_list, receiving_list, production_order_list, bin_list, batch_list, material_list, supplier_list, template_list, printer_list, print_job_list",
+      "proposedChange": "Create a reusable ListView mixin in apps/core/views.py:\n1. BaseListView class that handles pagination, search, and common filter patterns\n2. FilterMixin for declaring filterable fields\n3. SearchMixin for Q-object based search\n\nAlternatively, use Django's built-in class-based ListView with custom mixins for the filtering logic.",
+      "codeExample": "# apps/core/mixins.py\nfrom django.core.paginator import Paginator\nfrom django.db.models import Q\n\nclass FilterableListMixin:\n    \"\"\"Mixin for list views with common filtering/pagination patterns\"\"\"\n    paginate_by = 20\n    search_fields = []  # Override in subclass\n    filter_fields = []  # Override in subclass\n    \n    def get_search_query(self, request):\n        return request.GET.get('search', '')\n    \n    def apply_search(self, queryset, search):\n        if search and self.search_fields:\n            q_objects = Q()\n            for field in self.search_fields:\n                q_objects |= Q(**{f'{field}__icontains': search})\n            return queryset.filter(q_objects)\n        return queryset\n    \n    def apply_filters(self, queryset, request):\n        for field in self.filter_fields:\n            value = request.GET.get(field)\n            if value:\n                queryset = queryset.filter(**{field: value})\n        return queryset\n    \n    def paginate(self, queryset, request):\n        paginator = Paginator(queryset, self.paginate_by)\n        page = request.GET.get('page')\n        return paginator.get_page(page)\n\n# Usage in apps/inventory/views.py\nclass StockListView(FilterableListMixin):\n    search_fields = ['material__code', 'material__name', 'warehouse__code']\n    filter_fields = ['warehouse_id', 'material__material_type']",
+      "bestPractice": "DRY (Don't Repeat Yourself) - extract common patterns into reusable components. Django class-based views and mixins are designed for exactly this use case.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": 280,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Good test coverage on existing list views before refactoring"
+      ],
+      "status": "archived",
+      "linked_task_id": "018-extract-duplicated-list-view-pagination-filtering-"
+    },
+    {
+      "id": "cq-004",
+      "type": "code_quality",
+      "title": "Add Python linting and code quality configuration",
+      "description": "The project has no linting configuration files (flake8, pylint, mypy). Without automated code quality checks, inconsistent coding styles, unused imports, and type errors can accumulate over time.",
+      "rationale": "Linting tools catch common bugs, enforce consistent code style, and improve code readability. They are especially valuable in team environments and CI/CD pipelines. The project already uses pyproject.toml which can host most linting configuration.",
+      "category": "linting",
+      "severity": "minor",
+      "affectedFiles": [
+        "pyproject.toml"
+      ],
+      "currentState": "No linting tools configured. pyproject.toml only has basic project metadata and dependencies. No .flake8, .pylintrc, setup.cfg, or mypy.ini files exist.",
+      "proposedChange": "Add linting configuration to pyproject.toml and set up pre-commit hooks:\n1. Add ruff (modern, fast Python linter) configuration to pyproject.toml\n2. Configure basic rules: unused imports, line length, import sorting\n3. Add Django-specific rules\n4. Optionally add mypy for gradual type checking\n5. Set up pre-commit hooks for automatic linting",
+      "codeExample": "# Add to pyproject.toml\n[tool.ruff]\nline-length = 120\ntarget-version = \"py310\"\n\n[tool.ruff.lint]\nselect = [\n    \"E\",  # pycodestyle errors\n    \"W\",  # pycodestyle warnings\n    \"F\",  # pyflakes\n    \"I\",  # isort\n    \"B\",  # flake8-bugbear\n    \"C4\", # flake8-comprehensions\n    \"DJ\", # flake8-django\n]\nignore = [\n    \"E501\",  # line too long (handled by formatter)\n]\n\n[tool.ruff.lint.isort]\nknown-first-party = [\"apps\", \"config\"]\n\n[tool.mypy]\npython_version = \"3.10\"\nplugins = [\"mypy_django_plugin.main\"]\nignore_missing_imports = true\nstrict_optional = true\n\n# requirements-dev.txt addition\nruff>=0.1.0\nmypy>=1.0.0\ndjango-stubs>=4.0.0\npre-commit>=3.0.0",
+      "bestPractice": "Every Python project should have automated code quality checks. Ruff is the modern choice - it's faster than flake8/isort/black combined and supports Django-specific rules.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "small",
+      "breakingChange": false,
+      "prerequisites": [],
+      "status": "archived",
+      "linked_task_id": "019-add-python-linting-and-code-quality-configuration"
+    },
+    {
+      "id": "cq-005",
+      "type": "code_quality",
+      "title": "Split large purchasing views.py into domain-specific modules",
+      "description": "The file apps/purchasing/views.py has grown to 1084 lines and handles three distinct domains: Purchase Requests (solicitations), Purchase Orders, and Receiving. Each domain has its own set of CRUD operations, status transitions, and business logic.",
+      "rationale": "Like the inventory views, this file has grown too large to maintain effectively. The purchasing workflow has clear domain boundaries that map well to separate modules. This split would also make it easier to add the planned 'Supplier Search API Endpoint' feature without further bloating the file.",
+      "category": "large_files",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/purchasing/views.py"
+      ],
+      "currentState": "Single 1084-line file containing:\n- Purchase Request views (lines ~60-400): request_list, request_detail, request_create, request_update, request_submit, request_approve, request_reject\n- Purchase Order views (lines ~400-700): order_list, order_detail, order_create, order_items, order_send, order_confirm\n- Receiving views (lines ~700-1084): receiving_list, receiving_detail, receiving_create, receiving_inspect, receiving_complete",
+      "proposedChange": "Split into domain-specific view modules:\n- apps/purchasing/views/__init__.py (re-exports for backward compatibility)\n- apps/purchasing/views/dashboard.py (dashboard view)\n- apps/purchasing/views/requests.py (PurchaseRequest CRUD and workflow)\n- apps/purchasing/views/orders.py (PurchaseOrder CRUD and workflow)\n- apps/purchasing/views/receiving.py (Receiving CRUD and workflow)",
+      "codeExample": "# apps/purchasing/views/__init__.py\nfrom .dashboard import dashboard\nfrom .requests import (\n    request_list, request_detail, request_create, \n    request_update, request_submit, request_approve, request_reject\n)\nfrom .orders import (\n    order_list, order_detail, order_create,\n    order_items, order_send, order_confirm\n)\nfrom .receiving import (\n    receiving_list, receiving_detail, receiving_create,\n    receiving_inspect, receiving_complete\n)\n\n# This maintains backward compatibility with existing URL imports\n__all__ = [\n    'dashboard', 'request_list', 'request_detail', ...\n]",
+      "bestPractice": "Single Responsibility Principle - each module should focus on one domain/resource. Django's URL dispatcher makes it easy to reorganize views while maintaining the same URL patterns.",
+      "metrics": {
+        "lineCount": 1084,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Add tests for purchasing views before refactoring (see cq-002)",
+        "Update URL imports after splitting"
+      ],
+      "status": "archived",
+      "linked_task_id": "020-split-large-purchasing-views-py-into-domain-specif"
+    }
+  ],
+  "project_context": {
+    "existing_features": [],
+    "tech_stack": [],
+    "target_audience": null,
+    "planned_features": [
+      "Add autofocus and enhanced form field interactions",
+      "Add ARIA labels to icon-only action buttons",
+      "Add skeleton loading states for data tables",
+      "Add Date Range Filter to Material and Supplier Lists",
+      "Add Production Module Dashboard",
+      "Add Reports View to Production Module",
+      "Add search input debouncing with visual feedback",
+      "Enhance keyboard accessibility for modal dialogs",
+      "Add Bulk Status Change for Production Orders",
+      "Add Supplier Search API Endpoint"
+    ]
+  },
+  "summary": {
+    "total_ideas": 20,
+    "by_type": {
+      "ui_ux_improvements": 5,
+      "code_improvements": 5,
+      "performance_optimizations": 5,
+      "code_quality": 5
+    },
+    "by_status": {
+      "archived": 10,
+      "draft": 10
+    }
+  },
+  "generated_at": "2026-01-27T10:33:00.405645",
+  "updated_at": "2026-01-27T13:41:06.716Z"
+}

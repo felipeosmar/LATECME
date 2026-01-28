@@ -1,0 +1,46 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql", "redis"],
+      "framework": "Django 5.2.4",
+      "port": 8000,
+      "dev_command": "python manage.py runserver 0.0.0.0:8000",
+      "test_command": "python manage.py test",
+      "migrations_command": "python manage.py migrate"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "docker_compose": "docker-compose.yml",
+    "database": "postgresql",
+    "cache": "redis",
+    "redis_configured": true,
+    "redis_host": "redis",
+    "redis_port": 6379
+  },
+  "conventions": {
+    "linter": "none",
+    "formatter": "none",
+    "testing": "django.test",
+    "apps_directory": "apps/",
+    "config_directory": "config/"
+  },
+  "apps": [
+    "core",
+    "accounts",
+    "materials",
+    "inventory",
+    "production",
+    "labels",
+    "purchasing"
+  ],
+  "dashboard_views": [
+    "apps/core/views.py::dashboard",
+    "apps/materials/views.py::dashboard_materials",
+    "apps/inventory/views.py::dashboard",
+    "apps/production/views.py::production_order_list",
+    "apps/purchasing/views.py::dashboard"
+  ]
+}

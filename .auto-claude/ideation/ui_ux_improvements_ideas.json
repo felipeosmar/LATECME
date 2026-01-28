@@ -1,0 +1,122 @@
+{
+  "ui_ux_improvements": [
+    {
+      "id": "uiux-001",
+      "type": "ui_ux_improvements",
+      "title": "Add skeleton loading states for data tables",
+      "description": "Implement skeleton placeholder loading states that match the layout of data tables during HTMX requests and page loads",
+      "rationale": "Currently, data tables show no visual feedback during loading except a small spinner. Skeleton screens reduce perceived load time and prevent layout shifts, improving user experience during navigation and filtering",
+      "category": "performance",
+      "affected_components": [
+        "templates/components/_loading.html",
+        "templates/components/_table.html",
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "When filtering/paginating tables via HTMX, users see either nothing or a small spinner. The table content disappears briefly, causing layout shift.",
+      "proposed_change": "Create a new _table_skeleton.html component with Tabler's placeholder-glow animation. Apply skeleton states during hx-request class. Example: Add '.htmx-request .table tbody { display: none; } .htmx-request .table-skeleton { display: block; }' pattern with 5-row skeleton placeholder showing loading animation for each column.",
+      "user_benefit": "Users see a meaningful loading state that matches the expected content layout, reducing confusion about whether the app is responding and preventing jarring content jumps",
+      "status": "draft",
+      "created_at": "2026-01-27T10:31:00.000Z"
+    },
+    {
+      "id": "uiux-002",
+      "type": "ui_ux_improvements",
+      "title": "Enhance keyboard accessibility for modal dialogs",
+      "description": "Add proper focus trapping, focus restoration, and keyboard navigation to all Alpine.js modals",
+      "rationale": "Current modals (like the movement modal in stock_list.html) lack focus trapping - users can tab out of the modal while it's open. This is both an accessibility issue (WCAG 2.1 Level A) and a usability problem",
+      "category": "accessibility",
+      "affected_components": [
+        "templates/inventory/stock_list.html",
+        "templates/components/_modal.html",
+        "static/js/app.js"
+      ],
+      "screenshots": [],
+      "current_state": "Modals open without moving focus to the modal content. Tab key allows focus to escape to elements behind the modal overlay. No focus restoration when modal closes. Escape key works but isn't consistently implemented.",
+      "proposed_change": "1. Update Alpine.js modal data function in app.js to include focusTrap logic: store previous active element on open, set focus to first focusable element in modal, trap Tab/Shift+Tab within modal bounds, restore focus on close. 2. Add aria-modal='true' and role='dialog' attributes to modal containers. 3. Add aria-hidden='true' to .page wrapper when modal is open. Example: x-init=\"$el.querySelectorAll('button, input, select, textarea')[0]?.focus()\" on modal open.",
+      "user_benefit": "Keyboard-only users and screen reader users can navigate modals correctly. Focus returns to the trigger button after closing, maintaining navigation context",
+      "status": "draft",
+      "created_at": "2026-01-27T10:31:00.000Z"
+    },
+    {
+      "id": "uiux-003",
+      "type": "ui_ux_improvements",
+      "title": "Add search input debouncing with visual feedback",
+      "description": "Implement debounced search with a visual typing indicator for all search/filter forms",
+      "rationale": "Search forms like in material_list.html trigger on form submit, requiring manual button clicks. For better UX, debounced auto-search with visual feedback would reduce friction. The debounce function exists in app.js but isn't being used.",
+      "category": "usability",
+      "affected_components": [
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "templates/production/production_order_list.html",
+        "static/js/app.js",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "Search inputs require clicking the 'Filtrar' button or pressing Enter. No auto-search functionality. No visual indication that typing will trigger a search after a delay.",
+      "proposed_change": "1. Add hx-trigger='keyup changed delay:400ms' to search inputs for debounced search. 2. Add a typing indicator CSS class that shows '...' or a subtle pulse animation when user is typing. 3. Update search input pattern: <input type='text' name='search' class='form-control' hx-get='...' hx-trigger='keyup changed delay:400ms, search' hx-target='#results' hx-indicator='#search-indicator'>. 4. Add CSS: '.search-typing::after { content: \"...\"; animation: pulse 1s infinite; }'",
+      "user_benefit": "Users get instant feedback as they type, reducing clicks needed to search. Visual indicator shows the system is responding to their input, improving perceived responsiveness",
+      "status": "draft",
+      "created_at": "2026-01-27T10:31:00.000Z"
+    },
+    {
+      "id": "uiux-004",
+      "type": "ui_ux_improvements",
+      "title": "Add ARIA labels to icon-only action buttons",
+      "description": "Add descriptive aria-label attributes to all icon-only buttons and links in data tables and navigation",
+      "rationale": "Action buttons in tables (view, edit, delete) use only icons without text or aria-labels. Screen readers announce these as 'button' or 'link' without context, making the interface inaccessible to visually impaired users",
+      "category": "accessibility",
+      "affected_components": [
+        "templates/materials/material_list.html",
+        "templates/inventory/stock_list.html",
+        "templates/production/production_order_list.html",
+        "templates/production/batch_list.html",
+        "templates/base/internal.html"
+      ],
+      "screenshots": [],
+      "current_state": "Icon buttons like <a href='...' class='btn btn-icon btn-sm btn-primary' title='Ver Detalhes'> lack aria-label. The title attribute provides hover tooltips but is not announced by screen readers by default.",
+      "proposed_change": "Add aria-label matching the title to all icon-only buttons. Example: <a href='{% url \"materials:detail\" material.id %}' class='btn btn-icon btn-sm btn-primary' title='Ver Detalhes' aria-label='Ver detalhes do material {{ material.code }}'> For the sidebar toggle: add aria-label='Abrir menu de navegacao' and aria-expanded state. For pagination: aria-label='Pagina {{ num }}' and aria-current='page' for active page.",
+      "user_benefit": "Screen reader users hear meaningful descriptions like 'Ver detalhes do material AL7075' instead of just 'link'. Complies with WCAG 2.1 Level A Success Criterion 1.1.1 (Non-text Content)",
+      "status": "draft",
+      "created_at": "2026-01-27T10:31:00.000Z"
+    },
+    {
+      "id": "uiux-005",
+      "type": "ui_ux_improvements",
+      "title": "Add autofocus and enhanced form field interactions",
+      "description": "Auto-focus the primary input field on form pages and add subtle interaction enhancements to form inputs",
+      "rationale": "Forms like material_form.html don't focus the first input field on load, requiring users to manually click or tab to start typing. This adds unnecessary friction to data entry workflows.",
+      "category": "usability",
+      "affected_components": [
+        "templates/materials/material_form.html",
+        "templates/materials/supplier_form.html",
+        "templates/accounts/login.html",
+        "templates/inventory/stock_list.html",
+        "static/css/custom.css"
+      ],
+      "screenshots": [],
+      "current_state": "Form pages load without focusing any input. Users must click the first field to begin typing. The login page has 'autocomplete=off' which hinders password managers. Search inputs don't have autofocus.",
+      "proposed_change": "1. Add autofocus attribute to primary input: <input type='text' name='code' id='...' autofocus ...>. 2. Remove 'autocomplete=off' from login form and use 'autocomplete=username'/'autocomplete=current-password' (already correct in login.html but form tag has autocomplete=off). 3. Add focus-visible ring styling for better keyboard navigation visibility: '.form-control:focus-visible { outline: 2px solid var(--tblr-primary); outline-offset: 2px; }'. 4. For modals, use x-init to focus first input when opened.",
+      "user_benefit": "Users can immediately start typing without clicking. Keyboard users see clear focus indicators. Password managers work correctly on the login page. Data entry is faster and more efficient",
+      "status": "draft",
+      "created_at": "2026-01-27T10:31:00.000Z"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-01-27T10:31:00.000Z",
+    "project": "LATECME",
+    "tech_stack": ["Django", "Tabler CSS", "Alpine.js", "HTMX"],
+    "total_ideas": 5,
+    "categories": {
+      "accessibility": 2,
+      "usability": 2,
+      "performance": 1,
+      "visual": 0,
+      "interaction": 0
+    },
+    "analysis_method": "static_code_analysis",
+    "notes": "Puppeteer MCP not available for visual testing. Analysis based on template code review. All templates use Tabler CSS framework consistently. HTMX is used for partial page updates. Alpine.js handles interactive state."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/materials/views.py",
+      "apps/materials/urls.py",
+      "apps/materials/test_views.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/materials/views.py",
+    "apps/materials/models.py",
+    "apps/materials/test_views.py"
+  ],
+  "patterns": {
+    "api_view_pattern": "All API views use @login_required decorator, take 'q' parameter, require 2+ chars, return JsonResponse with 'results' array",
+    "url_pattern": "API endpoints use path('api/..., name='..._api') pattern",
+    "test_pattern": "Tests inherit from TestCase, use setUp for fixtures, test valid queries, short queries, and auth requirements",
+    "search_pattern": "Use Q() objects for OR queries, filter by is_active=True, limit to 10 results with [:10]"
+  },
+  "existing_implementations": {
+    "description": "material_search_api exists in apps/materials/views.py and provides the exact pattern to follow",
+    "relevant_files": [
+      "apps/materials/views.py (lines 280-302 - material_search_api view)",
+      "apps/materials/models.py (lines 36-60 - Supplier model with searchable fields: name, code, cnpj)",
+      "apps/materials/urls.py (line 23 - API URL pattern)",
+      "apps/materials/test_views.py (lines 202-220 - material_search_api tests)"
+    ]
+  },
+  "supplier_model_fields": {
+    "searchable": ["name", "code", "cnpj"],
+    "display": ["id", "code", "name", "cnpj"],
+    "notes": "Supplier model inherits from BaseModel which includes is_active field"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "ui_ux_improvements",
+  "ideaId": "uiux-002",
+  "rationale": "Current modals (like the movement modal in stock_list.html) lack focus trapping - users can tab out of the modal while it's open. This is both an accessibility issue (WCAG 2.1 Level A) and a usability problem",
+  "category": "ui_ux",
+  "uiuxCategory": "accessibility",
+  "affectedFiles": [
+    "templates/inventory/stock_list.html",
+    "templates/components/_modal.html",
+    "static/js/app.js"
+  ],
+  "problemSolved": "Modals open without moving focus to the modal content. Tab key allows focus to escape to elements behind the modal overlay. No focus restoration when modal closes. Escape key works but isn't consistently implemented."
+}

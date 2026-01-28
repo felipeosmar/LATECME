@@ -1,0 +1,16 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "ui_ux_improvements",
+  "ideaId": "uiux-004",
+  "rationale": "Action buttons in tables (view, edit, delete) use only icons without text or aria-labels. Screen readers announce these as 'button' or 'link' without context, making the interface inaccessible to visually impaired users",
+  "category": "ui_ux",
+  "uiuxCategory": "accessibility",
+  "affectedFiles": [
+    "templates/materials/material_list.html",
+    "templates/inventory/stock_list.html",
+    "templates/production/production_order_list.html",
+    "templates/production/batch_list.html",
+    "templates/base/internal.html"
+  ],
+  "problemSolved": "Icon buttons like <a href='...' class='btn btn-icon btn-sm btn-primary' title='Ver Detalhes'> lack aria-label. The title attribute provides hover tooltips but is not announced by screen readers by default."
+}

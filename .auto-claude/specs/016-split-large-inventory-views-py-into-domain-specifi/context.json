@@ -1,0 +1,70 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/inventory/urls.py"
+    ]
+  },
+  "files_to_create": {
+    "backend": [
+      "apps/inventory/views/__init__.py",
+      "apps/inventory/views/stock_views.py",
+      "apps/inventory/views/movement_views.py",
+      "apps/inventory/views/warehouse_views.py",
+      "apps/inventory/views/reservation_views.py",
+      "apps/inventory/views/count_views.py"
+    ]
+  },
+  "files_to_delete": {
+    "backend": [
+      "apps/inventory/views.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/views.py",
+    "apps/inventory/urls.py",
+    "apps/inventory/models.py"
+  ],
+  "patterns": {
+    "view_pattern": "Function-based views with @login_required decorator",
+    "import_pattern": "Django standard imports (render, get_object_or_404, JsonResponse, etc.)",
+    "url_pattern": "URLs use 'from . import views' then 'views.function_name'",
+    "api_pattern": "AJAX endpoints return JsonResponse with success/message keys",
+    "pagination_pattern": "Django Paginator with page size 20-25"
+  },
+  "existing_implementations": {
+    "description": "No Django apps in this project currently use split views - all use monolithic views.py files",
+    "relevant_files": [
+      "apps/materials/views.py",
+      "apps/purchasing/views.py",
+      "apps/production/views.py"
+    ],
+    "note": "This refactor will establish the pattern for splitting large view files"
+  },
+  "domain_breakdown": {
+    "stock_views": {
+      "functions": ["dashboard", "stock_list", "stock_detail", "reports"],
+      "line_range": "19-148, 414-462",
+      "dependencies": ["MaterialStock", "Warehouse", "StockMovement", "StockReservation"]
+    },
+    "movement_views": {
+      "functions": ["movements_list", "create_movement"],
+      "line_range": "152-220, 340-411",
+      "dependencies": ["StockMovement", "Material", "Warehouse"]
+    },
+    "warehouse_views": {
+      "functions": ["warehouse_list", "warehouse_detail", "warehouse_create", "warehouse_update", "api_warehouses"],
+      "line_range": "224-588, 1000-1013",
+      "dependencies": ["Warehouse", "MaterialStock", "CustomUser"]
+    },
+    "reservation_views": {
+      "functions": ["reservations_list", "reservation_detail", "reservation_create", "reservation_update", "reservation_cancel", "api_materials_with_stock", "api_stock_info"],
+      "line_range": "302-336, 979-1236",
+      "dependencies": ["StockReservation", "Material", "Warehouse", "MaterialStock"]
+    },
+    "count_views": {
+      "functions": ["inventory_count_list", "inventory_count_detail", "inventory_count_create", "inventory_count_start", "inventory_count_save_items", "inventory_count_complete", "inventory_count_cancel", "inventory_count_generate_adjustments"],
+      "line_range": "595-973",
+      "dependencies": ["InventoryCount", "InventoryCountItem", "MaterialStock", "Warehouse", "CustomUser"]
+    }
+  }
+}

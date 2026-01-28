@@ -1,0 +1,14 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_improvements",
+  "ideaId": "ci-004",
+  "rationale": "The code reveals this opportunity because: 1) Date range filter pattern exists in inventory/views.py movements_list() and production/views.py bin_list(), 2) Material and Supplier models have created_at field from BaseModel, 3) The filter UI pattern is established in the codebase, 4) material_list and supplier_list already have search and type filters, just missing date range.",
+  "category": "feature",
+  "estimatedEffort": "small",
+  "complexity": "small",
+  "affectedFiles": [
+    "apps/materials/views.py",
+    "templates/materials/material_list.html",
+    "templates/materials/supplier_list.html"
+  ]
+}

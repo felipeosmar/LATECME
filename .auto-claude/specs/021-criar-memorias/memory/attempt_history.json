@@ -1,0 +1,28 @@
+{
+  "subtasks": {
+    "subtask-1-1": {
+      "attempts": [
+        {
+          "session": 1,
+          "timestamp": "2026-01-28T09:21:01.003991",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 1,
+          "timestamp": "2026-01-28T13:43:31.988058",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        }
+      ],
+      "status": "failed"
+    }
+  },
+  "stuck_subtasks": [],
+  "metadata": {
+    "created_at": "2026-01-27T16:05:53.632587",
+    "last_updated": "2026-01-28T13:43:31.988086"
+  }
+}

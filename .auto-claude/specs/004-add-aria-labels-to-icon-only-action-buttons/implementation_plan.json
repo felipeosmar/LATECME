@@ -1,0 +1,13 @@
+{
+  "feature": "Add ARIA labels to icon-only action buttons",
+  "description": "Add descriptive aria-label attributes to all icon-only buttons and links in data tables and navigation",
+  "created_at": "2026-01-27T13:35:38.819Z",
+  "updated_at": "2026-01-27T13:35:38.819Z",
+  "status": "backlog",
+  "planStatus": "pending",
+  "phases": [],
+  "workflow_type": "development",
+  "services_involved": [],
+  "final_acceptance": [],
+  "spec_file": "spec.md"
+}

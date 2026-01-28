@@ -1,0 +1,14 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_improvements",
+  "ideaId": "ci-001",
+  "rationale": "The code reveals this opportunity because: 1) Dashboard pattern already exists in inventory/views.py dashboard() and purchasing/views.py dashboard(), 2) Production module has all the necessary models (ProductionOrder, Batch, Bin) with status fields and timestamps, 3) Statistics queries using Count, Sum, and aggregations are well-established patterns in the codebase, 4) Template structure exists (templates/dashboard/index.html, templates/inventory/dashboard.html) that can be followed.",
+  "category": "feature",
+  "estimatedEffort": "medium",
+  "complexity": "medium",
+  "affectedFiles": [
+    "apps/production/views.py",
+    "apps/production/urls.py",
+    "templates/production/dashboard.html"
+  ]
+}

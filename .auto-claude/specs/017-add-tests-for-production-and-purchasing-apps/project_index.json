@@ -1,0 +1,52 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql"
+  },
+  "conventions": {
+    "linter": "none",
+    "formatter": "none",
+    "testing": "django.test.TestCase",
+    "test_location": "Each app has a tests.py file",
+    "docstring_language": "portuguese"
+  },
+  "apps": {
+    "production": {
+      "path": "apps/production",
+      "models": ["ProductionOrder", "Bin", "BinHistory", "Batch", "BatchItem"],
+      "has_tests": false,
+      "views_lines": 869
+    },
+    "purchasing": {
+      "path": "apps/purchasing",
+      "models": ["PurchaseRequest", "PurchaseRequestItem", "PurchaseOrder", "PurchaseOrderItem", "Receiving", "ReceivingItem"],
+      "has_tests": false,
+      "views_lines": 1084
+    },
+    "inventory": {
+      "path": "apps/inventory",
+      "models": ["Warehouse", "MaterialStock", "StockMovement", "StockReservation", "InventoryCount", "InventoryCountItem"],
+      "has_tests": true
+    },
+    "materials": {
+      "path": "apps/materials",
+      "models": ["Material", "MaterialCategory", "Supplier", "MaterialSupplier"],
+      "has_tests": true
+    },
+    "accounts": {
+      "path": "apps/accounts",
+      "models": ["CustomUser", "UserRole"],
+      "has_tests": true
+    }
+  }
+}

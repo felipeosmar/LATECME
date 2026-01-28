@@ -110,15 +110,8 @@ class PurchaseRequest(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.reference_number:
-            last_request = PurchaseRequest.objects.order_by('-created_at').first()
-            if last_request and last_request.reference_number:
-                try:
-                    last_num = int(last_request.reference_number.replace('SC', ''))
-                    self.reference_number = f"SC{last_num + 1:05d}"
-                except ValueError:
-                    self.reference_number = "SC00001"
-            else:
-                self.reference_number = "SC00001"
+            from apps.core.models import Sequence
+            self.reference_number = Sequence.get_next('purchase_request', 'SC')
         super().save(*args, **kwargs)
 
     @property
@@ -275,15 +268,8 @@ class PurchaseOrder(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.reference_number:
-            last_order = PurchaseOrder.objects.order_by('-created_at').first()
-            if last_order and last_order.reference_number:
-                try:
-                    last_num = int(last_order.reference_number.replace('PC', ''))
-                    self.reference_number = f"PC{last_num + 1:05d}"
-                except ValueError:
-                    self.reference_number = "PC00001"
-            else:
-                self.reference_number = "PC00001"
+            from apps.core.models import Sequence
+            self.reference_number = Sequence.get_next('purchase_order', 'PC')
         super().save(*args, **kwargs)
 
     @property
@@ -440,15 +426,8 @@ class Receiving(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.reference_number:
-            last_receiving = Receiving.objects.order_by('-created_at').first()
-            if last_receiving and last_receiving.reference_number:
-                try:
-                    last_num = int(last_receiving.reference_number.replace('RB', ''))
-                    self.reference_number = f"RB{last_num + 1:05d}"
-                except ValueError:
-                    self.reference_number = "RB00001"
-            else:
-                self.reference_number = "RB00001"
+            from apps.core.models import Sequence
+            self.reference_number = Sequence.get_next('receiving', 'RB')
         super().save(*args, **kwargs)
 
     @property

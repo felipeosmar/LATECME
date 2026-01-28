@@ -1,0 +1,14 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_improvements",
+  "ideaId": "ci-003",
+  "rationale": "The code reveals this opportunity because: 1) Reports view pattern exists in inventory/views.py reports() with date range filtering, 2) Production models have all necessary data fields (status, dates, quantities) for meaningful reports, 3) Aggregation queries using Sum, Count, values() are well-established, 4) templates/inventory/reports.html provides the template structure to follow.",
+  "category": "feature",
+  "estimatedEffort": "medium",
+  "complexity": "medium",
+  "affectedFiles": [
+    "apps/production/views.py",
+    "apps/production/urls.py",
+    "templates/production/reports.html"
+  ]
+}

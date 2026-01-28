@@ -1,0 +1,88 @@
+{
+  "files_to_modify": {},
+  "files_to_create": {
+    "production": ["apps/production/tests.py"],
+    "purchasing": ["apps/purchasing/tests.py"]
+  },
+  "files_to_reference": [
+    "apps/inventory/tests.py",
+    "apps/materials/tests.py",
+    "apps/accounts/tests.py"
+  ],
+  "patterns": {
+    "test_pattern": "Django TestCase with setUp() creating test user and required objects",
+    "test_naming": "test_<descriptive_name> with Portuguese docstrings",
+    "test_structure": "One TestCase class per model, covering creation, validation, properties, methods, and edge cases",
+    "authentication_pattern": "All views require login_required decorator, tests use Django Client with login()",
+    "model_pattern": "All models inherit from BaseModel (has created_by, updated_by, is_active fields)",
+    "decimal_pattern": "Use Decimal('0.000') for quantities, Decimal('0.00') for prices"
+  },
+  "existing_implementations": {
+    "description": "Three apps (inventory, materials, accounts) have comprehensive test coverage serving as templates",
+    "relevant_files": [
+      "apps/inventory/tests.py - 590 lines covering 6 models with model tests and property tests",
+      "apps/materials/tests.py - 366 lines covering 4 models with validation and business logic tests",
+      "apps/accounts/tests.py - 379 lines covering user authentication, registration, and views"
+    ],
+    "test_coverage_patterns": [
+      "Model creation and __str__ representation",
+      "Unique constraints and field validation",
+      "Model properties and computed fields",
+      "Model methods and business logic",
+      "Status choices and state transitions",
+      "Related object queries",
+      "View authentication and authorization",
+      "View form processing and AJAX endpoints"
+    ]
+  },
+  "models_to_test": {
+    "production": {
+      "ProductionOrder": {
+        "key_features": ["Auto-generated order_number", "Status workflow", "completion_percentage property", "is_overdue property", "start() and complete() methods"],
+        "relationships": ["Material (ForeignKey)", "CustomUser as responsible", "Batch (reverse relation)"]
+      },
+      "Bin": {
+        "key_features": ["Auto-generated code", "load_material() method", "unload_material() method", "empty() method", "is_empty and is_loaded properties"],
+        "relationships": ["Warehouse", "Material as current_material", "BinHistory (reverse relation)"]
+      },
+      "BinHistory": {
+        "key_features": ["Movement types (IN/OUT/EMPTY/TRANSFER/ADJUSTMENT)", "quantity_before and quantity_after auto-calculation"],
+        "relationships": ["Bin", "Material", "Batch", "CustomUser as performed_by"]
+      },
+      "Batch": {
+        "key_features": ["Auto-generated batch_number", "add_bin_material() method", "mark_ready() method", "start_production() method", "complete() method", "quantity_variance property"],
+        "relationships": ["ProductionOrder", "Material", "CustomUser as prepared_by", "BatchItem (reverse relation)"]
+      },
+      "BatchItem": {
+        "key_features": ["Tracks material collected from bins for batch"],
+        "relationships": ["Batch", "Bin", "Material", "CustomUser as collected_by"]
+      }
+    },
+    "purchasing": {
+      "PurchaseRequest": {
+        "key_features": ["Auto-generated reference_number (SC prefix)", "Status workflow", "Priority levels", "total_value property", "can_approve and can_edit properties"],
+        "relationships": ["CustomUser as requester", "Warehouse", "CustomUser as approved_by", "PurchaseRequestItem (reverse relation)"]
+      },
+      "PurchaseRequestItem": {
+        "key_features": ["total_price property"],
+        "relationships": ["PurchaseRequest", "Material", "Supplier as preferred_supplier"]
+      },
+      "PurchaseOrder": {
+        "key_features": ["Auto-generated reference_number (PC prefix)", "Status workflow", "total_value property", "total_received property", "can_receive property"],
+        "relationships": ["Supplier", "Warehouse", "PurchaseRequest", "CustomUser as buyer", "PurchaseOrderItem (reverse relation)"]
+      },
+      "PurchaseOrderItem": {
+        "key_features": ["total_price property", "pending_quantity property", "is_fully_received property"],
+        "relationships": ["PurchaseOrder", "Material"]
+      },
+      "Receiving": {
+        "key_features": ["Auto-generated reference_number (RB prefix)", "Status workflow", "total_received_value property"],
+        "relationships": ["PurchaseOrder", "CustomUser as received_by", "CustomUser as inspected_by", "ReceivingItem (reverse relation)"]
+      },
+      "ReceivingItem": {
+        "key_features": ["total_value property", "Tracks quantity_received, quantity_accepted, quantity_rejected"],
+        "relationships": ["Receiving", "PurchaseOrderItem"]
+      }
+    }
+  }
+}

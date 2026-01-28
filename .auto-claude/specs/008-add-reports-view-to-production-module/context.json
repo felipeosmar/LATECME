@@ -1,0 +1,56 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/production/views.py",
+      "apps/production/urls.py"
+    ]
+  },
+  "files_to_create": {
+    "backend": [
+      "templates/production/reports.html"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/views.py",
+    "templates/inventory/reports.html",
+    "apps/inventory/urls.py"
+  ],
+  "patterns": {
+    "view_pattern": "Django function-based views with @login_required decorator",
+    "query_pattern": "Use .filter(), .values(), .annotate() with Count and Sum aggregations",
+    "date_filtering": "Use date_from/date_to query params with default 30-day range",
+    "template_pattern": "Extend base/internal.html, use card-based layout with HTMX support",
+    "url_pattern": "Add route with app_name namespace"
+  },
+  "existing_implementations": {
+    "description": "Inventory app has a complete reports() view implementation at apps/inventory/views.py:414 with date range filtering, aggregation queries (movements_by_type, top_materials, top_warehouses), and a comprehensive HTML template",
+    "relevant_files": [
+      "apps/inventory/views.py",
+      "templates/inventory/reports.html",
+      "apps/inventory/urls.py"
+    ],
+    "key_patterns": [
+      "Date filtering with default 30-day range: date_from = (timezone.now() - timedelta(days=30)).date()",
+      "Aggregation queries: .values('field').annotate(count=Count('id'), total=Sum('quantity'))",
+      "Template structure: Period filter card + Summary cards + Data tables + Export options"
+    ]
+  },
+  "production_models": {
+    "ProductionOrder": {
+      "key_fields": ["order_number", "status", "planned_quantity", "produced_quantity", "actual_start_date", "actual_end_date"],
+      "status_choices": ["DRAFT", "PLANNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]
+    },
+    "Batch": {
+      "key_fields": ["batch_number", "status", "target_quantity", "actual_quantity", "preparation_date", "production_start_date", "completion_date"],
+      "status_choices": ["PREPARATION", "READY", "IN_PRODUCTION", "COMPLETED", "CANCELLED"]
+    },
+    "Bin": {
+      "key_fields": ["code", "status", "current_material", "current_quantity", "capacity"],
+      "status_choices": ["EMPTY", "LOADED", "IN_USE", "MAINTENANCE"]
+    },
+    "BinHistory": {
+      "key_fields": ["movement_type", "quantity", "material", "created_at"],
+      "movement_types": ["IN", "OUT", "EMPTY", "TRANSFER", "ADJUSTMENT"]
+    }
+  }
+}

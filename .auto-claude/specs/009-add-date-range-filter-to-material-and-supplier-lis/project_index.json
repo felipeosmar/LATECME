@@ -1,0 +1,32 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql",
+    "web_server": "nginx"
+  },
+  "conventions": {
+    "framework": "django",
+    "template_engine": "django",
+    "frontend": "htmx",
+    "testing": "django.test"
+  },
+  "apps": [
+    "materials",
+    "inventory",
+    "production",
+    "purchasing",
+    "accounts",
+    "labels",
+    "core"
+  ]
+}

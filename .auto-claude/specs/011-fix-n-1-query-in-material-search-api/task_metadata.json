@@ -1,0 +1,9 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "performance_optimizations",
+  "ideaId": "perf-001",
+  "rationale": "This API endpoint is called on every keystroke for material autocomplete searches. With typical usage patterns of 2-3 searches per form interaction, this could generate 30+ database queries per user action. The fix is straightforward with `Prefetch` and annotation.",
+  "category": "performance",
+  "performanceCategory": "database",
+  "impact": "high"
+}

@@ -1,0 +1,50 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "pyproject.toml"
+    ]
+  },
+  "files_to_create": {
+    "backend": [
+      ".ruff.toml"
+    ]
+  },
+  "files_to_reference": [
+    "apps/accounts/models.py",
+    "apps/accounts/views.py",
+    "apps/core/models.py",
+    "config/settings.py"
+  ],
+  "patterns": {
+    "import_style": "Django imports first (grouped), then third-party, then local imports. Example: apps/accounts/views.py lines 1-9",
+    "docstring_style": "Triple-quoted strings, mix of Portuguese and English. Models have Portuguese verbose_name",
+    "model_patterns": "Abstract base models exist (TimeStampedModel, BaseModel) in apps/core/models.py",
+    "view_patterns": "Mix of class-based views (LoginView, CreateView) and function-based views with @login_required decorator"
+  },
+  "existing_implementations": {
+    "description": "No linting or code quality tools currently configured. pyproject.toml exists with project metadata but no tool configurations.",
+    "relevant_files": [
+      "pyproject.toml",
+      "requirements.txt"
+    ],
+    "tech_stack_notes": "Django 5.2.4, Python >=3.10, uses prettyconf for config management, PostgreSQL database"
+  },
+  "linting_requirements": {
+    "tools_to_add": [
+      "ruff - Fast Python linter and formatter (replaces flake8, black, isort)",
+      "mypy - Static type checker",
+      "bandit - Security linter"
+    ],
+    "integration_points": [
+      "pyproject.toml for central configuration",
+      ".ruff.toml for detailed ruff configuration (optional)",
+      "pre-commit hooks (optional future enhancement)",
+      "Makefile commands for easy execution"
+    ],
+    "django_specific": [
+      "Configure ruff to understand Django patterns",
+      "Set up mypy with django-stubs",
+      "Exclude migrations from linting"
+    ]
+  }
+}

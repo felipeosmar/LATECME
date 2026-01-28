@@ -1,0 +1,34 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Read(/home/felipe/work/LATECME/**)",
+      "Write(/home/felipe/work/LATECME/**)",
+      "Edit(/home/felipe/work/LATECME/**)",
+      "Glob(/home/felipe/work/LATECME/**)",
+      "Grep(/home/felipe/work/LATECME/**)",
+      "Read(/home/felipe/work/LATECME/.auto-claude/specs/021-criar-memorias/**)",
+      "Write(/home/felipe/work/LATECME/.auto-claude/specs/021-criar-memorias/**)",
+      "Edit(/home/felipe/work/LATECME/.auto-claude/specs/021-criar-memorias/**)",
+      "Bash(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)",
+      "mcp__graphiti-memory__search_nodes(*)",
+      "mcp__graphiti-memory__search_facts(*)",
+      "mcp__graphiti-memory__add_episode(*)",
+      "mcp__graphiti-memory__get_episodes(*)",
+      "mcp__graphiti-memory__get_entity_edge(*)"
+    ]
+  }
+}

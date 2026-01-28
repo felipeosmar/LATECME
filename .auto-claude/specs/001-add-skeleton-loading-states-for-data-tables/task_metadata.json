@@ -1,0 +1,16 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "ui_ux_improvements",
+  "ideaId": "uiux-001",
+  "rationale": "Currently, data tables show no visual feedback during loading except a small spinner. Skeleton screens reduce perceived load time and prevent layout shifts, improving user experience during navigation and filtering",
+  "category": "ui_ux",
+  "uiuxCategory": "performance",
+  "affectedFiles": [
+    "templates/components/_loading.html",
+    "templates/components/_table.html",
+    "templates/materials/material_list.html",
+    "templates/inventory/stock_list.html",
+    "static/css/custom.css"
+  ],
+  "problemSolved": "When filtering/paginating tables via HTMX, users see either nothing or a small spinner. The table content disappears briefly, causing layout shift."
+}

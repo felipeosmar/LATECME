@@ -1,0 +1,94 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/purchasing/urls.py"
+    ]
+  },
+  "files_to_split": {
+    "backend": [
+      "apps/purchasing/views.py"
+    ]
+  },
+  "files_to_create": {
+    "backend": [
+      "apps/purchasing/views/__init__.py",
+      "apps/purchasing/views/dashboard.py",
+      "apps/purchasing/views/purchase_requests.py",
+      "apps/purchasing/views/purchase_orders.py",
+      "apps/purchasing/views/receiving.py",
+      "apps/purchasing/views/api.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/purchasing/models.py",
+    "apps/purchasing/urls.py"
+  ],
+  "patterns": {
+    "view_pattern": "Django function-based views with @login_required and @require_http_methods decorators",
+    "import_pattern": "from . import views pattern used in urls.py, will need to be updated to from .views import module",
+    "response_pattern": "JsonResponse for API endpoints, render for template views",
+    "model_pattern": "Uses select_related() and prefetch_related() for query optimization"
+  },
+  "existing_implementations": {
+    "description": "No split views pattern exists in the codebase yet. This is the first refactoring of this kind.",
+    "relevant_files": [
+      "apps/purchasing/views.py (source file to be split)",
+      "apps/inventory/views.py (similar monolithic structure)"
+    ]
+  },
+  "domain_boundaries": {
+    "dashboard": {
+      "description": "Main purchasing dashboard with stats and overview",
+      "lines": "20-53",
+      "views": ["dashboard"]
+    },
+    "purchase_requests": {
+      "description": "Purchase request (solicitation) CRUD and status transitions",
+      "lines": "60-410",
+      "views": [
+        "request_list",
+        "request_detail",
+        "request_create",
+        "request_update",
+        "request_submit",
+        "request_approve",
+        "request_reject",
+        "request_item_add",
+        "request_item_remove"
+      ]
+    },
+    "purchase_orders": {
+      "description": "Purchase order CRUD and status transitions",
+      "lines": "416-703",
+      "views": [
+        "order_list",
+        "order_detail",
+        "order_create",
+        "order_send",
+        "order_confirm",
+        "order_item_add",
+        "order_item_remove"
+      ]
+    },
+    "receiving": {
+      "description": "Material receiving process and inspection",
+      "lines": "709-1036",
+      "views": [
+        "receiving_list",
+        "receiving_detail",
+        "receiving_create",
+        "receiving_item_add",
+        "receiving_approve",
+        "receiving_reject"
+      ]
+    },
+    "api": {
+      "description": "API endpoints for frontend integration",
+      "lines": "1042-1085",
+      "views": [
+        "api_approved_requests",
+        "api_order_items"
+      ]
+    }
+  }
+}

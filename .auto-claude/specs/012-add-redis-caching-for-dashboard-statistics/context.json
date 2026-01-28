@@ -1,0 +1,92 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "config/settings.py",
+      "requirements.txt",
+      "apps/materials/views.py",
+      "apps/inventory/views.py",
+      "apps/production/views.py",
+      "apps/purchasing/views.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/materials/views.py",
+    "apps/inventory/views.py",
+    "config/settings.py"
+  ],
+  "patterns": {
+    "view_pattern": "Django function-based views with @login_required decorator",
+    "query_pattern": "Direct ORM queries with .count(), .aggregate(), .annotate()",
+    "context_pattern": "Context dict returned via render(request, template, context)",
+    "settings_pattern": "Django settings using prettyconf for environment variables"
+  },
+  "existing_implementations": {
+    "description": "No existing cache implementation found. Redis is configured in docker-compose.yml but not integrated with Django.",
+    "relevant_files": [
+      "docker-compose.yml",
+      "config/settings.py"
+    ],
+    "redis_config": {
+      "host": "redis",
+      "port": 6379,
+      "docker_service": "redis:7-alpine",
+      "maxmemory": "256mb",
+      "policy": "allkeys-lru"
+    }
+  },
+  "dashboard_queries": {
+    "materials": {
+      "file": "apps/materials/views.py",
+      "function": "dashboard_materials",
+      "lines": "243-277",
+      "queries": [
+        "Material.objects.filter(is_active=True).count()",
+        "Supplier.objects.filter(is_active=True).count()",
+        "MaterialCategory.objects.filter(is_active=True).count()",
+        "Material.objects.values('material_type').annotate(count=Count('id'))",
+        "Supplier.objects.annotate(material_count=Count('materials')).order_by('-material_count')[:5]",
+        "Material.objects.filter(is_active=True, suppliers__isnull=True).count()"
+      ]
+    },
+    "inventory": {
+      "file": "apps/inventory/views.py",
+      "function": "dashboard",
+      "lines": "20-60",
+      "queries": [
+        "Warehouse.objects.filter(is_active=True).count()",
+        "MaterialStock.objects.values('material').distinct().count()",
+        "MaterialStock.objects.aggregate(total=Sum(F('current_quantity') * F('material__materialsupplier__price_per_kg')))",
+        "MaterialStock.objects.filter(current_quantity__lte=F('minimum_stock'), current_quantity__gt=0)[:10]",
+        "MaterialStock.objects.filter(current_quantity=0)[:10]",
+        "StockMovement.objects.order_by('-created_at')[:10]",
+        "StockReservation.objects.filter(expiry_date__gt=timezone.now())[:10]"
+      ]
+    },
+    "production": {
+      "file": "apps/production/views.py",
+      "function": "production_order_list",
+      "lines": "24-69",
+      "queries": [
+        "ProductionOrder.objects.filter(status='IN_PROGRESS').count()",
+        "ProductionOrder.objects.filter(status='COMPLETED').count()",
+        "Batch.objects.count()"
+      ]
+    },
+    "purchasing": {
+      "file": "apps/purchasing/views.py",
+      "function": "dashboard",
+      "lines": "21-52",
+      "queries": [
+        "PurchaseRequest.objects.filter(status='PENDING').count()",
+        "PurchaseRequest.objects.filter(status='APPROVED').count()",
+        "PurchaseOrder.objects.filter(status__in=['SENT', 'CONFIRMED', 'PARTIAL']).count()",
+        "Receiving.objects.filter(status='PENDING').count()"
+      ]
+    }
+  },
+  "cache_strategy": {
+    "ttl_recommendation": "300 seconds (5 minutes) for dashboard statistics",
+    "invalidation_approach": "Time-based expiration (simple) or signal-based (advanced)",
+    "cache_key_pattern": "dashboard:{app_name}:{view_name}"
+  }
+}

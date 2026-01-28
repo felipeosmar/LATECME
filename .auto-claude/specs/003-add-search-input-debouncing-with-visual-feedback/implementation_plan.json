@@ -1,0 +1,13 @@
+{
+  "feature": "Add search input debouncing with visual feedback",
+  "description": "Implement debounced search with a visual typing indicator for all search/filter forms",
+  "created_at": "2026-01-27T13:35:38.264Z",
+  "updated_at": "2026-01-27T13:35:38.264Z",
+  "status": "backlog",
+  "planStatus": "pending",
+  "phases": [],
+  "workflow_type": "development",
+  "services_involved": [],
+  "final_acceptance": [],
+  "spec_file": "spec.md"
+}

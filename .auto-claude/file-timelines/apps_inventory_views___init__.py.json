@@ -1,0 +1,28 @@
+{
+  "file_path": "apps/inventory/views/__init__.py",
+  "main_branch_history": [],
+  "task_views": {
+    "016-split-large-inventory-views-py-into-domain-specifi": {
+      "task_id": "016-split-large-inventory-views-py-into-domain-specifi",
+      "branch_point": {
+        "commit_hash": "526d1b9e0da67dd7286419b5ea507796b929d555",
+        "content": "",
+        "timestamp": "2026-01-28T17:59:21.031299"
+      },
+      "worktree_state": {
+        "content": "# Views package for inventory app\n# This package contains domain-specific view modules\n\n# Import from stock_views\nfrom .stock_views import (\n    dashboard,\n    stock_list,\n    stock_detail,\n    reports,\n)\n\n# Import from warehouse_views\nfrom .warehouse_views import (\n    warehouse_list,\n    warehouse_detail,\n    warehouse_create,\n    warehouse_update,\n    api_warehouses,\n)\n\n# Import from reservation_views\nfrom .reservation_views import (\n    reservations_list,\n    reservation_detail,\n    reservation_create,\n    reservation_update,\n    reservation_cancel,\n    api_materials_with_stock,\n    api_stock_info,\n)\n\n# Import from movement_views\nfrom .movement_views import (\n    movements_list,\n    create_movement,\n)\n\n# Import from count_views\nfrom .count_views import (\n    inventory_count_list,\n    inventory_count_detail,\n    inventory_count_create,\n    inventory_count_start,\n    inventory_count_save_items,\n    inventory_count_complete,\n    inventory_count_cancel,\n    inventory_count_generate_adjustments,\n)\n\n# Export all view functions for backward compatibility\n__all__ = [\n    # Stock views\n    'dashboard',\n    'stock_list',\n    'stock_detail',\n    'reports',\n    # Warehouse views\n    'warehouse_list',\n    'warehouse_detail',\n    'warehouse_create',\n    'warehouse_update',\n    'api_warehouses',\n    # Reservation views\n    'reservations_list',\n    'reservation_detail',\n    'reservation_create',\n    'reservation_update',\n    'reservation_cancel',\n    'api_materials_with_stock',\n    'api_stock_info',\n    # Movement views\n    'movements_list',\n    'create_movement',\n    # Count views\n    'inventory_count_list',\n    'inventory_count_detail',\n    'inventory_count_create',\n    'inventory_count_start',\n    'inventory_count_save_items',\n    'inventory_count_complete',\n    'inventory_count_cancel',\n    'inventory_count_generate_adjustments',\n]\n",
+        "last_modified": "2026-01-28T17:59:21.065153"
+      },
+      "task_intent": {
+        "title": "016-split-large-inventory-views-py-into-domain-specifi",
+        "description": "",
+        "from_plan": false
+      },
+      "commits_behind_main": 0,
+      "status": "active",
+      "merged_at": null
+    }
+  },
+  "created_at": "2026-01-28T17:59:21.031324",
+  "last_updated": "2026-01-28T17:59:21.035085"
+}

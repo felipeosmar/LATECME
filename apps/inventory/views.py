@@ -348,6 +348,7 @@ def create_movement(request):
         unit_cost = request.POST.get('unit_cost')
         reference_document = request.POST.get('reference_document', '')
         notes = request.POST.get('notes', '')
+        destination_warehouse_id = request.POST.get('destination_warehouse_id')
 
         # Validações
         if not all([material_id, warehouse_id, movement_type, reason, quantity]):
@@ -365,9 +366,26 @@ def create_movement(request):
         # Obter objetos
         material = get_object_or_404(Material, id=material_id)
         warehouse = get_object_or_404(Warehouse, id=warehouse_id)
+        
+        destination_warehouse = None
+        if destination_warehouse_id:
+            destination_warehouse = get_object_or_404(Warehouse, id=destination_warehouse_id)
 
-        # Verificar se há estoque suficiente para saídas
-        if movement_type == 'OUT':
+        # Validação específica para Transferência
+        if movement_type == 'TRANSFER':
+            if not destination_warehouse:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Armazém de destino é obrigatório para transferências.'
+                })
+            if destination_warehouse.id == warehouse.id:
+                 return JsonResponse({
+                    'success': False,
+                    'message': 'Armazém de destino deve ser diferente da origem.'
+                })
+
+        # Verificar se há estoque suficiente para saídas ou transferências
+        if movement_type in ['OUT', 'TRANSFER']:
             try:
                 stock = MaterialStock.objects.get(
                     material=material,
@@ -394,7 +412,8 @@ def create_movement(request):
             unit_cost=Decimal(unit_cost) if unit_cost else None,
             reference_document=reference_document,
             notes=notes,
-            user=request.user
+            user=request.user,
+            destination_warehouse=destination_warehouse
         )
 
         return JsonResponse({
@@ -529,12 +548,8 @@ def warehouse_update(request, warehouse_id):
         warehouse = get_object_or_404(Warehouse, id=warehouse_id)
 
         # Parse PUT data
-        put_data = request.body.decode('utf-8')
-        data = {}
-        for param in put_data.split('&'):
-            if '=' in param:
-                key, value = param.split('=', 1)
-                data[key] = value
+        from django.http import QueryDict
+        data = QueryDict(request.body)
 
         code = data.get('code', '').strip()
         name = data.get('name', '').strip()

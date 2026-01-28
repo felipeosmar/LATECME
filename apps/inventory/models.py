@@ -452,14 +452,12 @@ class InventoryCount(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.reference_number:
-            # Gerar número de referência automático
+            from apps.core.models import Sequence
             today = timezone.now().date()
-            count = InventoryCount.objects.filter(
-                count_date=today,
-                warehouse=self.warehouse
-            ).count()
-            self.reference_number = f"INV-{self.warehouse.code}-{today.strftime('%Y%m%d')}-{count + 1:03d}"
-
+            self.reference_number = Sequence.get_next(
+                'inventory_count', 'INV', padding=3,
+                date_scope=today, extra_key=self.warehouse.code
+            )
         super().save(*args, **kwargs)
 
 
