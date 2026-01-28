@@ -131,7 +131,6 @@ line-ending = "auto"
 python_version = "3.10"
 
 # Django configuration
-django_settings_module = "config.settings"
 plugins = ["mypy_django_plugin.main"]
 
 # Exclude patterns
