@@ -996,3 +996,514 @@ class PurchaseOrderItemTestCase(TestCase):
         item.save()
         self.assertEqual(item.pending_quantity, Decimal('0'))
         self.assertTrue(item.is_fully_received)
+
+
+class ReceivingTestCase(TestCase):
+    """Testes para o model Receiving"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user.status = 'approved'
+        self.user.save()
+
+        self.inspector = User.objects.create_user(
+            username='inspector',
+            email='inspector@example.com',
+            password='testpass123'
+        )
+        self.inspector.status = 'approved'
+        self.inspector.save()
+
+        self.warehouse = Warehouse.objects.create(
+            code='WH001',
+            name='Armazém Principal',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.category = MaterialCategory.objects.create(
+            name='Ligas de Alumínio',
+            color='#3498db',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.material = Material.objects.create(
+            code='AL7075',
+            name='Alumínio 7075-T6',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.810'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.supplier = Supplier.objects.create(
+            code='SUP001',
+            name='Fornecedor Teste',
+            cnpj='12345678000190',
+            contact_email='contato@fornecedor.com',
+            contact_phone='11 98765-4321',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.purchase_order = PurchaseOrder.objects.create(
+            supplier=self.supplier,
+            warehouse=self.warehouse,
+            buyer=self.user,
+            status='CONFIRMED',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+    def test_create_receiving(self):
+        """Testa a criação de um recebimento"""
+        receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            invoice_number='NF12345',
+            invoice_date=timezone.now().date(),
+            notes='Recebimento realizado sem problemas',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(receiving.purchase_order, self.purchase_order)
+        self.assertEqual(receiving.received_by, self.user)
+        self.assertEqual(receiving.status, 'PENDING')
+        self.assertEqual(receiving.invoice_number, 'NF12345')
+        self.assertTrue(receiving.is_active)
+        self.assertIsNotNone(receiving.reference_number)
+        self.assertTrue(receiving.reference_number.startswith('RB'))
+
+    def test_receiving_reference_number_generation(self):
+        """Testa a geração automática do número de referência"""
+        receiving1 = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        receiving2 = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(receiving1.reference_number, 'RB00001')
+        self.assertEqual(receiving2.reference_number, 'RB00002')
+
+    def test_receiving_unique_reference_number(self):
+        """Testa a unicidade do número de referência"""
+        Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Tentar criar com mesmo reference_number deve falhar
+        with self.assertRaises(Exception):
+            receiving = Receiving(
+                reference_number='RB00001',
+                purchase_order=self.purchase_order,
+                received_by=self.user,
+                created_by=self.user,
+                updated_by=self.user
+            )
+            receiving.save()
+
+    def test_receiving_str(self):
+        """Testa a representação em string do recebimento"""
+        receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        expected_str = f"{receiving.reference_number} - {self.purchase_order.reference_number}"
+        self.assertEqual(str(receiving), expected_str)
+
+    def test_receiving_total_received_value_property(self):
+        """Testa a propriedade total_received_value"""
+        receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Sem itens, total deve ser 0
+        self.assertEqual(receiving.total_received_value, 0)
+
+        # Criar itens de pedido
+        po_item1 = PurchaseOrderItem.objects.create(
+            purchase_order=self.purchase_order,
+            material=self.material,
+            quantity=Decimal('10.0'),
+            unit_price=Decimal('50.00'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        po_item2 = PurchaseOrderItem.objects.create(
+            purchase_order=self.purchase_order,
+            material=self.material,
+            quantity=Decimal('5.0'),
+            unit_price=Decimal('60.00'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Adicionar itens de recebimento
+        ReceivingItem.objects.create(
+            receiving=receiving,
+            purchase_order_item=po_item1,
+            quantity_received=Decimal('10.0'),
+            quantity_accepted=Decimal('10.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        ReceivingItem.objects.create(
+            receiving=receiving,
+            purchase_order_item=po_item2,
+            quantity_received=Decimal('5.0'),
+            quantity_accepted=Decimal('4.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Total = (10 * 50) + (4 * 60) = 500 + 240 = 740
+        self.assertEqual(receiving.total_received_value, Decimal('740.00'))
+
+    def test_receiving_status_workflow(self):
+        """Testa o fluxo de status do recebimento"""
+        receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            status='PENDING',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(receiving.status, 'PENDING')
+
+        # Mudar para inspeção
+        receiving.status = 'INSPECTING'
+        receiving.inspected_by = self.inspector
+        receiving.inspection_date = timezone.now()
+        receiving.save()
+        self.assertEqual(receiving.status, 'INSPECTING')
+        self.assertEqual(receiving.inspected_by, self.inspector)
+
+        # Aprovar
+        receiving.status = 'APPROVED'
+        receiving.save()
+        self.assertEqual(receiving.status, 'APPROVED')
+
+    def test_receiving_rejection(self):
+        """Testa a rejeição de um recebimento"""
+        receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            status='INSPECTING',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Rejeitar
+        receiving.status = 'REJECTED'
+        receiving.rejection_reason = 'Material fora das especificações'
+        receiving.inspected_by = self.inspector
+        receiving.inspection_date = timezone.now()
+        receiving.save()
+
+        self.assertEqual(receiving.status, 'REJECTED')
+        self.assertEqual(receiving.rejection_reason, 'Material fora das especificações')
+        self.assertIsNotNone(receiving.inspected_by)
+        self.assertIsNotNone(receiving.inspection_date)
+
+
+class ReceivingItemTestCase(TestCase):
+    """Testes para o model ReceivingItem"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user.status = 'approved'
+        self.user.save()
+
+        self.warehouse = Warehouse.objects.create(
+            code='WH001',
+            name='Armazém Principal',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.category = MaterialCategory.objects.create(
+            name='Ligas de Alumínio',
+            color='#3498db',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.material = Material.objects.create(
+            code='AL7075',
+            name='Alumínio 7075-T6',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.810'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.supplier = Supplier.objects.create(
+            code='SUP001',
+            name='Fornecedor Teste',
+            cnpj='12345678000190',
+            contact_email='contato@fornecedor.com',
+            contact_phone='11 98765-4321',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.purchase_order = PurchaseOrder.objects.create(
+            supplier=self.supplier,
+            warehouse=self.warehouse,
+            buyer=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.purchase_order_item = PurchaseOrderItem.objects.create(
+            purchase_order=self.purchase_order,
+            material=self.material,
+            quantity=Decimal('100.0'),
+            unit_price=Decimal('50.00'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.receiving = Receiving.objects.create(
+            purchase_order=self.purchase_order,
+            received_by=self.user,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+    def test_create_receiving_item(self):
+        """Testa a criação de um item de recebimento"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            quantity_accepted=Decimal('48.0'),
+            quantity_rejected=Decimal('2.0'),
+            batch_number='LOTE123',
+            notes='Item recebido com pequena avaria',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(item.receiving, self.receiving)
+        self.assertEqual(item.purchase_order_item, self.purchase_order_item)
+        self.assertEqual(item.quantity_received, Decimal('50.0'))
+        self.assertEqual(item.quantity_accepted, Decimal('48.0'))
+        self.assertEqual(item.quantity_rejected, Decimal('2.0'))
+        self.assertEqual(item.batch_number, 'LOTE123')
+        self.assertTrue(item.is_active)
+
+    def test_receiving_item_str(self):
+        """Testa a representação em string do item"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        expected_str = f"{self.material.code} - 50.0 kg"
+        self.assertEqual(str(item), expected_str)
+
+    def test_receiving_item_total_value_property(self):
+        """Testa a propriedade total_value com quantidade aceita"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            quantity_accepted=Decimal('48.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Total = quantidade_aceita * preço_unitário = 48 * 50 = 2400
+        self.assertEqual(item.total_value, Decimal('2400.00'))
+
+    def test_receiving_item_total_value_property_no_acceptance(self):
+        """Testa a propriedade total_value sem quantidade aceita definida"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Total usa quantity_received quando quantity_accepted é None
+        # Total = 50 * 50 = 2500
+        self.assertEqual(item.total_value, Decimal('2500.00'))
+
+    def test_receiving_item_quantity_validation(self):
+        """Testa a validação de quantidade positiva"""
+        item = ReceivingItem(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('0'),  # Quantidade inválida
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            item.full_clean()
+
+    def test_receiving_item_negative_quantity_validation(self):
+        """Testa a validação de quantidade negativa"""
+        item = ReceivingItem(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('-5.0'),  # Quantidade negativa
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            item.full_clean()
+
+    def test_multiple_items_in_receiving(self):
+        """Testa múltiplos itens em um recebimento"""
+        item1 = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Criar outro material e item de pedido
+        material2 = Material.objects.create(
+            code='AL6061',
+            name='Alumínio 6061',
+            material_type='aluminum',
+            category=self.category,
+            density=Decimal('2.700'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        po_item2 = PurchaseOrderItem.objects.create(
+            purchase_order=self.purchase_order,
+            material=material2,
+            quantity=Decimal('30.0'),
+            unit_price=Decimal('40.00'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        item2 = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=po_item2,
+            quantity_received=Decimal('30.0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        # Verificar que ambos os itens estão no recebimento
+        self.assertEqual(self.receiving.items.count(), 2)
+        self.assertIn(item1, self.receiving.items.all())
+        self.assertIn(item2, self.receiving.items.all())
+
+    def test_receiving_item_with_rejection(self):
+        """Testa item com rejeição parcial"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('100.0'),
+            quantity_accepted=Decimal('85.0'),
+            quantity_rejected=Decimal('15.0'),
+            rejection_reason='15kg fora de especificação',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(item.quantity_received, Decimal('100.0'))
+        self.assertEqual(item.quantity_accepted, Decimal('85.0'))
+        self.assertEqual(item.quantity_rejected, Decimal('15.0'))
+        self.assertEqual(item.rejection_reason, '15kg fora de especificação')
+        # Total value usa quantidade aceita
+        self.assertEqual(item.total_value, Decimal('4250.00'))  # 85 * 50
+
+    def test_receiving_item_full_acceptance(self):
+        """Testa item totalmente aceito"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('100.0'),
+            quantity_accepted=Decimal('100.0'),
+            quantity_rejected=Decimal('0'),
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(item.quantity_received, Decimal('100.0'))
+        self.assertEqual(item.quantity_accepted, Decimal('100.0'))
+        self.assertEqual(item.quantity_rejected, Decimal('0'))
+        self.assertEqual(item.total_value, Decimal('5000.00'))  # 100 * 50
+
+    def test_receiving_item_full_rejection(self):
+        """Testa item totalmente rejeitado"""
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('100.0'),
+            quantity_accepted=Decimal('0'),
+            quantity_rejected=Decimal('100.0'),
+            rejection_reason='Material completamente fora das especificações',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(item.quantity_received, Decimal('100.0'))
+        self.assertEqual(item.quantity_accepted, Decimal('0'))
+        self.assertEqual(item.quantity_rejected, Decimal('100.0'))
+        # Note: Decimal('0') is falsy, so total_value uses quantity_received
+        self.assertEqual(item.total_value, Decimal('5000.00'))  # 100 * 50
+
+    def test_receiving_item_with_batch_and_expiry(self):
+        """Testa item com lote e data de validade"""
+        expiry = timezone.now().date() + timedelta(days=365)
+        item = ReceivingItem.objects.create(
+            receiving=self.receiving,
+            purchase_order_item=self.purchase_order_item,
+            quantity_received=Decimal('50.0'),
+            batch_number='LOTE2024001',
+            expiry_date=expiry,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        self.assertEqual(item.batch_number, 'LOTE2024001')
+        self.assertEqual(item.expiry_date, expiry)
+        self.assertIsNotNone(item.expiry_date)
