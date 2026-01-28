@@ -1,4 +1,4 @@
-.PHONY: help build up down logs shell migrate collectstatic createsuperuser clean rebuild prod-build prod-up prod-down prod-logs
+.PHONY: help build up down logs shell migrate collectstatic createsuperuser clean rebuild prod-build prod-up prod-down prod-logs lint format format-check typecheck security quality
 
 # Development commands
 help:
@@ -16,6 +16,14 @@ help:
 	@echo "  make prod-logs     - Show production logs"
 	@echo "  make prod-shell    - Open shell in Django container"
 	@echo "  make prod-migrate  - Run migrations in production"
+	@echo ""
+	@echo "Code Quality:"
+	@echo "  make lint          - Run ruff linter"
+	@echo "  make format        - Format code with ruff"
+	@echo "  make format-check  - Check code formatting without changes"
+	@echo "  make typecheck     - Run mypy type checker"
+	@echo "  make security      - Run bandit security scanner"
+	@echo "  make quality       - Run all code quality checks"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  make clean         - Remove containers, volumes, and images"
@@ -82,3 +90,22 @@ backup-db:
 # Restore database
 restore-db:
 	@echo "Usage: cat backup.sql | docker-compose -f docker-compose.yml exec -T postgres psql -U \$$DJANGO_DB_USER \$$DJANGO_DB_NAME"
+
+# Code Quality
+lint:
+	poetry run ruff check apps/ config/
+
+format:
+	poetry run ruff format apps/ config/
+
+format-check:
+	poetry run ruff format apps/ config/ --check
+
+typecheck:
+	poetry run mypy apps/ --config-file=pyproject.toml
+
+security:
+	poetry run bandit -r apps/ config/ -c pyproject.toml
+
+quality: lint format-check typecheck security
+	@echo "All code quality checks completed"
