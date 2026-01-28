@@ -18,6 +18,13 @@ dependencies = [
     "gunicorn (>=23.0.0,<24.0.0)"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0,<1.0.0",
+    "mypy>=1.13.0,<2.0.0",
+    "bandit>=1.8.0,<2.0.0"
+]
+
 [tool.poetry]
 package-mode = false
 
