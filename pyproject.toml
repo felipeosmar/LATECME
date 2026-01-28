@@ -125,3 +125,47 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 # Automatically detect the appropriate line ending
 line-ending = "auto"
+
+[tool.mypy]
+# Python version to target
+python_version = "3.10"
+
+# Django configuration
+django_settings_module = "config.settings"
+plugins = ["mypy_django_plugin.main"]
+
+# Exclude patterns
+exclude = [
+    "migrations/",
+    "venv/",
+    ".venv/",
+    "build/",
+    "dist/",
+]
+
+# Type checking strictness (start lenient for existing codebase)
+check_untyped_defs = false
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+
+# Warnings
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+warn_return_any = false
+warn_unreachable = true
+
+# Error messages
+show_error_codes = true
+show_error_context = true
+pretty = true
+
+# Miscellaneous
+allow_redefinition = true
+implicit_reexport = true
+strict_optional = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
