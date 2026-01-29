@@ -301,6 +301,26 @@ class MaterialViewsTestCase(TestCase):
         self.assertEqual(self.supplier.name, 'Alcoa Brasil Ltda')
         self.assertEqual(self.supplier.contact_email, 'contato@alcoa.com.br')
 
+    def test_supplier_search_api_view(self):
+        """Testa a API de busca de fornecedores"""
+        response = self.client.get(reverse('materials:supplier_search_api'), {'q': 'Alco'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+
+        data = response.json()
+        self.assertIn('results', data)
+        self.assertEqual(len(data['results']), 1)
+        self.assertEqual(data['results'][0]['code'], 'FOR001')
+
+    def test_supplier_search_api_view_short_query(self):
+        """Testa a API de busca com query muito curta"""
+        response = self.client.get(reverse('materials:supplier_search_api'), {'q': 'A'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data['results']), 0)
+
 
 class MaterialViewsPermissionTestCase(TestCase):
     """Testes de permissão para as views do módulo materials"""

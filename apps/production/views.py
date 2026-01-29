@@ -163,6 +163,164 @@ def production_order_complete(request, order_id):
 
 
 # =====================================================
+# VIEWS PARA OPERAÇÕES EM LOTE DE ORDENS DE PRODUÇÃO
+# =====================================================
+
+@login_required
+@require_http_methods(["POST"])
+def production_order_batch_start(request):
+    """Iniciar múltiplas ordens de produção em lote via AJAX"""
+    try:
+        import json
+
+        # Parse JSON data from request body
+        try:
+            data = json.loads(request.body)
+            order_ids = data.get('order_ids', [])
+        except json.JSONDecodeError:
+            # Fallback to POST data if JSON parsing fails
+            order_ids = request.POST.getlist('order_ids[]')
+
+        # Validações
+        if not order_ids:
+            return JsonResponse({
+                'success': False,
+                'message': 'Nenhuma ordem selecionada.'
+            }, status=400)
+
+        if len(order_ids) > 100:
+            return JsonResponse({
+                'success': False,
+                'message': 'Máximo de 100 ordens por vez.'
+            }, status=400)
+
+        # Processar ordens em transação atômica
+        started_count = 0
+        failed_count = 0
+        errors = []
+
+        with transaction.atomic():
+            for order_id in order_ids:
+                try:
+                    order = ProductionOrder.objects.get(id=order_id)
+                    if order.start(request.user):
+                        started_count += 1
+                    else:
+                        failed_count += 1
+                        errors.append(f'Ordem {order.order_number}: não foi possível iniciar (status atual: {order.get_status_display()})')
+                except ProductionOrder.DoesNotExist:
+                    failed_count += 1
+                    errors.append(f'Ordem {order_id}: não encontrada')
+                except Exception as e:
+                    failed_count += 1
+                    errors.append(f'Ordem {order_id}: {str(e)}')
+
+        # Mensagem de retorno
+        if started_count > 0 and failed_count == 0:
+            message = f'{started_count} ordem(ns) iniciada(s) com sucesso.'
+        elif started_count > 0 and failed_count > 0:
+            message = f'{started_count} ordem(ns) iniciada(s), {failed_count} falharam.'
+        else:
+            message = f'Nenhuma ordem foi iniciada. {failed_count} falharam.'
+
+        return JsonResponse({
+            'success': started_count > 0,
+            'message': message,
+            'started': started_count,
+            'failed': failed_count,
+            'errors': errors
+        })
+
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Valor inválido: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao iniciar ordens: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def production_order_batch_complete(request):
+    """Concluir múltiplas ordens de produção em lote via AJAX"""
+    try:
+        import json
+
+        # Parse JSON data from request body
+        try:
+            data = json.loads(request.body)
+            order_ids = data.get('order_ids', [])
+        except json.JSONDecodeError:
+            # Fallback to POST data if JSON parsing fails
+            order_ids = request.POST.getlist('order_ids[]')
+
+        # Validações
+        if not order_ids:
+            return JsonResponse({
+                'success': False,
+                'message': 'Nenhuma ordem selecionada.'
+            }, status=400)
+
+        if len(order_ids) > 100:
+            return JsonResponse({
+                'success': False,
+                'message': 'Máximo de 100 ordens por vez.'
+            }, status=400)
+
+        # Processar ordens em transação atômica
+        completed_count = 0
+        failed_count = 0
+        errors = []
+
+        with transaction.atomic():
+            for order_id in order_ids:
+                try:
+                    order = ProductionOrder.objects.get(id=order_id)
+                    if order.complete(request.user):
+                        completed_count += 1
+                    else:
+                        failed_count += 1
+                        errors.append(f'Ordem {order.order_number}: não foi possível concluir (status atual: {order.get_status_display()})')
+                except ProductionOrder.DoesNotExist:
+                    failed_count += 1
+                    errors.append(f'Ordem {order_id}: não encontrada')
+                except Exception as e:
+                    failed_count += 1
+                    errors.append(f'Ordem {order_id}: {str(e)}')
+
+        # Mensagem de retorno
+        if completed_count > 0 and failed_count == 0:
+            message = f'{completed_count} ordem(ns) concluída(s) com sucesso.'
+        elif completed_count > 0 and failed_count > 0:
+            message = f'{completed_count} ordem(ns) concluída(s), {failed_count} falharam.'
+        else:
+            message = f'Nenhuma ordem foi concluída. {failed_count} falharam.'
+
+        return JsonResponse({
+            'success': completed_count > 0,
+            'message': message,
+            'completed': completed_count,
+            'failed': failed_count,
+            'errors': errors
+        })
+
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Valor inválido: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro ao concluir ordens: {str(e)}'
+        }, status=500)
+
+
+# =====================================================
 # VIEWS PARA CONTENTORES (BINS)
 # =====================================================
 

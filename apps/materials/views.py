@@ -63,9 +63,13 @@ def material_list(request):
         'category_id': int(category_id) if category_id else '',
         'categories': categories,
         'material_types': material_types,
+<<<<<<< HEAD
         'total_materials': materials.count(),
         'date_from': date_from,
         'date_to': date_to,
+=======
+        'total_materials': paginator.count,
+>>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
     }
     
     return render(request, 'materials/material_list.html', context)
@@ -199,9 +203,13 @@ def supplier_list(request):
     context = {
         'page_obj': page_obj,
         'search': search,
+<<<<<<< HEAD
         'total_suppliers': suppliers.count(),
         'date_from': date_from,
         'date_to': date_to,
+=======
+        'total_suppliers': paginator.count,
+>>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
     }
 
     return render(request, 'materials/supplier_list.html', context)
@@ -321,12 +329,12 @@ def material_search_api(request):
     query = request.GET.get('q', '')
     if len(query) < 2:
         return JsonResponse({'results': []})
-    
+
     materials = Material.objects.filter(
         Q(code__icontains=query) | Q(name__icontains=query),
         is_active=True
     )[:10]
-    
+
     results = []
     for material in materials:
         results.append({
@@ -336,5 +344,30 @@ def material_search_api(request):
             'type': material.get_material_type_display(),
             'best_price': float(material.get_best_price()) if material.get_best_price() else None
         })
-    
+
+    return JsonResponse({'results': results})
+
+
+@login_required
+def supplier_search_api(request):
+    """API para busca de fornecedores (AJAX)"""
+    query = request.GET.get('q', '')
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+
+    suppliers = Supplier.objects.filter(
+        Q(name__icontains=query) | Q(code__icontains=query) | Q(cnpj__icontains=query),
+        is_active=True
+    ).annotate(material_count=Count('materials'))[:10]
+
+    results = []
+    for supplier in suppliers:
+        results.append({
+            'id': supplier.id,
+            'code': supplier.code,
+            'name': supplier.name,
+            'cnpj': supplier.cnpj,
+            'material_count': supplier.material_count
+        })
+
     return JsonResponse({'results': results})
