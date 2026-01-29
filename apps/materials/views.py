@@ -5,6 +5,7 @@ from django.db.models import Q, Count, Min, Avg
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from datetime import datetime
+from django.views.decorators.cache import cache_page
 from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition
 from .forms import MaterialForm, SupplierForm, MaterialCompositionFormSet
 
@@ -63,13 +64,9 @@ def material_list(request):
         'category_id': int(category_id) if category_id else '',
         'categories': categories,
         'material_types': material_types,
-<<<<<<< HEAD
-        'total_materials': materials.count(),
+        'total_materials': paginator.count,
         'date_from': date_from,
         'date_to': date_to,
-=======
-        'total_materials': paginator.count,
->>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
     }
     
     return render(request, 'materials/material_list.html', context)
@@ -203,13 +200,9 @@ def supplier_list(request):
     context = {
         'page_obj': page_obj,
         'search': search,
-<<<<<<< HEAD
-        'total_suppliers': suppliers.count(),
+        'total_suppliers': paginator.count,
         'date_from': date_from,
         'date_to': date_to,
-=======
-        'total_suppliers': paginator.count,
->>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
     }
 
     return render(request, 'materials/supplier_list.html', context)
@@ -285,6 +278,7 @@ def supplier_edit(request, supplier_id):
     })
 
 
+@cache_page(300)
 @login_required
 def dashboard_materials(request):
     """Dashboard do módulo de materiais"""
