@@ -1,0 +1,54 @@
+{
+  "files_to_modify": {
+    "frontend": [
+      "static/js/app.js",
+      "templates/components/_modal.html",
+      "templates/components/_confirm_dialog.html"
+    ]
+  },
+  "files_to_reference": [
+    "templates/inventory/stock_list.html",
+    "templates/purchasing/order_detail.html",
+    "templates/purchasing/receiving_detail.html"
+  ],
+  "patterns": {
+    "modal_pattern": "All modals use Alpine.js x-data with 'open' boolean state. Show/hide controlled by x-show directive and @open-modal.window/@close-modal.window events",
+    "component_pattern": "Reusable components in templates/components/ directory using Django template includes",
+    "alpine_helpers": "Global Alpine.data() helpers defined in static/js/app.js within alpine:init event listener",
+    "event_system": "Custom events dispatched with $dispatch() for modal control (open-modal, close-modal)"
+  },
+  "existing_implementations": {
+    "description": "Found 3 modal patterns in use: 1) Reusable _modal.html component, 2) _confirm_dialog.html component, 3) Inline custom modals in various pages",
+    "relevant_files": [
+      "templates/components/_modal.html",
+      "templates/components/_confirm_dialog.html",
+      "static/js/app.js"
+    ],
+    "current_features": [
+      "ESC key closes modal (@keydown.escape.window)",
+      "Click outside closes modal (@click.outside)",
+      "Backdrop click closes modal",
+      "Basic ARIA role=dialog on some modals"
+    ],
+    "missing_features": [
+      "Focus trapping within modal",
+      "Focus restoration to trigger element",
+      "aria-modal=true attribute",
+      "aria-labelledby linking to modal title",
+      "aria-describedby linking to modal content",
+      "Tab key navigation management"
+    ]
+  },
+  "wcag_requirements": {
+    "level_a": [
+      "2.1.2 No Keyboard Trap - Users must be able to navigate away from any component using only keyboard",
+      "4.1.2 Name, Role, Value - Modal must have proper ARIA attributes"
+    ],
+    "implementation_notes": [
+      "Focus trap must keep Tab/Shift+Tab within modal while open",
+      "First focusable element should receive focus when modal opens",
+      "Focus should return to trigger element when modal closes",
+      "ESC key must close modal"
+    ]
+  }
+}
