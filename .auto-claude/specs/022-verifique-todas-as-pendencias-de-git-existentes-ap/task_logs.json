@@ -1,7 +1,11 @@
 {
   "spec_id": "022-verifique-todas-as-pendencias-de-git-existentes-ap",
   "created_at": "2026-01-29T15:29:42.721699+00:00",
+<<<<<<< HEAD
   "updated_at": "2026-01-29T15:57:04.613495+00:00",
+=======
+  "updated_at": "2026-01-29T15:49:50.341673+00:00",
+>>>>>>> a4391a18d697ef4dd25935835d172b63071e7472
   "phases": {
     "planning": {
       "phase": "planning",
@@ -546,9 +550,15 @@
     },
     "coding": {
       "phase": "coding",
+<<<<<<< HEAD
       "status": "completed",
       "started_at": "2026-01-29T15:34:00.170497+00:00",
       "completed_at": "2026-01-29T15:54:47.382583+00:00",
+=======
+      "status": "active",
+      "started_at": "2026-01-29T15:34:00.170497+00:00",
+      "completed_at": null,
+>>>>>>> a4391a18d697ef4dd25935835d172b63071e7472
       "entries": [
         {
           "timestamp": "2026-01-29T15:34:00.170550+00:00",
@@ -4849,6 +4859,7 @@
           "tool_input": "git add .auto-claude/specs/022-verifique-todas-...",
           "subtask_id": "3.3",
           "session": 8
+<<<<<<< HEAD
         },
         {
           "timestamp": "2026-01-29T15:49:51.705363+00:00",
@@ -5680,11 +5691,14 @@
           "content": "All subtasks completed successfully",
           "phase": "coding",
           "session": 11
+=======
+>>>>>>> a4391a18d697ef4dd25935835d172b63071e7472
         }
       ]
     },
     "validation": {
       "phase": "validation",
+<<<<<<< HEAD
       "status": "completed",
       "started_at": "2026-01-29T15:54:47.407476+00:00",
       "completed_at": "2026-01-29T15:57:04.598672+00:00",
@@ -6114,6 +6128,12 @@
           "session": 11
         }
       ]
+=======
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "entries": []
+>>>>>>> a4391a18d697ef4dd25935835d172b63071e7472
     }
   }
 }

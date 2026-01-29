@@ -129,6 +129,7 @@
   ],
   "stack_commands": [
     "ar",
+    "bandit",
     "clang",
     "clang++",
     "cmake",
@@ -152,6 +153,7 @@
     "ld",
     "make",
     "meson",
+    "mypy",
     "ninja",
     "nm",
     "node",
@@ -177,6 +179,7 @@
     "redis-benchmark",
     "redis-cli",
     "redis-server",
+    "ruff",
     "strip",
     "uvicorn"
   ],
@@ -185,6 +188,7 @@
     "./entrypoint.sh",
     "./fix_split_lines.sh",
     "./fix_templates.sh",
+    "./test_query_performance.sh",
     "bun",
     "make",
     "npm",
@@ -203,7 +207,10 @@
       "poetry"
     ],
     "frameworks": [
-      "django"
+      "django",
+      "mypy",
+      "ruff",
+      "bandit"
     ],
     "databases": [
       "postgresql",
@@ -241,13 +248,20 @@
       "rebuild",
       "status",
       "backup-db",
-      "restore-db"
+      "restore-db",
+      "lint",
+      "format",
+      "format-check",
+      "typecheck",
+      "security",
+      "quality"
     ],
     "poetry_scripts": [],
     "cargo_aliases": [],
     "shell_scripts": [
       "fix_split_lines.sh",
       "entrypoint.sh",
+      "test_query_performance.sh",
       "entrypoint.prod.sh",
       "fix_templates.sh"
     ]
