@@ -188,6 +188,7 @@
     "./entrypoint.sh",
     "./fix_split_lines.sh",
     "./fix_templates.sh",
+    "./test_query_performance.sh",
     "bun",
     "make",
     "npm",
@@ -260,11 +261,12 @@
     "shell_scripts": [
       "fix_split_lines.sh",
       "entrypoint.sh",
+      "test_query_performance.sh",
       "entrypoint.prod.sh",
       "fix_templates.sh"
     ]
   },
   "project_dir": "/home/felipe/work/LATECME/.auto-claude/worktrees/tasks/022-verifique-todas-as-pendencias-de-git-existentes-ap",
-  "created_at": "2026-01-29T12:37:13.965122",
+  "created_at": "2026-01-29T12:38:00.611355",
   "project_hash": "63c5ae49967c3a0b7228852328c97f7a"
 }
