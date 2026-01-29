@@ -603,9 +603,28 @@
           "approach": "Session ended without progress",
           "success": false,
           "error": "Subtask status is pending"
+        },
+        {
+          "session": 1,
+          "timestamp": "2026-01-29T10:06:29.101094",
+          "approach": "Implemented: Apply materials indexes migration",
+          "success": true,
+          "error": null
         }
       ],
-      "status": "stuck"
+      "status": "completed"
+    },
+    "subtask-5-1": {
+      "attempts": [
+        {
+          "session": 2,
+          "timestamp": "2026-01-29T10:09:46.144252",
+          "approach": "Implemented: Verify indexes exist in PostgreSQL",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
     }
   },
   "stuck_subtasks": [
@@ -618,6 +637,6 @@
   ],
   "metadata": {
     "created_at": "2026-01-27T10:45:18.663252",
-    "last_updated": "2026-01-27T11:24:03.261814"
+    "last_updated": "2026-01-29T10:09:46.144275"
   }
 }

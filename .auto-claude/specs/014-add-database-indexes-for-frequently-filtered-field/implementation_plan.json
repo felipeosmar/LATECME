@@ -211,8 +211,9 @@
             "type": "manual",
             "instructions": "Connect to PostgreSQL and run: SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public' AND indexname LIKE '%_idx' OR indexname LIKE '%_partial'; Verify all expected indexes are present."
           },
-          "status": "pending",
-          "notes": "Check that all created indexes appear in PostgreSQL catalog. Expected indexes: inventory_stockmovement_movement_type_idx, inventory_stockmovement_created_at_idx, inventory_inventorycount_status_idx, etc."
+          "status": "completed",
+          "notes": "Successfully verified all database indexes exist in PostgreSQL. Connected to laserlab_db and queried pg_indexes catalog. Found 37 indexes across 4 apps: Inventory (7 unique), Materials (5), Production (7), Purchasing (11). All indexes use B-tree indexing. Verification report created at doc/index_verification_report.md. All expected indexes from migrations 0002_add_indexes.py (inventory, purchasing, materials) and 0003_add_indexes.py (production) are present and functional.",
+          "updated_at": "2026-01-29T13:09:29.614794+00:00"
         },
         {
           "id": "subtask-5-2",
@@ -321,7 +322,7 @@
   "qa_signoff": null,
   "status": "in_progress",
   "planStatus": "in_progress",
-  "updated_at": "2026-01-29T13:04:29.851Z",
-  "last_updated": "2026-01-29T13:05:50.828938+00:00",
+  "updated_at": "2026-01-29T13:10:05.447Z",
+  "last_updated": "2026-01-29T13:09:29.614839+00:00",
   "recoveryNote": "Task recovered from stuck state at 2026-01-29T13:04:22.941Z"
 }
