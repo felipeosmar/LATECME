@@ -1,0 +1,48 @@
+{
+  "file_path": "query_performance_results.txt",
+  "main_branch_history": [],
+  "task_views": {
+    "014-add-database-indexes-for-frequently-filtered-field": {
+      "task_id": "014-add-database-indexes-for-frequently-filtered-field",
+      "branch_point": {
+        "commit_hash": "9cb0da068121bc36db309ec6dd2549f03f3acfa2",
+        "content": "",
+        "timestamp": "2026-01-29T14:31:56.012491"
+      },
+      "worktree_state": {
+        "content": "================================================================================\nDATABASE INDEX PERFORMANCE TEST\n================================================================================\n\n                                                            QUERY PLAN                                                             \n-----------------------------------------------------------------------------------------------------------------------------------\n Limit  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.660..0.662 rows=2.00 loops=1)\n   Buffers: shared hit=3 read=1\n   ->  Sort  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.657..0.658 rows=2.00 loops=1)\n         Sort Key: created_at DESC\n         Sort Method: quicksort  Memory: 25kB\n         Buffers: shared hit=3 read=1\n         ->  Seq Scan on inventory_stockmovement  (cost=0.00..1.04 rows=1 width=1019) (actual time=0.603..0.605 rows=2.00 loops=1)\n               Filter: ((movement_type)::text = 'IN'::text)\n               Rows Removed by Filter: 1\n               Buffers: shared read=1\n Planning:\n   Buffers: shared hit=307 read=17\n Planning Time: 3.258 ms\n Execution Time: 0.717 ms\n(14 rows)\n\n",
+        "last_modified": "2026-01-29T14:50:34.813122"
+      },
+      "task_intent": {
+        "title": "014-add-database-indexes-for-frequently-filtered-field",
+        "description": "",
+        "from_plan": false
+      },
+      "commits_behind_main": 2,
+      "status": "active",
+      "merged_at": null
+    },
+    "002-enhance-keyboard-accessibility-for-modal-dialogs": {
+      "task_id": "002-enhance-keyboard-accessibility-for-modal-dialogs",
+      "branch_point": {
+        "commit_hash": "9cb0da068121bc36db309ec6dd2549f03f3acfa2",
+        "content": "",
+        "timestamp": "2026-01-29T14:32:51.952343"
+      },
+      "worktree_state": {
+        "content": "================================================================================\nDATABASE INDEX PERFORMANCE TEST\n================================================================================\n\n                                                            QUERY PLAN                                                             \n-----------------------------------------------------------------------------------------------------------------------------------\n Limit  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.660..0.662 rows=2.00 loops=1)\n   Buffers: shared hit=3 read=1\n   ->  Sort  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.657..0.658 rows=2.00 loops=1)\n         Sort Key: created_at DESC\n         Sort Method: quicksort  Memory: 25kB\n         Buffers: shared hit=3 read=1\n         ->  Seq Scan on inventory_stockmovement  (cost=0.00..1.04 rows=1 width=1019) (actual time=0.603..0.605 rows=2.00 loops=1)\n               Filter: ((movement_type)::text = 'IN'::text)\n               Rows Removed by Filter: 1\n               Buffers: shared read=1\n Planning:\n   Buffers: shared hit=307 read=17\n Planning Time: 3.258 ms\n Execution Time: 0.717 ms\n(14 rows)\n\n",
+        "last_modified": "2026-01-29T14:32:51.999369"
+      },
+      "task_intent": {
+        "title": "002-enhance-keyboard-accessibility-for-modal-dialogs",
+        "description": "Add proper focus trapping, focus restoration, and keyboard navigation to all Alpine.js modals",
+        "from_plan": true
+      },
+      "commits_behind_main": 2,
+      "status": "active",
+      "merged_at": null
+    }
+  },
+  "created_at": "2026-01-29T14:31:56.035583",
+  "last_updated": "2026-01-29T14:32:51.980776"
+}
