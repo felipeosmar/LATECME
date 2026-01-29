@@ -118,5 +118,44 @@ Analyzed 16 auto-claude/* branches to identify which have real work not in dev:
 
 ---
 
+### Subtask 3.3: Delete merged local auto-claude/* branches
+**Status:** COMPLETED
+
+**Actions:**
+- Identified 13 auto-claude/* branches merged into dev
+- Deleted 8 branches using `git branch -d` (safe delete)
+- Remaining 5 required force delete (`-D`) because HEAD was different from dev
+  - Verified these branches had no commits not in dev (all work merged)
+- Force deleted remaining 5 branches:
+  - auto-claude/008-add-reports-view-to-production-module
+  - auto-claude/009-add-date-range-filter-to-material-and-supplier-lis
+  - auto-claude/011-fix-n-1-query-in-material-search-api
+  - auto-claude/012-add-redis-caching-for-dashboard-statistics
+  - auto-claude/013-remove-unused-static-file-plugins-to-reduce-deploy
+
+**Deleted branches (13 total):**
+- auto-claude/002-enhance-keyboard-accessibility-for-modal-dialogs
+- auto-claude/007-add-supplier-search-api-endpoint
+- auto-claude/008-add-reports-view-to-production-module
+- auto-claude/009-add-date-range-filter-to-material-and-supplier-lis
+- auto-claude/010-add-bulk-status-change-for-production-orders
+- auto-claude/011-fix-n-1-query-in-material-search-api
+- auto-claude/012-add-redis-caching-for-dashboard-statistics
+- auto-claude/013-remove-unused-static-file-plugins-to-reduce-deploy
+- auto-claude/015-avoid-duplicate-count-queries-in-list-views
+- auto-claude/016-split-large-inventory-views-py-into-domain-specifi
+- auto-claude/017-add-tests-for-production-and-purchasing-apps
+- auto-claude/018-extract-duplicated-list-view-pagination-filtering-
+- auto-claude/019-add-python-linting-and-code-quality-configuration
+
+**Remaining branches (correctly kept - unmerged work):**
+- auto-claude/014-add-database-indexes-for-frequently-filtered-field (2 commits not in dev)
+- auto-claude/020-split-large-purchasing-views-py-into-domain-specif (2 commits not in dev)
+- auto-claude/022-verifique-todas-as-pendencias-de-git-existentes-ap (current worktree branch)
+
+**Result:** Cleaned up 13 merged local branches, reduced from 16 to 3 auto-claude/* branches
+
+---
+
 ## Next Steps
-- 3.3: Delete merged local auto-claude/* branches
+- Phase 4: Verification (subtasks 4.1, 4.2, 4.3)

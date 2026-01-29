@@ -3,7 +3,7 @@
   "description": "Verifique todas as pendencias de GIT existentes, aplique todo o codigo na branche \"dev\". Resolva todas as worktrees pendentes.",
   "workflow_type": "feature",
   "created_at": "2026-01-29T15:29:31.334Z",
-  "updated_at": "2026-01-29T15:46:31.995Z",
+  "updated_at": "2026-01-29T15:48:09.597Z",
   "status": "in_progress",
   "planStatus": "in_progress",
   "phases": [
@@ -75,7 +75,9 @@
         {
           "id": "3.3",
           "description": "Delete merged local auto-claude/* branches",
-          "status": "pending"
+          "status": "completed",
+          "notes": "Deleted 13 merged auto-claude/* branches. Kept 3 branches: 014 and 020 (have unmerged work), 022 (current worktree branch). Local branch count reduced from 16 to 3 auto-claude/* branches.",
+          "updated_at": "2026-01-29T15:49:41.438697+00:00"
         }
       ]
     },
@@ -101,5 +103,5 @@
       ]
     }
   ],
-  "last_updated": "2026-01-29T15:47:09.964498+00:00"
+  "last_updated": "2026-01-29T15:49:41.438724+00:00"
 }
