@@ -10,5 +10,6 @@
     "templates/components/_modal.html",
     "static/js/app.js"
   ],
-  "problemSolved": "Modals open without moving focus to the modal content. Tab key allows focus to escape to elements behind the modal overlay. No focus restoration when modal closes. Escape key works but isn't consistently implemented."
+  "problemSolved": "Modals open without moving focus to the modal content. Tab key allows focus to escape to elements behind the modal overlay. No focus restoration when modal closes. Escape key works but isn't consistently implemented.",
+  "archivedAt": "2026-01-29T18:04:34.372Z"
 }

@@ -16,5 +16,7 @@
     "qa": "low"
   },
   "requireReviewBeforeCoding": true,
-  "baseBranch": "main"
+  "baseBranch": "main",
+  "archivedAt": "2026-01-29T17:30:19.566Z",
+  "archivedInVersion": "1.0.1"
 }

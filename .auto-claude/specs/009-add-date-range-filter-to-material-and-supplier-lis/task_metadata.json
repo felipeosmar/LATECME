@@ -10,5 +10,6 @@
     "apps/materials/views.py",
     "templates/materials/material_list.html",
     "templates/materials/supplier_list.html"
-  ]
+  ],
+  "archivedAt": "2026-01-29T17:35:46.313Z"
 }

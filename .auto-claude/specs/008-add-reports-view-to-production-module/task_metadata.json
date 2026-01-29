@@ -10,5 +10,6 @@
     "apps/production/views.py",
     "apps/production/urls.py",
     "templates/production/reports.html"
-  ]
+  ],
+  "archivedAt": "2026-01-29T17:35:24.546Z"
 }

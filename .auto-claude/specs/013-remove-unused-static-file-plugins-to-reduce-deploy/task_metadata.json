@@ -5,5 +5,6 @@
   "rationale": "Large static file directories slow down `collectstatic`, increase deployment image size, and waste storage. The unused plugins also pose security risks if they contain outdated vulnerable code. The base template confirms only Tabler/HTMX/Alpine are loaded.",
   "category": "performance",
   "performanceCategory": "bundle_size",
-  "impact": "medium"
+  "impact": "medium",
+  "archivedAt": "2026-01-29T17:35:36.966Z"
 }
