@@ -310,9 +310,12 @@ def quick_print(request):
     default_template = templates.filter(is_default=True).first()
     default_printer = printers.filter(is_default=True).first()
 
+    # Evaluate queryset once and count without extra query
+    bins_list = list(bins[:100])  # Limitar a 100 resultados
+
     context = {
-        'bins': bins[:100],  # Limitar a 100 resultados
-        'total_bins': bins.count(),
+        'bins': bins_list,
+        'total_bins': len(bins_list),
         'warehouses': warehouses,
         'templates': templates,
         'printers': printers,

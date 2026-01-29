@@ -85,6 +85,11 @@ class ProductionOrder(BaseModel):
         verbose_name = "Ordem de Produção"
         verbose_name_plural = "Ordens de Produção"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['status', 'is_active']),
+        ]
 
     def __str__(self):
         return f"{self.order_number} - {self.material.code}"
@@ -215,6 +220,10 @@ class Bin(BaseModel):
         verbose_name = "Contentor"
         verbose_name_plural = "Contentores"
         ordering = ['warehouse__code', 'code']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         status_display = f" ({self.current_quantity} kg de {self.current_material.code})" if self.current_material else " (Vazio)"
@@ -539,6 +548,10 @@ class Batch(BaseModel):
         verbose_name = "Batelada"
         verbose_name_plural = "Bateladas"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         return f"{self.batch_number} - {self.material.code} ({self.actual_quantity} kg)"

@@ -104,6 +104,12 @@ class PurchaseRequest(BaseModel):
         verbose_name = "Solicitacao de Compra"
         verbose_name_plural = "Solicitacoes de Compra"
         ordering = ['-request_date', '-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['request_date']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['status', 'is_active']),
+        ]
 
     def __str__(self):
         return f"{self.reference_number} - {self.get_status_display()}"
@@ -262,6 +268,12 @@ class PurchaseOrder(BaseModel):
         verbose_name = "Pedido de Compra"
         verbose_name_plural = "Pedidos de Compra"
         ordering = ['-order_date', '-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['order_date']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['status', 'is_active']),
+        ]
 
     def __str__(self):
         return f"{self.reference_number} - {self.supplier.name}"
@@ -420,6 +432,11 @@ class Receiving(BaseModel):
         verbose_name = "Recebimento"
         verbose_name_plural = "Recebimentos"
         ordering = ['-receiving_date', '-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['receiving_date']),
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         return f"{self.reference_number} - {self.purchase_order.reference_number}"
