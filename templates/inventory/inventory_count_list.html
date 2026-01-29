@@ -12,8 +12,9 @@
 {% block page_subtitle %}<div class="page-subtitle">Gestao de Contagens Fisicas de Estoque</div>{% endblock %}
 
 {% block page_actions %}
-<button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-count'})" x-data>
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'create-count'})">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
     Nova Contagem
@@ -30,7 +31,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-blue text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-check"></use>
                                 </svg>
                             </span>
@@ -49,7 +52,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-info text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-calendar-event"></use>
                                 </svg>
                             </span>
@@ -68,7 +73,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-yellow text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-loader"></use>
                                 </svg>
                             </span>
@@ -87,7 +94,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-green text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
                                 </svg>
                             </span>
@@ -105,20 +114,21 @@
     <!-- Filters -->
     <div class="card mb-3">
         <div class="card-body">
-            <form hx-get="{% url 'inventory:inventory_count_list' %}"
-                  hx-target="#counts-table"
-                  hx-push-url="true"
-                  hx-trigger="submit, change from:select">
+            <form hx-get="{% url 'inventory:inventory_count_list' %}" hx-target="#counts-table" hx-push-url="true"
+                hx-trigger="submit, change from:select">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label">Buscar</label>
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                                 </svg>
                             </span>
-                            <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por referencia ou armazem...">
+                            <input type="text" name="search" value="{{ search }}" class="form-control"
+                                placeholder="Buscar por referencia ou armazem...">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -126,7 +136,8 @@
                         <select name="status" class="form-select">
                             <option value="">Todos os Status</option>
                             {% for status_code, status_name in status_choices %}
-                            <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>{{ status_name }}</option>
+                            <option value="{{ status_code }}" {% if status_filter == status_code %}selected{% endif %}>{{
+                                status_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -141,7 +152,9 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
                             </svg>
                             Filtrar
@@ -149,7 +162,9 @@
                     </div>
                     <div class="col-md-2">
                         <a href="{% url 'inventory:inventory_count_list' %}" class="btn btn-secondary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                             </svg>
                             Limpar
@@ -164,7 +179,8 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-check"></use>
                 </svg>
                 Contagens de Inventario
@@ -232,21 +248,30 @@
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <a href="{% url 'inventory:inventory_count_detail' count.id %}" class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <a href="{% url 'inventory:inventory_count_detail' count.id %}"
+                                        class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                                         </svg>
                                     </a>
                                     {% if count.status == 'PLANNED' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-warning" title="Iniciar contagem" @click="startCount('{{ count.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-warning"
+                                        title="Iniciar contagem" @click="startCount('{{ count.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                                         </svg>
                                     </button>
                                     {% endif %}
                                     {% if count.status != 'COMPLETED' and count.status != 'CANCELLED' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-danger" title="Cancelar" @click="cancelCount('{{ count.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-danger" title="Cancelar"
+                                        @click="cancelCount('{{ count.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                                         </svg>
                                     </button>
@@ -263,16 +288,19 @@
             {% if counts.has_other_pages %}
             <div class="card-footer d-flex align-items-center">
                 <p class="m-0 text-muted">
-                    Mostrando <span>{{ counts.start_index }}</span> a <span>{{ counts.end_index }}</span> de <span>{{ counts.paginator.count }}</span> contagens
+                    Mostrando <span>{{ counts.start_index }}</span> a <span>{{ counts.end_index }}</span> de <span>{{
+                        counts.paginator.count }}</span> contagens
                 </p>
                 <ul class="pagination m-0 ms-auto">
                     {% if counts.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.previous_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.previous_page_number }}"
-                           hx-target="#counts-table"
-                           hx-push-url="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.previous_page_number }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.previous_page_number }}"
+                            hx-target="#counts-table" hx-push-url="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
                             </svg>
                             Anterior
@@ -282,28 +310,29 @@
                     {% for num in counts.paginator.page_range %}
                     {% if counts.number == num %}
                     <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > counts.number|add:'-3' and num < counts.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ num }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ num }}"
-                           hx-target="#counts-table"
-                           hx-push-url="true">{{ num }}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if counts.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
-                           hx-target="#counts-table"
-                           hx-push-url="true">
-                            Proximo
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    {% endif %}
+                    {% elif num > counts.number|add:'-3' and num < counts.number|add:'3' %} <li class="page-item">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ num }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ num }}"
+                            hx-target="#counts-table" hx-push-url="true">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if counts.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
+                                hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
+                                hx-target="#counts-table" hx-push-url="true">
+                                Proximo
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        {% endif %}
                 </ul>
             </div>
             {% endif %}
@@ -311,17 +340,23 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-check"></use>
                         </svg>
                     </div>
                     <p class="empty-title">Nenhuma contagem encontrada</p>
                     <p class="empty-subtitle text-muted">
-                        {% if search or status_filter %}Nao ha contagens que correspondam aos filtros.{% else %}Nenhuma contagem foi criada ainda.{% endif %}
+                        {% if search or status_filter %}Nao ha contagens que correspondam aos filtros.{% else %}Nenhuma
+                        contagem foi criada ainda.{% endif %}
                     </p>
                     <div class="empty-action">
-                        <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-count'})">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" class="btn btn-primary"
+                            @click="$dispatch('open-modal', {id: 'create-count'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                             </svg>
                             Criar Primeira Contagem
@@ -334,12 +369,9 @@
     </div>
 
     <!-- Create Count Modal -->
-    <div class="modal modal-blur fade" tabindex="-1"
-         x-show="createModalOpen"
-         x-cloak
-         @open-modal.window="if ($event.detail.id === 'create-count') createModalOpen = true"
-         @close-modal.window="createModalOpen = false"
-         @keydown.escape.window="createModalOpen = false">
+    <div class="modal modal-blur fade show" :class="{ 'd-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak
+        @open-modal.window="if ($event.detail.id === 'create-count') createModalOpen = true"
+        @close-modal.window="createModalOpen = false" @keydown.escape.window="createModalOpen = false">
         <div class="modal-dialog modal-lg" @click.outside="createModalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
@@ -354,7 +386,8 @@
                                 <select class="form-select" x-model="formData.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for warehouse in warehouses %}
-                                    <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}</option>
+                                    <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}
+                                    </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -369,7 +402,8 @@
                                 <select class="form-select" x-model="formData.counter">
                                     <option value="">Selecione...</option>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}
+                                    </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -378,21 +412,26 @@
                                 <select class="form-select" x-model="formData.supervisor">
                                     <option value="">Selecione...</option>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}
+                                    </option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="3" x-model="formData.notes" placeholder="Observacoes sobre a contagem..."></textarea>
+                            <textarea class="form-control" rows="3" x-model="formData.notes"
+                                placeholder="Observacoes sobre a contagem..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
+                        <button type="button" class="btn btn-secondary"
+                            @click="createModalOpen = false">Cancelar</button>
                         <button type="submit" class="btn btn-primary" :disabled="submitting">
                             <span x-show="!submitting">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
                                 </svg>
                                 Criar Contagem
@@ -407,39 +446,48 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="createModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade show" :class="{ 'd-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak>
+    </div>
 
     <!-- Confirm Action Modal -->
-    <div class="modal modal-blur fade" tabindex="-1"
-         x-show="confirmModalOpen"
-         x-cloak
-         @keydown.escape.window="confirmModalOpen = false">
+    <div class="modal modal-blur fade show" :class="{ 'd-block': confirmModalOpen, 'd-none': !confirmModalOpen }"
+        x-cloak @keydown.escape.window="confirmModalOpen = false">
         <div class="modal-dialog modal-sm" @click.outside="confirmModalOpen = false">
             <div class="modal-content">
                 <div class="modal-status" :class="confirmAction === 'start' ? 'bg-warning' : 'bg-danger'"></div>
                 <div class="modal-body text-center py-4">
                     <template x-if="confirmAction === 'start'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                         </svg>
                     </template>
                     <template x-if="confirmAction === 'cancel'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-danger mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-danger mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                         </svg>
                     </template>
                     <h3 x-text="confirmAction === 'start' ? 'Iniciar Contagem?' : 'Cancelar Contagem?'"></h3>
-                    <div class="text-muted" x-text="confirmAction === 'start' ? 'Os itens do estoque serao carregados para contagem.' : 'A contagem sera cancelada permanentemente.'"></div>
+                    <div class="text-muted"
+                        x-text="confirmAction === 'start' ? 'Os itens do estoque serao carregados para contagem.' : 'A contagem sera cancelada permanentemente.'">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="w-100">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn w-100" @click="confirmModalOpen = false">Voltar</button>
+                                <button type="button" class="btn w-100"
+                                    @click="confirmModalOpen = false">Voltar</button>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn w-100" :class="confirmAction === 'start' ? 'btn-warning' : 'btn-danger'" @click="executeAction" :disabled="submitting">
-                                    <span x-show="!submitting" x-text="confirmAction === 'start' ? 'Iniciar' : 'Cancelar'"></span>
+                                <button type="button" class="btn w-100"
+                                    :class="confirmAction === 'start' ? 'btn-warning' : 'btn-danger'"
+                                    @click="executeAction" :disabled="submitting">
+                                    <span x-show="!submitting"
+                                        x-text="confirmAction === 'start' ? 'Iniciar' : 'Cancelar'"></span>
                                     <span x-show="submitting" x-cloak>
                                         <span class="spinner-border spinner-border-sm"></span>
                                     </span>
@@ -451,112 +499,113 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="confirmModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade show" :class="{ 'd-block': confirmModalOpen, 'd-none': !confirmModalOpen }" x-cloak>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function countManager() {
-    return {
-        createModalOpen: false,
-        confirmModalOpen: false,
-        confirmAction: '',
-        selectedCountId: null,
-        submitting: false,
-        formData: {
-            warehouse: '',
-            count_date: new Date().toISOString().split('T')[0],
-            counter: '',
-            supervisor: '',
-            notes: ''
-        },
+    function countManager() {
+        return {
+            createModalOpen: false,
+            confirmModalOpen: false,
+            confirmAction: '',
+            selectedCountId: null,
+            submitting: false,
+            formData: {
+                warehouse: '',
+                count_date: new Date().toISOString().split('T')[0],
+                counter: '',
+                supervisor: '',
+                notes: ''
+            },
 
-        startCount(countId) {
-            this.selectedCountId = countId;
-            this.confirmAction = 'start';
-            this.confirmModalOpen = true;
-        },
+            startCount(countId) {
+                this.selectedCountId = countId;
+                this.confirmAction = 'start';
+                this.confirmModalOpen = true;
+            },
 
-        cancelCount(countId) {
-            this.selectedCountId = countId;
-            this.confirmAction = 'cancel';
-            this.confirmModalOpen = true;
-        },
+            cancelCount(countId) {
+                this.selectedCountId = countId;
+                this.confirmAction = 'cancel';
+                this.confirmModalOpen = true;
+            },
 
-        async executeAction() {
-            if (!this.selectedCountId) return;
+            async executeAction() {
+                if (!this.selectedCountId) return;
 
-            this.submitting = true;
-            const url = this.confirmAction === 'start'
-                ? `/inventory/counts/${this.selectedCountId}/start/`
-                : `/inventory/counts/${this.selectedCountId}/cancel/`;
+                this.submitting = true;
+                const url = this.confirmAction === 'start'
+                    ? `/inventory/counts/${this.selectedCountId}/start/`
+                    : `/inventory/counts/${this.selectedCountId}/cancel/`;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (this.confirmAction === 'start') {
+                            window.location.href = `/inventory/counts/${this.selectedCountId}/`;
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert(data.message || 'Erro ao executar acao');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao executar acao');
+                } finally {
+                    this.submitting = false;
+                    this.confirmModalOpen = false;
+                }
+            },
+
+            async submitCount() {
+                this.submitting = true;
+
+                const formData = new FormData();
+                Object.keys(this.formData).forEach(key => {
+                    if (this.formData[key]) {
+                        formData.append(key, this.formData[key]);
                     }
                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    if (this.confirmAction === 'start') {
-                        window.location.href = `/inventory/counts/${this.selectedCountId}/`;
+                try {
+                    const response = await fetch('{% url "inventory:inventory_count_create" %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            window.location.reload();
+                        }
                     } else {
-                        window.location.reload();
+                        alert(data.message || 'Erro ao criar contagem');
                     }
-                } else {
-                    alert(data.message || 'Erro ao executar acao');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao criar contagem');
+                } finally {
+                    this.submitting = false;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao executar acao');
-            } finally {
-                this.submitting = false;
-                this.confirmModalOpen = false;
-            }
-        },
-
-        async submitCount() {
-            this.submitting = true;
-
-            const formData = new FormData();
-            Object.keys(this.formData).forEach(key => {
-                if (this.formData[key]) {
-                    formData.append(key, this.formData[key]);
-                }
-            });
-
-            try {
-                const response = await fetch('{% url "inventory:inventory_count_create" %}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    if (data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        window.location.reload();
-                    }
-                } else {
-                    alert(data.message || 'Erro ao criar contagem');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao criar contagem');
-            } finally {
-                this.submitting = false;
             }
         }
     }
-}
 </script>
 {% endblock %}

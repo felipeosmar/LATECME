@@ -1,0 +1,16 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "ui_ux_improvements",
+  "ideaId": "uiux-005",
+  "rationale": "Forms like material_form.html don't focus the first input field on load, requiring users to manually click or tab to start typing. This adds unnecessary friction to data entry workflows.",
+  "category": "ui_ux",
+  "uiuxCategory": "usability",
+  "affectedFiles": [
+    "templates/materials/material_form.html",
+    "templates/materials/supplier_form.html",
+    "templates/accounts/login.html",
+    "templates/inventory/stock_list.html",
+    "static/css/custom.css"
+  ],
+  "problemSolved": "Form pages load without focusing any input. Users must click the first field to begin typing. The login page has 'autocomplete=off' which hinders password managers. Search inputs don't have autofocus."
+}

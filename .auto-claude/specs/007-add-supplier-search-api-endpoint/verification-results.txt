@@ -1,0 +1,44 @@
+Manual API Verification Results - Subtask 2-2
+==============================================
+
+Server: python manage.py runserver 8765
+Session: Created authenticated session for admin user
+
+Test Results:
+-------------
+
+✅ Test 1: Search by name 'Alcoa'
+   Request: curl -H 'Cookie: sessionid=XXX' 'http://localhost:8765/materials/api/suppliers/search/?q=Alcoa'
+   Response: {"results": [{"id": "7e064dab-da65-434c-b0a8-cfe2d055f2ba", "code": "ALU001", "name": "Alcoa Brasil", "cnpj": "01.234.567/0001-00", "material_count": 1}]}
+   Status: PASS - Returns correct JSON with supplier data
+
+✅ Test 2: Search by code 'ALU'
+   Request: curl -H 'Cookie: sessionid=XXX' 'http://localhost:8765/materials/api/suppliers/search/?q=ALU'
+   Response: {"results": [{"id": "7e064dab-da65-434c-b0a8-cfe2d055f2ba", "code": "ALU001", "name": "Alcoa Brasil", "cnpj": "01.234.567/0001-00", "material_count": 1}]}
+   Status: PASS - Code search works correctly
+
+✅ Test 3: Search by CNPJ '01.234'
+   Request: curl -H 'Cookie: sessionid=XXX' 'http://localhost:8765/materials/api/suppliers/search/?q=01.234'
+   Response: {"results": [{"id": "7e064dab-da65-434c-b0a8-cfe2d055f2ba", "code": "ALU001", "name": "Alcoa Brasil", "cnpj": "01.234.567/0001-00", "material_count": 1}]}
+   Status: PASS - CNPJ search works correctly
+
+✅ Test 4: Short query 'A' (< 2 chars)
+   Request: curl -H 'Cookie: sessionid=XXX' 'http://localhost:8765/materials/api/suppliers/search/?q=A'
+   Response: {"results": []}
+   Status: PASS - Returns empty results for queries < 2 chars
+
+✅ Test 5: Unauthenticated request
+   Request: curl -i 'http://localhost:8765/materials/api/suppliers/search/?q=test'
+   Response: HTTP/1.1 302 Found (redirect to login)
+   Status: PASS - Correctly requires authentication
+
+Summary:
+--------
+All verification requirements met:
+- ✅ Returns JSON with 'results' array
+- ✅ Each result has id, code, name, cnpj, material_count fields
+- ✅ Short queries (<2 chars) return empty results
+- ✅ Unauthenticated requests redirect to login
+- ✅ Search works for name, code, and CNPJ fields
+
+Verification: SUCCESSFUL

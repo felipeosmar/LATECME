@@ -1,0 +1,93 @@
+# Build Progress - Task 021: Criar Memorias
+
+## Current Status: BLOCKED (MCP Tool Permission Required)
+
+### Subtask: subtask-1-1
+**Description:** Create 10 memories documenting LATECME codebase
+**Status:** BLOCKED - Graphiti Memory MCP service has invalid API key configuration
+
+### Retry Attempt #2: 2026-01-28
+Attempted to create memories again. Same error persists:
+- `search_nodes` returns: `Error code: 401 - {'error': {'message': 'Incorrect API key provided: ollama...'}`
+- Service still configured with 'ollama' instead of valid OpenAI API key
+
+### Blocker Details
+
+The graphiti-memory MCP service is returning error 401 with message:
+"Incorrect API key provided: ollama. You can find your API key at https://platform.openai.com/account/api-keys."
+
+**Root Cause:** The MCP server is configured with 'ollama' as the API key, but the service requires a valid OpenAI API key.
+
+**Resolution Required:**
+1. Configure valid OPENAI_API_KEY environment variable for the graphiti-memory MCP server
+2. OR configure the service to use a local model properly
+3. Contact system administrator to fix MCP server configuration
+
+### Work Completed
+- ✅ Read and analyzed all codebase models (core, accounts, materials, inventory, production, purchasing)
+- ✅ Read Django settings and project configuration
+- ✅ Prepared content for all 10 memories (detailed below)
+- ✅ Group ID identified: `latecme-project`
+- ❌ Memory creation blocked by API key error
+
+### Prepared Memories (Ready to create once service is configured)
+
+#### 1. LATECME Project Overview
+LATECME is a Django 5.2.4 Manufacturing Control System for additive manufacturing of metallic materials. The project uses PostgreSQL as the database, Portuguese locale (pt-br), timezone America/Sao_Paulo, and has full Docker support with docker-compose configurations for development and production. Key dependencies include Django, Pillow for image processing, psycopg2-binary for PostgreSQL, and gunicorn for production. The system manages inventory of metallic alloys, tracks material traceability, supports barcode generation via labels app, and handles purchasing workflows.
+
+#### 2. LATECME Django Apps Structure
+LATECME consists of 7 Django apps: core (base models and utilities), accounts (user authentication with approval workflow), materials (material types, suppliers, chemical compositions), inventory (warehouses, stock, movements, reservations, inventory counts), production (production orders, bins/containers, batches), purchasing (purchase requests, orders, receiving), and labels (barcode generation). All domain models inherit from BaseModel in apps.core.models which provides UUID primary keys, audit fields, and timestamps. Each app follows Django conventions with models.py, views.py, urls.py, admin.py, and tests.py.
+
+#### 3. LATECME BaseModel Pattern
+LATECME uses a BaseModel pattern defined in apps.core.models. The pattern includes: TimeStampedModel (abstract model with created_at and updated_at auto-managed timestamps), and BaseModel which extends TimeStampedModel adding: UUID primary key (id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)), created_by and updated_by ForeignKey fields to AUTH_USER_MODEL with on_delete=PROTECT for audit trail, and is_active boolean for soft-deletion. All domain models (Material, Supplier, Warehouse, ProductionOrder, etc.) inherit from BaseModel for consistent behavior across the system.
+
+#### 4. LATECME Materials Domain
+The materials app manages metallic alloys for additive manufacturing. Key models: Material with types AL (Alumínio), TI (Titânio), SS (Aço Inoxidável), IN (Inconel), CO (Cobalto-Cromo), CU (Cobre), NI (Níquel), OTHER. Fields include code (pattern like AL7075, TI6AL4V), density, melting_point, specifications (JSONField), requires_certificate, storage_requirements, safety_notes. Supplier model has CNPJ validation (Brazilian tax ID), contact_email, contact_phone. MaterialSupplier is a through model linking materials to suppliers with price_per_kg, minimum_order, lead_time_days. ChemicalElement stores periodic table elements, and MaterialComposition links elements to materials with percentage values for chemical composition tracking.
+
+#### 5. LATECME Inventory Management
+The inventory app handles stock management. Models: Warehouse (code, name, location, manager), MaterialStock (material, warehouse, current_quantity, reserved_quantity, minimum_stock, maximum_stock, location_code). StockMovement tracks all movements with types: IN (Entrada), OUT (Saída), TRANSFER (Transferência), ADJUSTMENT (Ajuste), RETURN (Devolução), LOSS (Perda). Reasons include PURCHASE, PRODUCTION, SALE, INVENTORY_ADJUSTMENT, EXPIRED, DAMAGED, etc. The update_stock() method automatically adjusts MaterialStock quantities. StockReservation manages reserved quantities with expiry_date and purpose fields. InventoryCount and InventoryCountItem support periodic inventory audits with reference_number pattern INV-{warehouse}-{date}-{seq}, tracking system_quantity vs counted_quantity and variance calculations.
+
+#### 6. LATECME Production System
+The production app manages manufacturing workflow. Models: ProductionOrder with status workflow DRAFT→PLANNED→IN_PROGRESS→COMPLETED→CANCELLED, order_number pattern OP-YYYYMMDD-NNN, planned_quantity, produced_quantity, dates. Bin (Contentor) for material storage with status EMPTY/LOADED/IN_USE/MAINTENANCE, auto-generated code BIN00001, capacity, current_material, current_quantity. Batch (Batelada) collects material from bins for production with status PREPARATION→READY→IN_PRODUCTION→COMPLETED, batch_number pattern BAT-YYYYMMDD-NNN. BatchItem tracks material per bin with supplier_batch and certificate for traceability. BinHistory provides full audit trail with movement types IN/OUT/EMPTY/TRANSFER/ADJUSTMENT.
+
+#### 7. LATECME Purchasing Workflow
+The purchasing app manages procurement. Flow: PurchaseRequest (SC00001) → PurchaseOrder (PC00001) → Receiving (RB00001). PurchaseRequest has status DRAFT→PENDING→APPROVED→REJECTED→ORDERED with priority LOW/NORMAL/HIGH/URGENT, requester, warehouse_destino, approved_by. PurchaseOrder sent to suppliers with status DRAFT→SENT→CONFIRMED→PARTIAL→RECEIVED, linked to supplier and warehouse. Receiving handles material inspection with status PENDING→INSPECTING→APPROVED→REJECTED. ReceivingItem tracks quantity_received, quantity_accepted, quantity_rejected, batch_number. All models support complete material traceability from request to warehouse stock.
+
+#### 8. LATECME User Authentication
+The accounts app provides user management. CustomUser extends AbstractUser with status choices: pending, approved, rejected, suspended (approval workflow). Fields: role (ForeignKey to UserRole), phone, department, profile_photo, approved_by, approved_at. UserRole model with name, description, permissions (JSONField storing list of permission strings). Method can_access_system() returns true only if status='approved', role is assigned, and is_active=True. Common roles: Operador (inventory access), Administrador (full system), Comprador (purchasing). UserApprovalMiddleware enforces access control.
+
+#### 9. LATECME Reference Number Patterns
+LATECME uses consistent reference number patterns for document traceability. Patterns: SC (Solicitação de Compra/Purchase Request) - SC00001, SC00002; PC (Pedido de Compra/Purchase Order) - PC00001; RB (Recebimento/Receiving) - RB00001; OP (Ordem de Produção/Production Order) - OP-YYYYMMDD-NNN (e.g., OP-20260128-001); BAT (Batelada/Batch) - BAT-YYYYMMDD-NNN; INV (Inventário/Inventory Count) - INV-{warehouse_code}-YYYYMMDD-NNN; BIN (Contentor) - BIN00001. All auto-generated on model save() if not provided, using sequential numbering per day or global sequence.
+
+#### 10. LATECME Project Structure
+Root structure: pyproject.toml (Poetry, Python >=3.10), manage.py, Dockerfile/docker-compose files, Makefile. config/ has settings.py (Django 5.2.4), urls.py, wsgi.py, asgi.py. apps/ directory contains 7 apps (core, accounts, materials, inventory, production, purchasing, labels). templates/ has HTML using Jinja-like Django templates. static/ and staticfiles/ for CSS/JS with Tabler Admin UI framework, HTMX for dynamic updates, Alpine.js for reactivity. diagrams/ and doc/ for documentation. All interface in Portuguese (pt-br locale, verbose_name in Portuguese).
+
+---
+**Last Updated:** 2026-01-28T16:45:00Z
+**Blocker Since:** 2026-01-27T19:07:00Z (original API key issue reported)
+**Retry Attempt 2:** 2026-01-28T13:30:00Z - Same API key error persists
+**Retry Attempt 3:** 2026-01-28T16:45:00Z - Two blockers identified:
+  1. `add_memory` tool requires explicit user permission grant (not yet granted)
+  2. `search_nodes` works but returns API key error from service
+**Retry Attempt 4:** 2026-01-28T16:50:00Z - Different approach:
+  - Attempted to invoke all 10 add_memory calls simultaneously
+  - All calls require permission grant: "Claude requested permissions to use mcp__graphiti-memory__add_memory, but you haven't granted it yet."
+  - get_status also requires permission grant
+  - Prepared memory content is complete and ready to be created
+  - User action required: Grant permission for graphiti-memory MCP tools
+
+### Resolution Steps Required
+1. **User must grant permission** for `mcp__graphiti-memory__*` tools when prompted
+2. (Potentially) Fix API key configuration: replace 'ollama' with valid OPENAI_API_KEY
+3. Re-run this subtask once permission is granted
+
+### Ready to Execute
+Once permissions are granted, the following 10 memories can be created immediately using the prepared content above.
+
+### Memory Creation Commands Ready
+All 10 memories have been prepared with:
+- Group ID: `latecme-project`
+- Source: `text`
+- Source Description: `LATECME codebase analysis`
+
+The agent is waiting for user permission to execute mcp__graphiti-memory__add_memory.

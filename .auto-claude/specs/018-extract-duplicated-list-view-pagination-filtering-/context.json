@@ -1,0 +1,45 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/inventory/views.py",
+      "apps/purchasing/views.py",
+      "apps/production/views.py",
+      "apps/materials/views.py",
+      "apps/labels/views.py"
+    ]
+  },
+  "files_to_create": {
+    "backend": [
+      "apps/core/list_utils.py",
+      "tests/test_list_utils.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/views.py",
+    "apps/purchasing/views.py"
+  ],
+  "patterns": {
+    "list_view_pattern": "Function-based views using request.GET for filters, Paginator for pagination, and manual context building",
+    "common_pagination_size": "20 or 25 items per page",
+    "filter_pattern": "Multiple if statements checking request.GET.get() for each filter parameter",
+    "queryset_optimization": "All list views use select_related() and/or prefetch_related() for performance",
+    "authentication": "All views use @login_required decorator"
+  },
+  "existing_implementations": {
+    "description": "Found 14+ list views across 5 apps (inventory, purchasing, production, materials, labels) that all follow the same pattern for filtering, pagination, and rendering",
+    "relevant_files": [
+      "apps/inventory/views.py (stock_list, movements_list, warehouse_list, reservations_list, inventory_count_list)",
+      "apps/purchasing/views.py (request_list, order_list, receiving_list)",
+      "apps/production/views.py (production_order_list, bin_list, bin_history, batch_list)",
+      "apps/materials/views.py (material_list, supplier_list)",
+      "apps/labels/views.py (quick_print)"
+    ],
+    "duplication_locations": {
+      "inventory": ["stock_list", "movements_list", "warehouse_list", "reservations_list", "inventory_count_list"],
+      "purchasing": ["request_list", "order_list", "receiving_list"],
+      "production": ["production_order_list", "bin_list", "bin_history", "batch_list"],
+      "materials": ["material_list", "supplier_list"],
+      "labels": ["quick_print"]
+    }
+  }
+}

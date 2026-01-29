@@ -1,0 +1,92 @@
+{
+  "files_to_modify": {
+    "backend": []
+  },
+  "files_to_create": {
+    "backend": [
+      "apps/inventory/migrations/0002_add_indexes.py",
+      "apps/purchasing/migrations/0002_add_indexes.py",
+      "apps/production/migrations/0002_add_indexes.py",
+      "apps/materials/migrations/0002_add_indexes.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/migrations/0001_initial.py",
+    "apps/purchasing/models.py",
+    "apps/production/models.py",
+    "apps/inventory/models.py",
+    "apps/materials/models.py",
+    "apps/core/models.py"
+  ],
+  "patterns": {
+    "migration_pattern": "Django migrations use Migration class with operations list. Use AddIndex with models.Index() for adding database indexes.",
+    "index_syntax": "models.Index(fields=['field_name'], name='app_model_field_idx')",
+    "naming_convention": "Index names follow pattern: {app}_{model}_{field}_{idx|partial}",
+    "composite_index": "For frequently combined filters, use composite indexes like models.Index(fields=['is_active', 'status'])"
+  },
+  "existing_implementations": {
+    "description": "Found extensive filtering on status, movement_type, is_active, and created_at fields across multiple models in inventory, purchasing, and production apps. Views frequently filter by status (e.g., DRAFT, IN_PROGRESS, COMPLETED) and is_active=True.",
+    "relevant_files": [
+      "apps/inventory/models.py - StockMovement (movement_type), InventoryCount (status)",
+      "apps/purchasing/models.py - PurchaseRequest, PurchaseOrder, Receiving (all have status fields)",
+      "apps/production/models.py - ProductionOrder, Bin, Batch (all have status fields)",
+      "apps/core/models.py - BaseModel with is_active field inherited by most models",
+      "apps/materials/models.py - Material, Supplier, MaterialCategory (inherit is_active from BaseModel)"
+    ],
+    "filter_patterns_observed": [
+      ".filter(is_active=True) - extremely common across all apps",
+      ".filter(status='DRAFT') or .filter(status__in=[...]) - common in list views",
+      ".filter(movement_type='IN') - inventory stock movements",
+      ".order_by('-created_at') - common for recent items lists",
+      "Date range filters on created_at for reporting"
+    ]
+  },
+  "fields_requiring_indexes": {
+    "inventory": {
+      "StockMovement": ["movement_type", "created_at"],
+      "InventoryCount": ["status", "count_date"],
+      "MaterialStock": ["is_active"],
+      "Warehouse": ["is_active"]
+    },
+    "purchasing": {
+      "PurchaseRequest": ["status", "request_date", "is_active"],
+      "PurchaseOrder": ["status", "order_date", "is_active"],
+      "Receiving": ["status", "receiving_date", "is_active"]
+    },
+    "production": {
+      "ProductionOrder": ["status", "is_active"],
+      "Bin": ["status", "is_active"],
+      "Batch": ["status", "is_active"]
+    },
+    "materials": {
+      "Material": ["is_active", "material_type"],
+      "Supplier": ["is_active"],
+      "MaterialCategory": ["is_active"]
+    }
+  },
+  "composite_indexes_needed": {
+    "rationale": "Views often filter by multiple fields together (e.g., is_active=True AND status='IN_PROGRESS')",
+    "indexes": [
+      {
+        "model": "inventory.StockMovement",
+        "fields": ["warehouse", "movement_type", "created_at"],
+        "reason": "List views filter by warehouse and movement_type, ordered by date"
+      },
+      {
+        "model": "purchasing.PurchaseRequest",
+        "fields": ["status", "is_active"],
+        "reason": "Dashboard and list views filter active requests by status"
+      },
+      {
+        "model": "purchasing.PurchaseOrder",
+        "fields": ["status", "is_active"],
+        "reason": "List views filter active orders by status"
+      },
+      {
+        "model": "production.ProductionOrder",
+        "fields": ["status", "is_active"],
+        "reason": "Production monitoring filters active orders by status"
+      }
+    ]
+  }
+}

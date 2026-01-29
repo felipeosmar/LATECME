@@ -12,8 +12,9 @@
 {% block page_subtitle %}<div class="page-subtitle">Gestao de Reservas de Estoque</div>{% endblock %}
 
 {% block page_actions %}
-<button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'reservation-modal'})">
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'reservation-modal'})">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
     Nova Reserva
@@ -26,45 +27,51 @@
     <div class="card mb-3">
         <div class="card-header">
             <h3 class="card-title">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
                 </svg>
                 Filtros
             </h3>
         </div>
         <div class="card-body">
-            <form hx-get="{% url 'inventory:reservations_list' %}"
-                  hx-target="#reservations-results"
-                  hx-push-url="true"
-                  hx-trigger="submit, change from:select"
-                  class="row g-3">
+            <form hx-get="{% url 'inventory:reservations_list' %}" hx-target="#reservations-results" hx-push-url="true"
+                hx-trigger="submit, change from:select" class="row g-3">
                 <div class="col-md-6">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                             </svg>
                         </span>
-                        <input type="text" name="search" class="form-control" placeholder="Buscar por material ou finalidade..." value="{{ search }}">
+                        <input type="text" name="search" class="form-control"
+                            placeholder="Buscar por material ou finalidade..." value="{{ search }}">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="active" {% if status == 'active' %}selected{% endif %}>Reservas Ativas</option>
-                        <option value="expired" {% if status == 'expired' %}selected{% endif %}>Reservas Expiradas</option>
+                        <option value="expired" {% if status == 'expired' %}selected{% endif %}>Reservas Expiradas
+                        </option>
                         <option value="" {% if not status %}selected{% endif %}>Todas as Reservas</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <div class="btn-group w-100">
                         <button type="submit" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                             </svg>
                             Filtrar
                         </button>
                         <a href="{% url 'inventory:reservations_list' %}" class="btn btn-secondary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                             </svg>
                             Limpar
@@ -81,7 +88,8 @@
             <div class="card-header">
                 <h3 class="card-title">
                     Reservas
-                    <span class="badge bg-secondary ms-2">{{ reservations.paginator.count }} encontrada{{ reservations.paginator.count|pluralize:"s" }}</span>
+                    <span class="badge bg-secondary ms-2">{{ reservations.paginator.count }} encontrada{{
+                        reservations.paginator.count|pluralize:"s" }}</span>
                 </h3>
             </div>
             {% if reservations %}
@@ -115,11 +123,14 @@
                                 <span class="badge bg-warning">{{ reservation.quantity }} kg</span>
                             </td>
                             <td>
-                                <div class="fw-bold">{{ reservation.reserved_by.get_full_name|default:reservation.reserved_by.username }}</div>
+                                <div class="fw-bold">{{
+                                    reservation.reserved_by.get_full_name|default:reservation.reserved_by.username }}
+                                </div>
                                 <div class="text-muted small">{{ reservation.reserved_by.email }}</div>
                             </td>
                             <td>
-                                <span title="{{ reservation.purpose }}">{{ reservation.purpose|truncatechars:40 }}</span>
+                                <span title="{{ reservation.purpose }}">{{ reservation.purpose|truncatechars:40
+                                    }}</span>
                             </td>
                             <td>
                                 <div>{{ reservation.reservation_date|date:"d/m/Y" }}</div>
@@ -139,21 +150,27 @@
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     <button type="button" class="btn btn-icon btn-primary btn-sm"
-                                            @click="showDetail('{{ reservation.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        @click="showDetail('{{ reservation.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                                         </svg>
                                     </button>
                                     {% if not reservation.is_expired %}
                                     <button type="button" class="btn btn-icon btn-warning btn-sm"
-                                            @click="editReservation('{{ reservation.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        @click="editReservation('{{ reservation.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
                                         </svg>
                                     </button>
                                     <button type="button" class="btn btn-icon btn-danger btn-sm"
-                                            @click="cancelReservation('{{ reservation.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        @click="cancelReservation('{{ reservation.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                                         </svg>
                                     </button>
@@ -170,17 +187,19 @@
             {% if reservations.has_other_pages %}
             <div class="card-footer d-flex align-items-center">
                 <p class="m-0 text-muted">
-                    Mostrando <span>{{ reservations.start_index }}</span> a <span>{{ reservations.end_index }}</span> de <span>{{ reservations.paginator.count }}</span> registros
+                    Mostrando <span>{{ reservations.start_index }}</span> a <span>{{ reservations.end_index }}</span> de
+                    <span>{{ reservations.paginator.count }}</span> registros
                 </p>
                 <ul class="pagination m-0 ms-auto">
                     {% if reservations.has_previous %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.previous_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.previous_page_number }}"
-                           hx-target="#reservations-results"
-                           hx-push-url="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.previous_page_number }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.previous_page_number }}"
+                            hx-target="#reservations-results" hx-push-url="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
                             </svg>
                             Anterior
@@ -189,33 +208,33 @@
                     {% endif %}
 
                     {% for num in reservations.paginator.page_range %}
-                        {% if reservations.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                        {% elif num > reservations.number|add:'-3' and num < reservations.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link"
-                               href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}"
-                               hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}"
-                               hx-target="#reservations-results"
-                               hx-push-url="true">{{ num }}</a>
+                    {% if reservations.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > reservations.number|add:'-3' and num < reservations.number|add:'3' %} <li
+                        class="page-item">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}"
+                            hx-target="#reservations-results" hx-push-url="true">{{ num }}</a>
                         </li>
                         {% endif %}
-                    {% endfor %}
+                        {% endfor %}
 
-                    {% if reservations.has_next %}
-                    <li class="page-item">
-                        <a class="page-link"
-                           href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
-                           hx-target="#reservations-results"
-                           hx-push-url="true">
-                            Proximo
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    {% endif %}
+                        {% if reservations.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
+                                hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
+                                hx-target="#reservations-results" hx-push-url="true">
+                                Proximo
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        {% endif %}
                 </ul>
             </div>
             {% endif %}
@@ -223,17 +242,23 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-lock"></use>
                         </svg>
                     </div>
                     <p class="empty-title">Nenhuma reserva encontrada</p>
                     <p class="empty-subtitle text-muted">
-                        {% if search %}Nao ha reservas que correspondam a sua busca.{% else %}Nenhuma reserva foi registrada ainda.{% endif %}
+                        {% if search %}Nao ha reservas que correspondam a sua busca.{% else %}Nenhuma reserva foi
+                        registrada ainda.{% endif %}
                     </p>
                     <div class="empty-action">
-                        <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'reservation-modal'})">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" class="btn btn-primary"
+                            @click="$dispatch('open-modal', {id: 'reservation-modal'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                             </svg>
                             Criar Nova Reserva
@@ -246,16 +271,10 @@
     </div>
 
     <!-- Reservation Modal (Create/Edit) -->
-    <div class="modal modal-blur fade"
-         x-show="modalOpen"
-         x-cloak
-         @open-modal.window="if ($event.detail.id === 'reservation-modal') { resetForm(); modalOpen = true; }"
-         @close-modal.window="modalOpen = false"
-         @keydown.escape.window="modalOpen = false"
-         :class="{ 'show': modalOpen }"
-         tabindex="-1"
-         role="dialog"
-         :style="modalOpen ? 'display: block;' : ''">
+    <div class="modal modal-blur fade" x-cloak
+        @open-modal.window="if ($event.detail.id === 'reservation-modal') { resetForm(); modalOpen = true; }"
+        @close-modal.window="modalOpen = false" @keydown.escape.window="modalOpen = false"
+        :class="{ 'show d-block': modalOpen, 'd-none': !modalOpen }" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document" @click.outside="modalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
@@ -267,19 +286,23 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Material</label>
-                                <select x-model="formData.material_id" class="form-select" required @change="updateAvailableQuantity()">
+                                <select x-model="formData.material_id" class="form-select" required
+                                    @change="updateAvailableQuantity()">
                                     <option value="">Selecione um material...</option>
                                     <template x-for="material in materials" :key="material.id">
-                                        <option :value="material.id" x-text="`${material.code} - ${material.name}`"></option>
+                                        <option :value="material.id" x-text="`${material.code} - ${material.name}`">
+                                        </option>
                                     </template>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Armazem</label>
-                                <select x-model="formData.warehouse_id" class="form-select" required @change="updateAvailableQuantity()">
+                                <select x-model="formData.warehouse_id" class="form-select" required
+                                    @change="updateAvailableQuantity()">
                                     <option value="">Selecione um armazem...</option>
                                     <template x-for="warehouse in warehouses" :key="warehouse.id">
-                                        <option :value="warehouse.id" x-text="`${warehouse.code} - ${warehouse.name}`"></option>
+                                        <option :value="warehouse.id" x-text="`${warehouse.code} - ${warehouse.name}`">
+                                        </option>
                                     </template>
                                 </select>
                             </div>
@@ -288,38 +311,43 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Quantidade (kg)</label>
-                                <input type="number" x-model="formData.quantity" class="form-control" step="0.001" min="0.001" required>
-                                <small class="form-hint" x-show="availableQuantity !== null" x-text="`Disponivel: ${availableQuantity} kg`"></small>
+                                <input type="number" x-model="formData.quantity" class="form-control" step="0.001"
+                                    min="0.001" required>
+                                <small class="form-hint" x-show="availableQuantity !== null"
+                                    x-text="`Disponivel: ${availableQuantity} kg`"></small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Data de Expiracao</label>
-                                <input type="datetime-local" x-model="formData.expiry_date" class="form-control" required>
+                                <input type="datetime-local" x-model="formData.expiry_date" class="form-control"
+                                    required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label required">Finalidade</label>
                             <input type="text" x-model="formData.purpose" class="form-control" required maxlength="200"
-                                   placeholder="Ex: Projeto ABC, Ordem de Producao 123, etc.">
+                                placeholder="Ex: Projeto ABC, Ordem de Producao 123, etc.">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Documento de Referencia</label>
-                            <input type="text" x-model="formData.reference_document" class="form-control" maxlength="100"
-                                   placeholder="Numero do projeto, ordem, etc.">
+                            <input type="text" x-model="formData.reference_document" class="form-control"
+                                maxlength="100" placeholder="Numero do projeto, ordem, etc.">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Observacoes</label>
                             <textarea x-model="formData.notes" class="form-control" rows="3"
-                                      placeholder="Informacoes adicionais sobre a reserva..."></textarea>
+                                placeholder="Informacoes adicionais sobre a reserva..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="modalOpen = false">Cancelar</button>
                         <button type="submit" class="btn btn-success" :disabled="submitting">
                             <span x-show="!submitting">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-lock"></use>
                                 </svg>
                                 <span x-text="isEdit ? 'Atualizar Reserva' : 'Criar Reserva'"></span>
@@ -334,17 +362,11 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade" x-show="modalOpen" x-cloak :class="{ 'show': modalOpen }"></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': modalOpen, 'd-none': !modalOpen }" x-cloak></div>
 
     <!-- Detail Modal -->
-    <div class="modal modal-blur fade"
-         x-show="detailModalOpen"
-         x-cloak
-         @keydown.escape.window="detailModalOpen = false"
-         :class="{ 'show': detailModalOpen }"
-         tabindex="-1"
-         role="dialog"
-         :style="detailModalOpen ? 'display: block;' : ''">
+    <div class="modal modal-blur fade" x-cloak @keydown.escape.window="detailModalOpen = false"
+        :class="{ 'show d-block': detailModalOpen, 'd-none': !detailModalOpen }" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document" @click.outside="detailModalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
@@ -359,26 +381,30 @@
                                     <div class="datagrid-title">Material</div>
                                     <div class="datagrid-content">
                                         <strong x-text="currentReservation?.material_code"></strong>
-                                        <br><small class="text-muted" x-text="currentReservation?.material_name"></small>
+                                        <br><small class="text-muted"
+                                            x-text="currentReservation?.material_name"></small>
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Armazem</div>
                                     <div class="datagrid-content">
-                                        <strong x-text="currentReservation?.warehouse_code"></strong> - <span x-text="currentReservation?.warehouse_name"></span>
+                                        <strong x-text="currentReservation?.warehouse_code"></strong> - <span
+                                            x-text="currentReservation?.warehouse_name"></span>
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Quantidade</div>
                                     <div class="datagrid-content">
-                                        <span class="badge bg-warning" x-text="`${currentReservation?.quantity} kg`"></span>
+                                        <span class="badge bg-warning"
+                                            x-text="`${currentReservation?.quantity} kg`"></span>
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Reservado por</div>
                                     <div class="datagrid-content">
                                         <strong x-text="currentReservation?.reserved_by_name"></strong>
-                                        <br><small class="text-muted" x-text="currentReservation?.reserved_by_email"></small>
+                                        <br><small class="text-muted"
+                                            x-text="currentReservation?.reserved_by_email"></small>
                                     </div>
                                 </div>
                             </div>
@@ -400,8 +426,9 @@
                                 <div class="datagrid-item">
                                     <div class="datagrid-title">Status</div>
                                     <div class="datagrid-content">
-                                        <span class="badge" :class="currentReservation?.is_expired ? 'bg-danger' : 'bg-success'"
-                                              x-text="currentReservation?.is_expired ? 'Expirada' : 'Ativa'"></span>
+                                        <span class="badge"
+                                            :class="currentReservation?.is_expired ? 'bg-danger' : 'bg-success'"
+                                            x-text="currentReservation?.is_expired ? 'Expirada' : 'Ativa'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -442,14 +469,20 @@
                 <div class="modal-footer">
                     <template x-if="currentReservation && !currentReservation.is_expired">
                         <div class="btn-list">
-                            <button type="button" class="btn btn-warning" @click="detailModalOpen = false; editReservation(currentReservation.id)">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <button type="button" class="btn btn-warning"
+                                @click="detailModalOpen = false; editReservation(currentReservation.id)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
                                 </svg>
                                 Editar
                             </button>
-                            <button type="button" class="btn btn-danger" @click="cancelReservation(currentReservation.id)">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <button type="button" class="btn btn-danger"
+                                @click="cancelReservation(currentReservation.id)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                                 </svg>
                                 Cancelar Reserva
@@ -461,35 +494,36 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade" x-show="detailModalOpen" x-cloak :class="{ 'show': detailModalOpen }"></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': detailModalOpen, 'd-none': !detailModalOpen }" x-cloak>
+    </div>
 
     <!-- Confirm Cancel Modal -->
-    <div class="modal modal-blur fade"
-         x-show="confirmCancelOpen"
-         x-cloak
-         @keydown.escape.window="confirmCancelOpen = false"
-         :class="{ 'show': confirmCancelOpen }"
-         tabindex="-1"
-         role="dialog"
-         :style="confirmCancelOpen ? 'display: block;' : ''">
-        <div class="modal-dialog modal-sm modal-dialog-centered" role="document" @click.outside="confirmCancelOpen = false">
+    <div class="modal modal-blur fade" x-cloak @keydown.escape.window="confirmCancelOpen = false"
+        :class="{ 'show d-block': confirmCancelOpen, 'd-none': !confirmCancelOpen }" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document"
+            @click.outside="confirmCancelOpen = false">
             <div class="modal-content">
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-danger mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-danger mb-2" width="24" height="24"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
                     </svg>
                     <h3>Cancelar Reserva?</h3>
-                    <div class="text-muted">Tem certeza que deseja cancelar esta reserva? Esta acao nao pode ser desfeita.</div>
+                    <div class="text-muted">Tem certeza que deseja cancelar esta reserva? Esta acao nao pode ser
+                        desfeita.</div>
                 </div>
                 <div class="modal-footer">
                     <div class="w-100">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn w-100" @click="confirmCancelOpen = false">Voltar</button>
+                                <button type="button" class="btn w-100"
+                                    @click="confirmCancelOpen = false">Voltar</button>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn btn-danger w-100" @click="confirmCancel()" :disabled="submitting">
+                                <button type="button" class="btn btn-danger w-100" @click="confirmCancel()"
+                                    :disabled="submitting">
                                     <span x-show="!submitting">Cancelar Reserva</span>
                                     <span x-show="submitting" x-cloak>
                                         <span class="spinner-border spinner-border-sm"></span>
@@ -502,191 +536,192 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade" x-show="confirmCancelOpen" x-cloak :class="{ 'show': confirmCancelOpen }"></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': confirmCancelOpen, 'd-none': !confirmCancelOpen }"
+        x-cloak></div>
 </div>
 
 <script>
-function reservationManager() {
-    return {
-        modalOpen: false,
-        detailModalOpen: false,
-        confirmCancelOpen: false,
-        isEdit: false,
-        submitting: false,
-        materials: [],
-        warehouses: [],
-        availableQuantity: null,
-        currentReservation: null,
-        reservationToCancel: null,
-        formData: {
-            id: null,
-            material_id: '',
-            warehouse_id: '',
-            quantity: '',
-            expiry_date: '',
-            purpose: '',
-            reference_document: '',
-            notes: ''
-        },
-
-        init() {
-            this.loadMaterialsAndWarehouses();
-        },
-
-        resetForm() {
-            this.isEdit = false;
-            this.availableQuantity = null;
-            const defaultExpiry = new Date();
-            defaultExpiry.setDate(defaultExpiry.getDate() + 7);
-            const offset = defaultExpiry.getTimezoneOffset();
-            defaultExpiry.setMinutes(defaultExpiry.getMinutes() - offset);
-
-            this.formData = {
+    function reservationManager() {
+        return {
+            modalOpen: false,
+            detailModalOpen: false,
+            confirmCancelOpen: false,
+            isEdit: false,
+            submitting: false,
+            materials: [],
+            warehouses: [],
+            availableQuantity: null,
+            currentReservation: null,
+            reservationToCancel: null,
+            formData: {
                 id: null,
                 material_id: '',
                 warehouse_id: '',
                 quantity: '',
-                expiry_date: defaultExpiry.toISOString().slice(0, 16),
+                expiry_date: '',
                 purpose: '',
                 reference_document: '',
                 notes: ''
-            };
-        },
+            },
 
-        async loadMaterialsAndWarehouses() {
-            try {
-                const [materialsRes, warehousesRes] = await Promise.all([
-                    fetch('/inventory/api/materials-with-stock/'),
-                    fetch('/inventory/api/warehouses/')
-                ]);
+            init() {
+                this.loadMaterialsAndWarehouses();
+            },
 
-                if (materialsRes.ok) {
-                    this.materials = await materialsRes.json();
-                }
-                if (warehousesRes.ok) {
-                    this.warehouses = await warehousesRes.json();
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-            }
-        },
+            resetForm() {
+                this.isEdit = false;
+                this.availableQuantity = null;
+                const defaultExpiry = new Date();
+                defaultExpiry.setDate(defaultExpiry.getDate() + 7);
+                const offset = defaultExpiry.getTimezoneOffset();
+                defaultExpiry.setMinutes(defaultExpiry.getMinutes() - offset);
 
-        async updateAvailableQuantity() {
-            if (this.formData.material_id && this.formData.warehouse_id) {
+                this.formData = {
+                    id: null,
+                    material_id: '',
+                    warehouse_id: '',
+                    quantity: '',
+                    expiry_date: defaultExpiry.toISOString().slice(0, 16),
+                    purpose: '',
+                    reference_document: '',
+                    notes: ''
+                };
+            },
+
+            async loadMaterialsAndWarehouses() {
                 try {
-                    const response = await fetch(`/inventory/api/stock/${this.formData.material_id}/${this.formData.warehouse_id}/`);
-                    if (response.ok) {
-                        const stock = await response.json();
-                        this.availableQuantity = stock.available_quantity;
+                    const [materialsRes, warehousesRes] = await Promise.all([
+                        fetch('/inventory/api/materials-with-stock/'),
+                        fetch('/inventory/api/warehouses/')
+                    ]);
+
+                    if (materialsRes.ok) {
+                        this.materials = await materialsRes.json();
+                    }
+                    if (warehousesRes.ok) {
+                        this.warehouses = await warehousesRes.json();
                     }
                 } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                }
+            },
+
+            async updateAvailableQuantity() {
+                if (this.formData.material_id && this.formData.warehouse_id) {
+                    try {
+                        const response = await fetch(`/inventory/api/stock/${this.formData.material_id}/${this.formData.warehouse_id}/`);
+                        if (response.ok) {
+                            const stock = await response.json();
+                            this.availableQuantity = stock.available_quantity;
+                        }
+                    } catch (error) {
+                        this.availableQuantity = null;
+                    }
+                } else {
                     this.availableQuantity = null;
                 }
-            } else {
-                this.availableQuantity = null;
-            }
-        },
+            },
 
-        async showDetail(reservationId) {
-            try {
-                const response = await fetch(`/inventory/reservations/${reservationId}/`);
-                if (response.ok) {
-                    this.currentReservation = await response.json();
-                    this.detailModalOpen = true;
-                }
-            } catch (error) {
-                console.error('Erro ao carregar detalhes:', error);
-            }
-        },
-
-        async editReservation(reservationId) {
-            try {
-                const response = await fetch(`/inventory/reservations/${reservationId}/`);
-                if (response.ok) {
-                    const reservation = await response.json();
-                    this.isEdit = true;
-                    this.formData = {
-                        id: reservation.id,
-                        material_id: reservation.material_id,
-                        warehouse_id: reservation.warehouse_id,
-                        quantity: reservation.quantity,
-                        expiry_date: reservation.expiry_date_iso,
-                        purpose: reservation.purpose,
-                        reference_document: reservation.reference_document || '',
-                        notes: reservation.notes || ''
-                    };
-                    this.modalOpen = true;
-                    this.updateAvailableQuantity();
-                }
-            } catch (error) {
-                console.error('Erro ao carregar reserva:', error);
-            }
-        },
-
-        cancelReservation(reservationId) {
-            this.reservationToCancel = reservationId;
-            this.confirmCancelOpen = true;
-        },
-
-        async confirmCancel() {
-            if (!this.reservationToCancel) return;
-
-            this.submitting = true;
-            try {
-                const response = await fetch(`/inventory/reservations/${this.reservationToCancel}/cancel/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+            async showDetail(reservationId) {
+                try {
+                    const response = await fetch(`/inventory/reservations/${reservationId}/`);
+                    if (response.ok) {
+                        this.currentReservation = await response.json();
+                        this.detailModalOpen = true;
                     }
-                });
+                } catch (error) {
+                    console.error('Erro ao carregar detalhes:', error);
+                }
+            },
 
-                if (response.ok) {
-                    this.confirmCancelOpen = false;
-                    this.detailModalOpen = false;
-                    location.reload();
-                } else {
+            async editReservation(reservationId) {
+                try {
+                    const response = await fetch(`/inventory/reservations/${reservationId}/`);
+                    if (response.ok) {
+                        const reservation = await response.json();
+                        this.isEdit = true;
+                        this.formData = {
+                            id: reservation.id,
+                            material_id: reservation.material_id,
+                            warehouse_id: reservation.warehouse_id,
+                            quantity: reservation.quantity,
+                            expiry_date: reservation.expiry_date_iso,
+                            purpose: reservation.purpose,
+                            reference_document: reservation.reference_document || '',
+                            notes: reservation.notes || ''
+                        };
+                        this.modalOpen = true;
+                        this.updateAvailableQuantity();
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar reserva:', error);
+                }
+            },
+
+            cancelReservation(reservationId) {
+                this.reservationToCancel = reservationId;
+                this.confirmCancelOpen = true;
+            },
+
+            async confirmCancel() {
+                if (!this.reservationToCancel) return;
+
+                this.submitting = true;
+                try {
+                    const response = await fetch(`/inventory/reservations/${this.reservationToCancel}/cancel/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                        }
+                    });
+
+                    if (response.ok) {
+                        this.confirmCancelOpen = false;
+                        this.detailModalOpen = false;
+                        location.reload();
+                    } else {
+                        const data = await response.json();
+                        alert('Erro: ' + (data.message || 'Erro ao cancelar reserva'));
+                    }
+                } catch (error) {
+                    alert('Erro ao cancelar reserva.');
+                } finally {
+                    this.submitting = false;
+                }
+            },
+
+            async submitForm() {
+                this.submitting = true;
+                const url = this.isEdit
+                    ? `/inventory/reservations/${this.formData.id}/update/`
+                    : '/inventory/reservations/create/';
+                const method = this.isEdit ? 'PUT' : 'POST';
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(this.formData)
+                    });
+
                     const data = await response.json();
-                    alert('Erro: ' + (data.message || 'Erro ao cancelar reserva'));
+
+                    if (data.success) {
+                        this.modalOpen = false;
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                    }
+                } catch (error) {
+                    alert('Erro ao salvar reserva.');
+                } finally {
+                    this.submitting = false;
                 }
-            } catch (error) {
-                alert('Erro ao cancelar reserva.');
-            } finally {
-                this.submitting = false;
-            }
-        },
-
-        async submitForm() {
-            this.submitting = true;
-            const url = this.isEdit
-                ? `/inventory/reservations/${this.formData.id}/update/`
-                : '/inventory/reservations/create/';
-            const method = this.isEdit ? 'PUT' : 'POST';
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify(this.formData)
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    this.modalOpen = false;
-                    location.reload();
-                } else {
-                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
-                }
-            } catch (error) {
-                alert('Erro ao salvar reserva.');
-            } finally {
-                this.submitting = false;
             }
         }
     }
-}
 </script>
 {% endblock %}

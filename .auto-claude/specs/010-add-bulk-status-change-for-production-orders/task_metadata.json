@@ -1,0 +1,14 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_improvements",
+  "ideaId": "ci-005",
+  "rationale": "The code reveals this opportunity because: 1) Bulk operations pattern exists in production/views.py bin_batch_create() and bin_batch_print() with transaction.atomic(), 2) ProductionOrder has start() and complete() methods that can be called in a loop, 3) AJAX endpoint pattern with JsonResponse for bulk ops is established, 4) The list view already shows multiple orders that could be selected.",
+  "category": "feature",
+  "estimatedEffort": "medium",
+  "complexity": "medium",
+  "affectedFiles": [
+    "apps/production/views.py",
+    "apps/production/urls.py",
+    "templates/production/production_order_list.html"
+  ]
+}

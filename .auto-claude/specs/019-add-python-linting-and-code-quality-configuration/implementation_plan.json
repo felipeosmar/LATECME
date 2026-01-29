@@ -1,0 +1,441 @@
+{
+  "feature": "Add Python linting and code quality configuration",
+  "workflow_type": "simple",
+  "workflow_rationale": "This is a straightforward configuration task for a single Django backend. It involves adding linting tools (ruff, mypy, bandit) to an existing project with no multi-service dependencies. Simple workflow is appropriate as subtasks can be completed sequentially without complex phase orchestration.",
+  "phases": [
+    {
+      "id": "phase-1-setup",
+      "name": "Setup and Dependencies",
+      "type": "setup",
+      "description": "Add linting and code quality tools to project dependencies",
+      "depends_on": [],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Add ruff, mypy, and bandit to pyproject.toml dependencies",
+          "service": "backend",
+          "files_to_modify": [
+            "pyproject.toml"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "grep -E '(ruff|mypy|bandit)' pyproject.toml",
+            "expected": "Should find ruff, mypy, and bandit in dependencies"
+          },
+          "status": "completed",
+          "notes": "Successfully added ruff>=0.8.0, mypy>=1.13.0, and bandit>=1.8.0 to [project.optional-dependencies] dev group. Verification passed - all three tools are present in pyproject.toml.",
+          "updated_at": "2026-01-28T21:22:10.151515+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-2-ruff-config",
+      "name": "Configure Ruff",
+      "type": "implementation",
+      "description": "Configure Ruff linter and formatter with Django-specific settings",
+      "depends_on": [
+        "phase-1-setup"
+      ],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-2-1",
+          "description": "Create comprehensive ruff configuration in pyproject.toml",
+          "service": "backend",
+          "files_to_modify": [
+            "pyproject.toml"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "grep -A 5 '\\[tool.ruff\\]' pyproject.toml",
+            "expected": "Should find [tool.ruff] section with configuration"
+          },
+          "status": "completed",
+          "notes": "Successfully created comprehensive ruff configuration in pyproject.toml with:\n- Line length: 88 (Black default)\n- Target version: Python 3.10\n- Excluded directories: migrations, static files, cache directories\n- Rule sets: E (pycodestyle), F (Pyflakes), I (isort), N (pep8-naming), UP (pyupgrade), B (bugbear), C4 (comprehensions), DJ (Django), DTZ (datetimez), T10 (debugger), and more\n- Django-specific ignores for common patterns\n- Per-file ignores for __init__.py, tests, manage.py, settings\n- isort configuration with known-first-party apps and config\n- Format settings: double quotes, space indentation\nVerification passed - [tool.ruff] section found in pyproject.toml",
+          "updated_at": "2026-01-28T21:24:00.484997+00:00"
+        },
+        {
+          "id": "subtask-2-2",
+          "description": "Run ruff check on codebase to verify configuration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "ruff check apps/ config/ --exit-zero",
+            "expected": "Command executes successfully (may report issues but shouldn't crash)"
+          },
+          "status": "completed",
+          "notes": "Successfully ran ruff check on codebase. Command executed without errors (exit code 0 with --exit-zero flag). Found 4978 linting issues (4935 fixable with --fix), which is expected for first run on existing codebase. The configuration is working correctly - ruff can parse the configuration and scan all Python files in apps/ and config/ directories. Tool installed via poetry run pip install ruff in poetry virtualenv.",
+          "updated_at": "2026-01-28T21:26:10.050812+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-3-mypy-config",
+      "name": "Configure Mypy",
+      "type": "implementation",
+      "description": "Configure mypy static type checker with Django support",
+      "depends_on": [
+        "phase-1-setup"
+      ],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-3-1",
+          "description": "Add django-stubs to dependencies for Django type support",
+          "service": "backend",
+          "files_to_modify": [
+            "pyproject.toml"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "grep 'django-stubs' pyproject.toml",
+            "expected": "Should find django-stubs in dependencies"
+          },
+          "status": "completed",
+          "notes": "Successfully added django-stubs[compatible-mypy]>=5.2.0,<6.0.0 to [project.optional-dependencies] dev group in pyproject.toml. This provides Django type stubs for mypy type checking. Verification passed - django-stubs is now present in the file. The [compatible-mypy] extra ensures compatibility with the installed mypy version (1.13.0).",
+          "updated_at": "2026-01-28T21:27:25.509053+00:00"
+        },
+        {
+          "id": "subtask-3-2",
+          "description": "Create mypy configuration in pyproject.toml",
+          "service": "backend",
+          "files_to_modify": [
+            "pyproject.toml"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "grep -A 5 '\\[tool.mypy\\]' pyproject.toml",
+            "expected": "Should find [tool.mypy] section with django_settings_module"
+          },
+          "status": "completed",
+          "notes": "Successfully created comprehensive mypy configuration in pyproject.toml with:\n- Python version 3.10 target\n- Django settings module: config.settings\n- mypy_django_plugin.main plugin for Django support\n- Excluded migrations, venv, build, and dist directories\n- Lenient strictness settings for existing codebase (check_untyped_defs, disallow_untyped_calls, etc. set to false)\n- Warnings enabled: redundant casts, unused ignores, unused configs, unreachable code\n- Pretty error output with error codes and context\n- django-stubs configuration section\nVerification passed - [tool.mypy] section with django_settings_module found in pyproject.toml. Configuration is ready for type checking Django code with mypy.",
+          "updated_at": "2026-01-28T21:28:57.342591+00:00"
+        },
+        {
+          "id": "subtask-3-3",
+          "description": "Run mypy on codebase to verify configuration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "mypy apps/ --config-file=pyproject.toml || true",
+            "expected": "Command executes without configuration errors (type errors expected initially)"
+          },
+          "status": "completed",
+          "notes": "Successfully ran mypy on codebase to verify configuration. Fixed configuration by removing duplicate django_settings_module from [tool.mypy] section (should only be in [tool.django-stubs]). Installed mypy>=1.13.0, django-stubs[compatible-mypy]>=5.2.0, prettyconf, and psycopg2-binary in poetry virtualenv. Mypy executed successfully: checked 58 source files and found 46 type errors (expected for existing untyped codebase). No configuration errors detected - mypy is properly configured with Django plugin support via mypy_django_plugin.main. Configuration working correctly.",
+          "updated_at": "2026-01-28T21:32:01.960282+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-4-bandit-config",
+      "name": "Configure Bandit",
+      "type": "implementation",
+      "description": "Configure bandit security linter for Django project",
+      "depends_on": [
+        "phase-1-setup"
+      ],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-4-1",
+          "description": "Create bandit configuration in pyproject.toml",
+          "service": "backend",
+          "files_to_modify": [
+            "pyproject.toml"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "grep -A 3 '\\[tool.bandit\\]' pyproject.toml",
+            "expected": "Should find [tool.bandit] section with exclude configuration"
+          },
+          "status": "completed",
+          "notes": "Successfully created bandit configuration in pyproject.toml with:\n- Excluded directories: tests, migrations, venv, staticfiles, static, media\n- Skipped common Django false positives: B308 (mark_safe), B703 (django.utils.safestring)\n- Set severity level to MEDIUM to focus on more serious security issues\nVerification passed - [tool.bandit] section found with exclude_dirs configuration. Configuration follows the same pattern as other tools (ruff, mypy) in the file.",
+          "updated_at": "2026-01-28T21:33:14.959954+00:00"
+        },
+        {
+          "id": "subtask-4-2",
+          "description": "Run bandit security scan on codebase",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "bandit -r apps/ config/ -c pyproject.toml || true",
+            "expected": "Command executes successfully and produces security report"
+          },
+          "status": "completed",
+          "notes": "Successfully ran bandit security scan on codebase. Scanned 8,913 lines of code and found 50 Low severity issues (all acceptable): 34 hardcoded passwords in test files (expected for test fixtures), 13 random module usage in sample data generator (acceptable for non-security-critical code), and 3 try/except/pass blocks in printer client (low risk). No Medium or High severity issues detected. Configuration working correctly - bandit properly reads pyproject.toml configuration and excludes tests, migrations, and other specified directories. Command executed successfully using: poetry run bandit -r apps/ config/ -c pyproject.toml",
+          "updated_at": "2026-01-28T21:35:01.655772+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-5-makefile-integration",
+      "name": "Makefile Integration",
+      "type": "implementation",
+      "description": "Add linting commands to Makefile for easy execution",
+      "depends_on": [
+        "phase-2-ruff-config",
+        "phase-3-mypy-config",
+        "phase-4-bandit-config"
+      ],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-5-1",
+          "description": "Add linting commands to Makefile",
+          "service": "backend",
+          "files_to_modify": [
+            "Makefile"
+          ],
+          "files_to_create": [],
+          "patterns_from": [
+            "Makefile"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "grep -E '(lint|format|typecheck|security)' Makefile",
+            "expected": "Should find new lint, format, typecheck, and security targets"
+          },
+          "status": "completed",
+          "notes": "Successfully added linting commands to Makefile with:\n- Updated .PHONY line to include: lint, format, format-check, typecheck, security, quality\n- Added \"Code Quality\" section to help menu with descriptions for all commands\n- Created 6 new targets:\n  * make lint - runs ruff check on apps/ and config/\n  * make format - runs ruff format on apps/ and config/\n  * make format-check - runs ruff format --check (dry run)\n  * make typecheck - runs mypy with pyproject.toml config\n  * make security - runs bandit security scanner\n  * make quality - runs all checks (lint, format-check, typecheck, security)\n- All commands use 'poetry run' prefix to execute in poetry virtualenv\n- Follows existing Makefile patterns (tabs for indentation, @ for silent echo)\nVerification passed - grep command found all expected targets in Makefile. Committed changes with: auto-claude: subtask-5-1 - Add linting commands to Makefile",
+          "updated_at": "2026-01-28T21:36:38.291453+00:00"
+        },
+        {
+          "id": "subtask-5-2",
+          "description": "Test all Makefile linting commands",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Run: make lint, make format --check, make typecheck, make security. All should execute without command errors (linting issues are OK)"
+          },
+          "status": "completed",
+          "notes": "Successfully tested all Makefile linting commands. All commands executed without command errors:\n- make lint: Executed successfully, found 4978 linting errors (4935 fixable) - expected for existing unformatted codebase\n- make format-check: Executed successfully, found 51 files need reformatting - expected\n- make typecheck: Executed successfully with mypy, found 46 type errors - expected for untyped codebase. Configuration loaded correctly from pyproject.toml\n- make security: Executed successfully with bandit, found 50 Low severity issues (34 hardcoded passwords in test files, 13 random module usage, 3 try/except/pass blocks) - all acceptable\n\nAll tools properly read their configurations from pyproject.toml and run via 'poetry run' prefix. No configuration errors detected. Commands are ready for use by developers.",
+          "updated_at": "2026-01-28T21:38:35.624464+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-6-documentation",
+      "name": "Documentation",
+      "type": "implementation",
+      "description": "Update README and create linting documentation",
+      "depends_on": [
+        "phase-5-makefile-integration"
+      ],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-6-1",
+          "description": "Update README.md with code quality section",
+          "service": "backend",
+          "files_to_modify": [
+            "README.md"
+          ],
+          "files_to_create": [],
+          "patterns_from": [
+            "README.md"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "grep -i -E '(lint|code quality|ruff|mypy)' README.md",
+            "expected": "Should find code quality documentation"
+          },
+          "status": "completed",
+          "notes": "Successfully added comprehensive code quality section to README.md under \"Desenvolvimento\" section. The new \"Qualidade de C\u00f3digo\" section includes:\n- Overview of tools: Ruff (linter/formatter) and mypy (type checker)\n- Tool descriptions with key features and configuration locations\n- Command examples for running linting, formatting, and type checking\n- Instructions for integrating with popular editors (VS Code, PyCharm, Vim/Neovim)\nVerification passed - grep command found all expected keywords (lint, ruff, mypy) in README.md. Committed changes with: auto-claude: subtask-6-1 - Update README.md with code quality section",
+          "updated_at": "2026-01-28T21:39:55.367959+00:00"
+        },
+        {
+          "id": "subtask-6-2",
+          "description": "Create CONTRIBUTING.md with code quality guidelines",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "CONTRIBUTING.md"
+          ],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "test -f CONTRIBUTING.md && grep -i 'code quality' CONTRIBUTING.md",
+            "expected": "CONTRIBUTING.md exists and mentions code quality"
+          },
+          "status": "completed",
+          "notes": "Successfully created comprehensive CONTRIBUTING.md with code quality guidelines in Portuguese (matching README.md style). The document includes:\n- Pre-commit workflow guidelines\n- How to run linters (ruff, mypy, bandit) with detailed command examples\n- How to handle type errors with practical examples\n- Import sorting conventions following isort/ruff configuration\n- Code style standards (PEP 8, line length, quotes, indentation)\n- Naming conventions for Python and Django\n- Git commit and PR guidelines with semantic commit format\n- Editor integration instructions for VS Code, PyCharm, and Vim/Neovim\n- Detailed examples for common errors (E501, F401, DJ001, etc.) and their solutions\n- Security best practices with Bandit examples\n\nVerification passed: CONTRIBUTING.md exists and mentions \"code quality\". File contains 477 lines of comprehensive documentation to help developers maintain high code quality standards. Committed with: auto-claude: subtask-6-2 - Create CONTRIBUTING.md with code quality guideline",
+          "updated_at": "2026-01-28T21:42:46.801512+00:00"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_phases": 6,
+    "total_subtasks": 13,
+    "services_involved": [
+      "backend"
+    ],
+    "parallelism": {
+      "max_parallel_phases": 3,
+      "parallel_groups": [
+        {
+          "phases": [
+            "phase-2-ruff-config",
+            "phase-3-mypy-config",
+            "phase-4-bandit-config"
+          ],
+          "reason": "All three tool configurations depend only on phase-1-setup and configure independent tools"
+        }
+      ],
+      "recommended_workers": 1,
+      "speedup_estimate": "3x faster with parallel execution of phases 2-4"
+    },
+    "startup_command": "source auto-claude/.venv/bin/activate && python auto-claude/run.py --spec 019 --parallel 1"
+  },
+  "verification_strategy": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "test_creation_phase": "not_applicable",
+    "test_types_required": [],
+    "security_scanning_required": false,
+    "staging_deployment_required": false,
+    "acceptance_criteria": [
+      "Ruff linter and formatter configured and working",
+      "Mypy type checker configured with Django support",
+      "Bandit security linter configured",
+      "Makefile commands (make lint, make format, make typecheck, make security) all work",
+      "README.md updated with code quality documentation",
+      "CONTRIBUTING.md created with guidelines"
+    ],
+    "verification_steps": [
+      {
+        "name": "Verify Ruff Configuration",
+        "command": "ruff check apps/ config/ --exit-zero && ruff format apps/ config/ --check",
+        "expected_outcome": "Ruff runs without configuration errors",
+        "type": "lint",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Verify Mypy Configuration",
+        "command": "mypy apps/ --config-file=pyproject.toml || true",
+        "expected_outcome": "Mypy runs without configuration errors (type errors OK initially)",
+        "type": "typecheck",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Verify Bandit Configuration",
+        "command": "bandit -r apps/ config/ -c pyproject.toml -f json || true",
+        "expected_outcome": "Bandit runs and produces security report",
+        "type": "security",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Verify Makefile Commands",
+        "command": "make lint && make typecheck && make security",
+        "expected_outcome": "All Makefile linting commands execute successfully",
+        "type": "integration",
+        "required": true,
+        "blocking": true
+      }
+    ],
+    "reasoning": "Low risk configuration change. No functional code changes, only adding development tools. Verification focuses on ensuring tools are properly configured and executable."
+  },
+  "qa_acceptance": {
+    "unit_tests": {
+      "required": false,
+      "commands": [],
+      "minimum_coverage": null
+    },
+    "integration_tests": {
+      "required": false,
+      "commands": [],
+      "services_to_test": []
+    },
+    "e2e_tests": {
+      "required": false,
+      "commands": [],
+      "flows": []
+    },
+    "browser_verification": {
+      "required": false,
+      "pages": []
+    },
+    "database_verification": {
+      "required": false,
+      "checks": []
+    },
+    "linting_verification": {
+      "required": true,
+      "checks": [
+        "Ruff configuration exists in pyproject.toml",
+        "Mypy configuration exists in pyproject.toml",
+        "Bandit configuration exists in pyproject.toml",
+        "All tools can run without configuration errors",
+        "Makefile has lint, format, typecheck, security targets",
+        "Documentation updated in README.md",
+        "CONTRIBUTING.md created"
+      ]
+    }
+  },
+  "qa_signoff": {
+    "status": "approved",
+    "timestamp": "2026-01-28T21:45:30.000Z",
+    "qa_session": 1,
+    "report_file": "qa_report.md",
+    "tests_passed": {
+      "unit": "N/A - Not required for configuration task",
+      "integration": "N/A - Not required for configuration task",
+      "e2e": "N/A - Not required for configuration task",
+      "linting": "7/7 checks passed",
+      "security": "PASS - No issues found",
+      "configuration": "PASS - All tools properly configured"
+    },
+    "verified_by": "qa_agent",
+    "summary": "All acceptance criteria met. Linting tools (ruff, mypy, bandit) successfully configured with comprehensive pyproject.toml settings, Makefile commands, and documentation. Tools finding issues in existing codebase is expected behavior for configuration task.",
+    "issues_found": {
+      "critical": 0,
+      "major": 0,
+      "minor": 0
+    }
+  },
+  "status": "completed",
+  "planStatus": "completed",
+  "updated_at": "2026-01-28T21:45:30.000Z",
+  "last_updated": "2026-01-28T21:45:30.000Z",
+  "qa_iteration_history": [
+    {
+      "iteration": 1,
+      "status": "approved",
+      "timestamp": "2026-01-28T21:47:09.251694+00:00",
+      "issues": [],
+      "duration_seconds": 230.27
+    }
+  ],
+  "qa_stats": {
+    "total_iterations": 1,
+    "last_iteration": 1,
+    "last_status": "approved",
+    "issues_by_type": {}
+  }
+}

@@ -1,0 +1,158 @@
+BEFORE DELETION AUDIT - Static Files Analysis
+==============================================
+Generated: Tue Jan 27 10:50:04 AM -03 2026
+
+SUMMARY
+-------
+Total staticfiles size: 56M
+Total size: 56M
+Plugins directory size: 23M
+Plugin size as % of total: 41%
+Number of plugin directories: 60
+
+SIZE BREAKDOWN
+--------------
+56M	./staticfiles/
+23M	./staticfiles/plugins
+
+PLUGIN DIRECTORIES LIST (60 items)
+-----------------------------------
+bootstrap
+bootstrap3-dialog
+bootstrap3-editable
+bootstrap-calendar
+bootstrap-colorpalette
+bootstrap-colorpicker
+bootstrap-combobox
+bootstrap-datepicker
+bootstrap-daterangepicker
+bootstrap-eonasdan-datetimepicker
+bootstrap-select
+bootstrap-show-password
+bootstrap-social
+bootstrap-tagsinput
+bootstrap-timepicker
+bootstrap-wizard
+bootstrap-wysihtml5
+chart-js
+ckeditor
+DataTables
+dropzone
+flag-icon
+flot
+font-awesome
+fullcalendar
+gritter
+intro-js
+ionicons
+ionRangeSlider
+isotope
+jquery
+jquery-cookie
+jquery.countdown
+jquery-file-upload
+jquery-jvectormap
+jquery-knob
+jquery-pjax
+jquery-simplecolorpicker
+jquery-tag-it
+jquery-ui
+jquery-ui-1.12.1
+jstree
+lightbox
+masked-input
+mockjax
+moment
+morris
+nvd3
+pace
+parsley
+password-indicator
+powerange
+select2
+simple-line-icons
+slimscroll
+sparkline
+summernote
+superbox
+sweetalert
+switchery
+
+DETAILED PLUGIN SIZES
+----------------------
+8.1M	./staticfiles/plugins/flag-icon
+1.8M	./staticfiles/plugins/DataTables
+1.3M	./staticfiles/plugins/jquery-ui-1.12.1
+1.2M	./staticfiles/plugins/font-awesome
+1.1M	./staticfiles/plugins/sweetalert
+864K	./staticfiles/plugins/bootstrap3-editable
+768K	./staticfiles/plugins/ionicons
+684K	./staticfiles/plugins/summernote
+624K	./staticfiles/plugins/nvd3
+508K	./staticfiles/plugins/moment
+508K	./staticfiles/plugins/bootstrap3-dialog
+476K	./staticfiles/plugins/simple-line-icons
+416K	./staticfiles/plugins/bootstrap
+412K	./staticfiles/plugins/ckeditor
+376K	./staticfiles/plugins/parsley
+356K	./staticfiles/plugins/jquery-ui
+356K	./staticfiles/plugins/jquery-jvectormap
+324K	./staticfiles/plugins/superbox
+260K	./staticfiles/plugins/jquery-file-upload
+228K	./staticfiles/plugins/bootstrap-wysihtml5
+212K	./staticfiles/plugins/bootstrap-daterangepicker
+200K	./staticfiles/plugins/fullcalendar
+188K	./staticfiles/plugins/jstree
+168K	./staticfiles/plugins/morris
+144K	./staticfiles/plugins/chart-js
+128K	./staticfiles/plugins/sparkline
+116K	./staticfiles/plugins/bootstrap-datepicker
+104K	./staticfiles/plugins/jquery
+100K	./staticfiles/plugins/select2
+96K	./staticfiles/plugins/flot
+88K	./staticfiles/plugins/bootstrap-tagsinput
+76K	./staticfiles/plugins/intro-js
+72K	./staticfiles/plugins/ionRangeSlider
+72K	./staticfiles/plugins/bootstrap-eonasdan-datetimepicker
+68K	./staticfiles/plugins/bootstrap-colorpicker
+56K	./staticfiles/plugins/lightbox
+56K	./staticfiles/plugins/jquery.countdown
+56K	./staticfiles/plugins/dropzone
+52K	./staticfiles/plugins/gritter
+48K	./staticfiles/plugins/bootstrap-wizard
+36K	./staticfiles/plugins/bootstrap-select
+32K	./staticfiles/plugins/jquery-pjax
+32K	./staticfiles/plugins/jquery-knob
+32K	./staticfiles/plugins/bootstrap-timepicker
+32K	./staticfiles/plugins/bootstrap-social
+32K	./staticfiles/plugins/bootstrap-combobox
+28K	./staticfiles/plugins/switchery
+28K	./staticfiles/plugins/powerange
+28K	./staticfiles/plugins/password-indicator
+28K	./staticfiles/plugins/jquery-tag-it
+24K	./staticfiles/plugins/jquery-simplecolorpicker
+24K	./staticfiles/plugins/isotope
+24K	./staticfiles/plugins/bootstrap-calendar
+20K	./staticfiles/plugins/pace
+20K	./staticfiles/plugins/mockjax
+20K	./staticfiles/plugins/bootstrap-colorpalette
+12K	./staticfiles/plugins/slimscroll
+12K	./staticfiles/plugins/masked-input
+12K	./staticfiles/plugins/bootstrap-show-password
+8.0K	./staticfiles/plugins/jquery-cookie
+
+CONTEXT
+-------
+These plugins appear to be from an old admin template and are unused by the application.
+The actual application only uses:
+- Tabler (in static/vendor/)
+- HTMX (in static/vendor/)
+- Alpine.js (in static/vendor/)
+
+EXPECTED IMPACT
+---------------
+Removing the plugins directory should:
+- Reduce staticfiles from 56M to approximately 33M (23M reduction, 41% decrease)
+- Speed up collectstatic operations
+- Reduce deployment image size
+- Eliminate potential security vulnerabilities from outdated libraries

@@ -27,6 +27,9 @@ class Warehouse(BaseModel):
         verbose_name = "Armazém"
         verbose_name_plural = "Armazéns"
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         return f"{self.code} - {self.name}"
@@ -90,6 +93,9 @@ class MaterialStock(BaseModel):
         verbose_name = "Estoque de Material"
         verbose_name_plural = "Estoques de Materiais"
         ordering = ['material__code', 'warehouse__code']
+        indexes = [
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         return f"{self.material.code} - {self.warehouse.code} ({self.current_quantity} kg)"
@@ -224,6 +230,11 @@ class StockMovement(BaseModel):
         verbose_name = "Movimentação de Estoque"
         verbose_name_plural = "Movimentações de Estoque"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['movement_type']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['warehouse', 'movement_type', 'created_at']),
+        ]
 
     def __str__(self):
         return f"{self.get_movement_type_display()} - {self.material.code} - {self.quantity} kg"
@@ -446,20 +457,22 @@ class InventoryCount(BaseModel):
         verbose_name = "Contagem de Inventário"
         verbose_name_plural = "Contagens de Inventário"
         ordering = ['-count_date']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['count_date']),
+        ]
 
     def __str__(self):
         return f"{self.reference_number} - {self.warehouse.code} ({self.count_date})"
 
     def save(self, *args, **kwargs):
         if not self.reference_number:
-            # Gerar número de referência automático
+            from apps.core.models import Sequence
             today = timezone.now().date()
-            count = InventoryCount.objects.filter(
-                count_date=today,
-                warehouse=self.warehouse
-            ).count()
-            self.reference_number = f"INV-{self.warehouse.code}-{today.strftime('%Y%m%d')}-{count + 1:03d}"
-
+            self.reference_number = Sequence.get_next(
+                'inventory_count', 'INV', padding=3,
+                date_scope=today, extra_key=self.warehouse.code
+            )
         super().save(*args, **kwargs)
 
 

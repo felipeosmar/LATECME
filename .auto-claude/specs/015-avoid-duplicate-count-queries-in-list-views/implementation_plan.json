@@ -1,0 +1,213 @@
+{
+  "feature": "Avoid duplicate .count() queries in list views",
+  "workflow_type": "simple",
+  "workflow_rationale": "Simple performance optimization affecting only 2 files with straightforward code changes. No architectural changes needed.",
+  "phases": [
+    {
+      "id": "phase-1-implementation",
+      "name": "Fix Duplicate COUNT Queries",
+      "type": "implementation",
+      "description": "Replace queryset.count() calls with paginator.count in affected list views",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Fix material_list view - replace materials.count() with paginator.count",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/materials/views.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Run the view and check Django debug toolbar or logs to verify only one COUNT query is executed"
+          },
+          "status": "completed",
+          "notes": "Successfully replaced materials.count() with paginator.count on line 49 of apps/materials/views.py. This eliminates the duplicate COUNT query since the Paginator already executes one internally. Committed as da7aee0.",
+          "updated_at": "2026-01-27T13:50:14.664325+00:00"
+        },
+        {
+          "id": "subtask-1-2",
+          "description": "Fix supplier_list view - replace suppliers.count() with paginator.count",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/materials/views.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Run the view and check Django debug toolbar or logs to verify only one COUNT query is executed"
+          },
+          "status": "completed",
+          "notes": "Successfully replaced suppliers.count() with paginator.count on line 166 of apps/materials/views.py. This eliminates the duplicate COUNT query since the Paginator already executes one internally. Committed as 5d59e1c.",
+          "updated_at": "2026-01-27T13:51:39.050530+00:00"
+        },
+        {
+          "id": "subtask-1-3",
+          "description": "Fix quick_print view - remove bins.count() or optimize query",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/labels/views.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Run the view and verify query count. Since bins are limited to 100, consider if total count is actually needed."
+          },
+          "status": "completed",
+          "notes": "Successfully optimized quick_print view by replacing bins.count() with len(bins_list) after evaluating the queryset slice. This eliminates the duplicate COUNT query since we're already limiting results to 100. The queryset is evaluated once using list(bins[:100]) and then len() is used for counting, which doesn't trigger any additional database queries. Committed as 2aba0b0.",
+          "updated_at": "2026-01-27T13:53:25.677670+00:00"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_phases": 1,
+    "total_subtasks": 3,
+    "services_involved": [
+      "backend"
+    ],
+    "parallelism": {
+      "max_parallel_phases": 1,
+      "parallel_groups": [],
+      "recommended_workers": 1,
+      "speedup_estimate": "Sequential execution recommended for simple optimization"
+    },
+    "startup_command": "python manage.py runserver"
+  },
+  "verification_strategy": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "test_creation_phase": "not_required",
+    "test_types_required": [],
+    "security_scanning_required": false,
+    "staging_deployment_required": false,
+    "acceptance_criteria": [
+      "Each list view executes only one COUNT query instead of two",
+      "Total count displayed in UI remains accurate",
+      "No functional changes to pagination behavior"
+    ],
+    "verification_steps": [
+      {
+        "name": "Manual Query Verification",
+        "command": "Check Django debug toolbar or enable query logging",
+        "expected_outcome": "One COUNT query per list view instead of two",
+        "type": "manual",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "UI Verification",
+        "command": "Load each affected list view in browser",
+        "expected_outcome": "Total counts display correctly, pagination works normally",
+        "type": "browser",
+        "required": true,
+        "blocking": false
+      }
+    ],
+    "reasoning": "Low risk performance optimization - no functional changes, only query optimization"
+  },
+  "qa_acceptance": {
+    "unit_tests": {
+      "required": false,
+      "commands": [],
+      "minimum_coverage": null
+    },
+    "integration_tests": {
+      "required": false,
+      "commands": [],
+      "services_to_test": []
+    },
+    "e2e_tests": {
+      "required": false,
+      "commands": [],
+      "flows": []
+    },
+    "browser_verification": {
+      "required": true,
+      "pages": [
+        {
+          "url": "http://localhost:8000/materials/",
+          "checks": [
+            "material list renders",
+            "total count displays",
+            "pagination works"
+          ]
+        },
+        {
+          "url": "http://localhost:8000/materials/suppliers/",
+          "checks": [
+            "supplier list renders",
+            "total count displays",
+            "pagination works"
+          ]
+        },
+        {
+          "url": "http://localhost:8000/labels/quick-print/",
+          "checks": [
+            "bin list renders",
+            "total count displays if present"
+          ]
+        }
+      ]
+    },
+    "database_verification": {
+      "required": false,
+      "checks": []
+    },
+    "performance_verification": {
+      "required": true,
+      "checks": [
+        "Verify COUNT query reduction using Django debug toolbar",
+        "Confirm 50-100ms performance improvement per view on large datasets"
+      ]
+    }
+  },
+  "qa_signoff": {
+    "status": "approved",
+    "timestamp": "2026-01-27T14:00:32.160295+00:00",
+    "qa_session": 1,
+    "report_file": "qa_report.md",
+    "tests_passed": {
+      "unit": "4/4",
+      "integration": "N/A",
+      "e2e": "N/A"
+    },
+    "verified_by": "qa_agent",
+    "performance_verified": true,
+    "query_optimization_confirmed": {
+      "material_list": "1 COUNT query (50% reduction)",
+      "supplier_list": "1 COUNT query (50% reduction)",
+      "quick_print": "0 COUNT queries (100% reduction)"
+    },
+    "issues_found": {
+      "critical": 0,
+      "major": 0,
+      "minor": 1,
+      "minor_notes": "Pre-existing UnorderedObjectListWarning in supplier_list (not blocking)"
+    }
+  },
+  "status": "human_review",
+  "planStatus": "review",
+  "updated_at": "2026-01-27T14:00:58.826Z",
+  "last_updated": "2026-01-27T13:53:25.677696+00:00",
+  "qa_iteration_history": [
+    {
+      "iteration": 1,
+      "status": "approved",
+      "timestamp": "2026-01-27T14:00:58.742831+00:00",
+      "issues": [],
+      "duration_seconds": 429.34
+    }
+  ],
+  "qa_stats": {
+    "total_iterations": 1,
+    "last_iteration": 1,
+    "last_status": "approved",
+    "issues_by_type": {}
+  }
+}

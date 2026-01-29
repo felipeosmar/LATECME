@@ -12,8 +12,9 @@
 {% block page_subtitle %}<div class="page-subtitle">Gestao de Bateladas de Producao</div>{% endblock %}
 
 {% block page_actions %}
-<button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-batch'})">
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'create-batch'})">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
     Nova Batelada
@@ -25,31 +26,36 @@
     <!-- Filters -->
     <div class="card mb-3">
         <div class="card-body">
-            <form hx-get="{% url 'production:batch_list' %}"
-                  hx-target="#batches-table"
-                  hx-push-url="true"
-                  hx-trigger="submit, change from:select">
+            <form hx-get="{% url 'production:batch_list' %}" hx-target="#batches-table" hx-push-url="true"
+                hx-trigger="submit, change from:select">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label">Buscar</label>
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                                 </svg>
                             </span>
-                            <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por numero...">
+                            <input type="text" name="search" value="{{ search }}" class="form-control"
+                                placeholder="Buscar por numero...">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">
                             <option value="">Todos os Status</option>
-                            <option value="PREPARATION" {% if status_filter == 'PREPARATION' %}selected{% endif %}>Em Preparacao</option>
+                            <option value="PREPARATION" {% if status_filter == 'PREPARATION' %}selected{% endif %}>Em
+                                Preparacao</option>
                             <option value="READY" {% if status_filter == 'READY' %}selected{% endif %}>Pronta</option>
-                            <option value="IN_PRODUCTION" {% if status_filter == 'IN_PRODUCTION' %}selected{% endif %}>Em Producao</option>
-                            <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Concluida</option>
-                            <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelada</option>
+                            <option value="IN_PRODUCTION" {% if status_filter == 'IN_PRODUCTION' %}selected{% endif %}>Em
+                                Producao</option>
+                            <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Concluida
+                            </option>
+                            <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelada
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -63,7 +69,9 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
                             </svg>
                             Filtrar
@@ -71,7 +79,9 @@
                     </div>
                     <div class="col-md-2">
                         <a href="{% url 'production:batch_list' %}" class="btn btn-secondary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                             </svg>
                             Limpar
@@ -86,7 +96,8 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-layers-intersect"></use>
                 </svg>
                 Bateladas
@@ -120,7 +131,8 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="{% url 'production:order_detail' batch.production_order.id %}" class="text-reset">
+                                <a href="{% url 'production:order_detail' batch.production_order.id %}"
+                                    class="text-reset">
                                     {{ batch.production_order.order_number }}
                                 </a>
                             </td>
@@ -143,7 +155,8 @@
                             </td>
                             <td>{{ batch.target_quantity|floatformat:3 }} kg</td>
                             <td>
-                                <strong class="{% if batch.actual_quantity >= batch.target_quantity %}text-success{% else %}text-warning{% endif %}">
+                                <strong
+                                    class="{% if batch.actual_quantity >= batch.target_quantity %}text-success{% else %}text-warning{% endif %}">
                                     {{ batch.actual_quantity|floatformat:3 }} kg
                                 </strong>
                             </td>
@@ -151,7 +164,7 @@
                                 {% widthratio batch.actual_quantity batch.target_quantity 100 as progress %}
                                 <div class="progress progress-sm">
                                     <div class="progress-bar {% if progress >= 100 %}bg-success{% elif progress >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
-                                         style="width: {% if progress > 100 %}100{% else %}{{ progress }}{% endif %}%">
+                                        style="width: {% if progress > 100 %}100{% else %}{{ progress }}{% endif %}%">
                                     </div>
                                 </div>
                                 <small class="text-muted">{{ progress|default:0 }}%</small>
@@ -168,26 +181,38 @@
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <a href="{% url 'production:batch_detail' batch.id %}" class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <a href="{% url 'production:batch_detail' batch.id %}"
+                                        class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                                         </svg>
                                     </a>
                                     {% if batch.status == 'PREPARATION' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-success" title="Marcar como pronta" @click="markReady('{{ batch.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-success"
+                                        title="Marcar como pronta" @click="markReady('{{ batch.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
                                         </svg>
                                     </button>
                                     {% elif batch.status == 'READY' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-warning" title="Iniciar producao" @click="startProduction('{{ batch.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-warning"
+                                        title="Iniciar producao" @click="startProduction('{{ batch.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                                         </svg>
                                     </button>
                                     {% elif batch.status == 'IN_PRODUCTION' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-success" title="Concluir batelada" @click="completeBatch('{{ batch.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-success"
+                                        title="Concluir batelada" @click="completeBatch('{{ batch.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                                         </svg>
                                     </button>
@@ -204,16 +229,19 @@
             {% if batches.has_other_pages %}
             <div class="card-footer d-flex align-items-center">
                 <p class="m-0 text-muted">
-                    Mostrando <span>{{ batches.start_index }}</span> a <span>{{ batches.end_index }}</span> de <span>{{ batches.paginator.count }}</span> bateladas
+                    Mostrando <span>{{ batches.start_index }}</span> a <span>{{ batches.end_index }}</span> de <span>{{
+                        batches.paginator.count }}</span> bateladas
                 </p>
                 <ul class="pagination m-0 ms-auto">
                     {% if batches.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.previous_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.previous_page_number }}"
-                           hx-target="#batches-table"
-                           hx-push-url="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.previous_page_number }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.previous_page_number }}"
+                            hx-target="#batches-table" hx-push-url="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
                             </svg>
                             Anterior
@@ -223,28 +251,29 @@
                     {% for num in batches.paginator.page_range %}
                     {% if batches.number == num %}
                     <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > batches.number|add:'-3' and num < batches.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ num }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ num }}"
-                           hx-target="#batches-table"
-                           hx-push-url="true">{{ num }}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if batches.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
-                           hx-target="#batches-table"
-                           hx-push-url="true">
-                            Proximo
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    {% endif %}
+                    {% elif num > batches.number|add:'-3' and num < batches.number|add:'3' %} <li class="page-item">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ num }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ num }}"
+                            hx-target="#batches-table" hx-push-url="true">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if batches.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
+                                hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
+                                hx-target="#batches-table" hx-push-url="true">
+                                Proximo
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        {% endif %}
                 </ul>
             </div>
             {% endif %}
@@ -252,17 +281,23 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-layers-intersect"></use>
                         </svg>
                     </div>
                     <p class="empty-title">Nenhuma batelada encontrada</p>
                     <p class="empty-subtitle text-muted">
-                        {% if search or status_filter or order_filter %}Nao ha bateladas que correspondam aos filtros.{% else %}Nenhuma batelada foi criada ainda.{% endif %}
+                        {% if search or status_filter or order_filter %}Nao ha bateladas que correspondam aos filtros.{%
+                        else %}Nenhuma batelada foi criada ainda.{% endif %}
                     </p>
                     <div class="empty-action">
-                        <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-batch'})">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" class="btn btn-primary"
+                            @click="$dispatch('open-modal', {id: 'create-batch'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                             </svg>
                             Criar Primeira Batelada
@@ -276,11 +311,9 @@
 
     <!-- Create Batch Modal -->
     <div class="modal modal-blur fade" tabindex="-1"
-         x-show="createModalOpen"
-         x-cloak
-         @open-modal.window="if ($event.detail.id === 'create-batch') createModalOpen = true"
-         @close-modal.window="createModalOpen = false"
-         @keydown.escape.window="createModalOpen = false">
+        :class="{ 'show d-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak
+        @open-modal.window="if ($event.detail.id === 'create-batch') createModalOpen = true"
+        @close-modal.window="createModalOpen = false" @keydown.escape.window="createModalOpen = false">
         <div class="modal-dialog modal-lg" @click.outside="createModalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
@@ -292,10 +325,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Ordem de Producao</label>
-                                <select class="form-select" x-model="formData.production_order" @change="updateMaterial" required>
+                                <select class="form-select" x-model="formData.production_order" @change="updateMaterial"
+                                    required>
                                     <option value="">Selecione...</option>
                                     {% for order in production_orders %}
-                                    <option value="{{ order.id }}" data-material="{{ order.material.id }}">{{ order.order_number }} - {{ order.material.code }}</option>
+                                    <option value="{{ order.id }}" data-material="{{ order.material.id }}">{{
+                                        order.order_number }} - {{ order.material.code }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -304,7 +339,8 @@
                                 <select class="form-select" x-model="formData.material" required>
                                     <option value="">Selecione a ordem primeiro...</option>
                                     {% for material in materials %}
-                                    <option value="{{ material.id }}">{{ material.code }} - {{ material.name|truncatechars:40 }}</option>
+                                    <option value="{{ material.id }}">{{ material.code }} - {{
+                                        material.name|truncatechars:40 }}</option>
                                     {% endfor %}
                                 </select>
                                 <small class="form-hint">Sera preenchido automaticamente pela ordem</small>
@@ -313,19 +349,24 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Quantidade Alvo (kg)</label>
-                                <input type="number" class="form-control" x-model="formData.target_quantity" step="0.001" min="0.001" placeholder="Ex: 100.000" required>
+                                <input type="number" class="form-control" x-model="formData.target_quantity"
+                                    step="0.001" min="0.001" placeholder="Ex: 100.000" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="3" x-model="formData.notes" placeholder="Observacoes sobre a batelada..."></textarea>
+                            <textarea class="form-control" rows="3" x-model="formData.notes"
+                                placeholder="Observacoes sobre a batelada..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
+                        <button type="button" class="btn btn-secondary"
+                            @click="createModalOpen = false">Cancelar</button>
                         <button type="submit" class="btn btn-primary" :disabled="submitting">
                             <span x-show="!submitting">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
                                 </svg>
                                 Criar Batelada
@@ -340,45 +381,62 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="createModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak>
+    </div>
 
     <!-- Confirm Action Modal -->
     <div class="modal modal-blur fade" tabindex="-1"
-         x-show="confirmModalOpen"
-         x-cloak
-         @keydown.escape.window="confirmModalOpen = false">
+        :class="{ 'show d-block': confirmModalOpen, 'd-none': !confirmModalOpen }" x-cloak
+        @keydown.escape.window="confirmModalOpen = false">
         <div class="modal-dialog modal-sm" @click.outside="confirmModalOpen = false">
             <div class="modal-content">
-                <div class="modal-status" :class="actionType === 'ready' ? 'bg-success' : actionType === 'start' ? 'bg-warning' : 'bg-success'"></div>
+                <div class="modal-status"
+                    :class="actionType === 'ready' ? 'bg-success' : actionType === 'start' ? 'bg-warning' : 'bg-success'">
+                </div>
                 <div class="modal-body text-center py-4">
                     <template x-if="actionType === 'ready'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
                         </svg>
                     </template>
                     <template x-if="actionType === 'start'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                         </svg>
                     </template>
                     <template x-if="actionType === 'complete'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                         </svg>
                     </template>
-                    <h3 x-text="actionType === 'ready' ? 'Marcar como Pronta?' : actionType === 'start' ? 'Iniciar Producao?' : 'Concluir Batelada?'"></h3>
-                    <div class="text-muted" x-text="actionType === 'ready' ? 'A batelada sera marcada como pronta para producao.' : actionType === 'start' ? 'A producao sera iniciada.' : 'A batelada sera marcada como concluida.'"></div>
+                    <h3
+                        x-text="actionType === 'ready' ? 'Marcar como Pronta?' : actionType === 'start' ? 'Iniciar Producao?' : 'Concluir Batelada?'">
+                    </h3>
+                    <div class="text-muted"
+                        x-text="actionType === 'ready' ? 'A batelada sera marcada como pronta para producao.' : actionType === 'start' ? 'A producao sera iniciada.' : 'A batelada sera marcada como concluida.'">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="w-100">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn w-100" @click="confirmModalOpen = false">Cancelar</button>
+                                <button type="button" class="btn w-100"
+                                    @click="confirmModalOpen = false">Cancelar</button>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn w-100" :class="actionType === 'start' ? 'btn-warning' : 'btn-success'" @click="executeAction" :disabled="submitting">
-                                    <span x-show="!submitting" x-text="actionType === 'ready' ? 'Confirmar' : actionType === 'start' ? 'Iniciar' : 'Concluir'"></span>
-                                    <span x-show="submitting" x-cloak><span class="spinner-border spinner-border-sm"></span></span>
+                                <button type="button" class="btn w-100"
+                                    :class="actionType === 'start' ? 'btn-warning' : 'btn-success'"
+                                    @click="executeAction" :disabled="submitting">
+                                    <span x-show="!submitting"
+                                        x-text="actionType === 'ready' ? 'Confirmar' : actionType === 'start' ? 'Iniciar' : 'Concluir'"></span>
+                                    <span x-show="submitting" x-cloak><span
+                                            class="spinner-border spinner-border-sm"></span></span>
                                 </button>
                             </div>
                         </div>
@@ -387,131 +445,132 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="confirmModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': confirmModalOpen, 'd-none': !confirmModalOpen }" x-cloak>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function batchManager() {
-    return {
-        createModalOpen: false,
-        confirmModalOpen: false,
-        actionType: '',
-        selectedBatchId: null,
-        submitting: false,
-        formData: {
-            production_order: '',
-            material: '',
-            target_quantity: '',
-            notes: ''
-        },
+    function batchManager() {
+        return {
+            createModalOpen: false,
+            confirmModalOpen: false,
+            actionType: '',
+            selectedBatchId: null,
+            submitting: false,
+            formData: {
+                production_order: '',
+                material: '',
+                target_quantity: '',
+                notes: ''
+            },
 
-        updateMaterial() {
-            const select = document.querySelector(`option[value="${this.formData.production_order}"]`);
-            if (select) {
-                const materialId = select.dataset.material;
-                if (materialId) {
-                    this.formData.material = materialId;
-                }
-            }
-        },
-
-        markReady(batchId) {
-            this.selectedBatchId = batchId;
-            this.actionType = 'ready';
-            this.confirmModalOpen = true;
-        },
-
-        startProduction(batchId) {
-            this.selectedBatchId = batchId;
-            this.actionType = 'start';
-            this.confirmModalOpen = true;
-        },
-
-        completeBatch(batchId) {
-            this.selectedBatchId = batchId;
-            this.actionType = 'complete';
-            this.confirmModalOpen = true;
-        },
-
-        async executeAction() {
-            if (!this.selectedBatchId) return;
-
-            this.submitting = true;
-            let baseUrl = '';
-
-            if (this.actionType === 'ready') {
-                baseUrl = '{% url "production:batch_mark_ready" "00000000-0000-0000-0000-000000000000" %}';
-            } else if (this.actionType === 'start') {
-                baseUrl = '{% url "production:batch_start_production" "00000000-0000-0000-0000-000000000000" %}';
-            } else {
-                baseUrl = '{% url "production:batch_complete" "00000000-0000-0000-0000-000000000000" %}';
-            }
-
-            const url = baseUrl.replace('00000000-0000-0000-0000-000000000000', this.selectedBatchId);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
+            updateMaterial() {
+                const select = document.querySelector(`option[value="${this.formData.production_order}"]`);
+                if (select) {
+                    const materialId = select.dataset.material;
+                    if (materialId) {
+                        this.formData.material = materialId;
                     }
-                });
+                }
+            },
 
-                const data = await response.json();
-                if (data.success) {
-                    window.location.reload();
+            markReady(batchId) {
+                this.selectedBatchId = batchId;
+                this.actionType = 'ready';
+                this.confirmModalOpen = true;
+            },
+
+            startProduction(batchId) {
+                this.selectedBatchId = batchId;
+                this.actionType = 'start';
+                this.confirmModalOpen = true;
+            },
+
+            completeBatch(batchId) {
+                this.selectedBatchId = batchId;
+                this.actionType = 'complete';
+                this.confirmModalOpen = true;
+            },
+
+            async executeAction() {
+                if (!this.selectedBatchId) return;
+
+                this.submitting = true;
+                let baseUrl = '';
+
+                if (this.actionType === 'ready') {
+                    baseUrl = '{% url "production:batch_mark_ready" "00000000-0000-0000-0000-000000000000" %}';
+                } else if (this.actionType === 'start') {
+                    baseUrl = '{% url "production:batch_start_production" "00000000-0000-0000-0000-000000000000" %}';
                 } else {
-                    alert(data.message || 'Erro ao executar acao');
+                    baseUrl = '{% url "production:batch_complete" "00000000-0000-0000-0000-000000000000" %}';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao executar acao');
-            } finally {
-                this.submitting = false;
-                this.confirmModalOpen = false;
-            }
-        },
 
-        async submitBatch() {
-            this.submitting = true;
+                const url = baseUrl.replace('00000000-0000-0000-0000-000000000000', this.selectedBatchId);
 
-            const formData = new FormData();
-            Object.keys(this.formData).forEach(key => {
-                if (this.formData[key]) {
-                    formData.append(key, this.formData[key]);
-                }
-            });
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-            try {
-                const response = await fetch('{% url "production:batch_create" %}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    if (data.data && data.data.id) {
-                        window.location.href = '{% url "production:batch_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
-                    } else {
+                    const data = await response.json();
+                    if (data.success) {
                         window.location.reload();
+                    } else {
+                        alert(data.message || 'Erro ao executar acao');
                     }
-                } else {
-                    alert(data.message || 'Erro ao criar batelada');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao executar acao');
+                } finally {
+                    this.submitting = false;
+                    this.confirmModalOpen = false;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao criar batelada');
-            } finally {
-                this.submitting = false;
+            },
+
+            async submitBatch() {
+                this.submitting = true;
+
+                const formData = new FormData();
+                Object.keys(this.formData).forEach(key => {
+                    if (this.formData[key]) {
+                        formData.append(key, this.formData[key]);
+                    }
+                });
+
+                try {
+                    const response = await fetch('{% url "production:batch_create" %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (data.data && data.data.id) {
+                            window.location.href = '{% url "production:batch_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert(data.message || 'Erro ao criar batelada');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao criar batelada');
+                } finally {
+                    this.submitting = false;
+                }
             }
         }
     }
-}
 </script>
 {% endblock %}

@@ -1,0 +1,23 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test apps.purchasing"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql",
+    "ci_cd": false
+  },
+  "conventions": {
+    "linter": "none",
+    "formatter": "none",
+    "testing": "django.test",
+    "app_structure": "django_apps"
+  }
+}

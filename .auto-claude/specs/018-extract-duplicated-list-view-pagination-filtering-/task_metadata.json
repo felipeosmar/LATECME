@@ -1,0 +1,9 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_quality",
+  "ideaId": "cq-003",
+  "rationale": "Code duplication leads to inconsistencies when fixes are applied unevenly and increases maintenance burden. A reusable mixin or utility function would ensure consistent behavior, reduce boilerplate, and make adding new list views faster and less error-prone.",
+  "category": "refactoring",
+  "codeQualitySeverity": "minor",
+  "priority": "medium"
+}

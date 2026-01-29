@@ -85,18 +85,20 @@ class ProductionOrder(BaseModel):
         verbose_name = "Ordem de Produção"
         verbose_name_plural = "Ordens de Produção"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['status', 'is_active']),
+        ]
 
     def __str__(self):
         return f"{self.order_number} - {self.material.code}"
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            # Gerar número automático: OP-YYYYMMDD-NNN
+            from apps.core.models import Sequence
             today = timezone.now().date()
-            count = ProductionOrder.objects.filter(
-                created_at__date=today
-            ).count()
-            self.order_number = f"OP-{today.strftime('%Y%m%d')}-{count + 1:03d}"
+            self.order_number = Sequence.get_next('production_order', 'OP', padding=3, date_scope=today)
         super().save(*args, **kwargs)
 
     @property
@@ -218,36 +220,20 @@ class Bin(BaseModel):
         verbose_name = "Contentor"
         verbose_name_plural = "Contentores"
         ordering = ['warehouse__code', 'code']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         status_display = f" ({self.current_quantity} kg de {self.current_material.code})" if self.current_material else " (Vazio)"
         return f"{self.code}{status_display}"
 
     def save(self, *args, **kwargs):
-        # Gerar código automaticamente se não definido
         if not self.code:
-            self.code = self._generate_code()
+            from apps.core.models import Sequence
+            self.code = Sequence.get_next('bin', 'BIN')
         super().save(*args, **kwargs)
-
-    def _generate_code(self):
-        """Gera código sequencial no formato BINXXXXX"""
-        # Buscar o último código BIN (com ou sem hífen para compatibilidade)
-        last_bin = Bin.objects.filter(
-            code__regex=r'^BIN-?\d+$'
-        ).order_by('-code').first()
-
-        if last_bin:
-            try:
-                # Extrair número do último código (remove BIN e hífen opcional)
-                last_number = int(last_bin.code.replace('BIN-', '').replace('BIN', ''))
-                new_number = last_number + 1
-            except ValueError:
-                # Se não conseguir extrair, contar todos os bins
-                new_number = Bin.objects.count() + 1
-        else:
-            new_number = 1
-
-        return f"BIN{new_number:05d}"
 
     @property
     def is_empty(self):
@@ -562,20 +548,20 @@ class Batch(BaseModel):
         verbose_name = "Batelada"
         verbose_name_plural = "Bateladas"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['is_active']),
+        ]
 
     def __str__(self):
         return f"{self.batch_number} - {self.material.code} ({self.actual_quantity} kg)"
 
     def save(self, *args, **kwargs):
         if not self.batch_number:
-            # Gerar número automático: BAT-YYYYMMDD-NNN
+            from apps.core.models import Sequence
             today = timezone.now().date()
-            count = Batch.objects.filter(
-                created_at__date=today
-            ).count()
-            self.batch_number = f"BAT-{today.strftime('%Y%m%d')}-{count + 1:03d}"
+            self.batch_number = Sequence.get_next('batch', 'BAT', padding=3, date_scope=today)
 
-        # Definir material da ordem de produção se não definido
         if not self.material_id and self.production_order_id:
             self.material = self.production_order.material
 

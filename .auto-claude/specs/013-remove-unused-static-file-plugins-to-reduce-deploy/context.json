@@ -1,0 +1,34 @@
+{
+  "files_to_modify": {
+    "backend": []
+  },
+  "files_to_delete": {
+    "backend": ["staticfiles/plugins/"]
+  },
+  "files_to_reference": ["templates/base/base.html", "config/settings.py"],
+  "patterns": {
+    "static_files_pattern": "Django uses STATIC_ROOT for collectstatic output and STATICFILES_DIRS for source files",
+    "template_pattern": "Base template uses {% load static %} and {% static 'path' %} tags",
+    "used_libraries": "Only Tabler (CSS framework), HTMX (interactivity), and Alpine.js (reactive components) are used"
+  },
+  "existing_implementations": {
+    "description": "The staticfiles/plugins/ directory contains 60 legacy JavaScript plugins (23MB) from an admin template that are not referenced anywhere in the codebase",
+    "relevant_files": [
+      "templates/base/base.html",
+      "config/settings.py",
+      "staticfiles/plugins/"
+    ],
+    "verification_performed": [
+      "Checked base template - only loads Tabler/HTMX/Alpine from static/vendor/",
+      "Searched entire codebase for references to plugins - none found",
+      "Confirmed staticfiles/plugins/ is 23MB of 56MB total staticfiles"
+    ]
+  },
+  "impact_analysis": {
+    "deployment_size_reduction": "~23MB (41% reduction in staticfiles)",
+    "build_time_improvement": "Faster collectstatic command",
+    "security_benefit": "Removes potentially outdated vulnerable libraries",
+    "risk_level": "low",
+    "reason": "No code references these files; only affects disk space and deployment"
+  }
+}

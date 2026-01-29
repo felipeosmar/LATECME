@@ -1,0 +1,156 @@
+{
+  "code_quality": [
+    {
+      "id": "cq-001",
+      "type": "code_quality",
+      "title": "Split large inventory views.py into domain-specific modules",
+      "description": "The file apps/inventory/views.py has grown to 1251 lines and handles multiple unrelated concerns: stock management, movements, warehouses, reservations, and inventory counts. This violates single responsibility and makes the code hard to navigate, test, and maintain.",
+      "rationale": "Very large files increase cognitive load, make code reviews harder, and often lead to merge conflicts. The inventory app handles 5 distinct domains (stocks, movements, warehouses, reservations, counts) that each deserve their own view module. Smaller, focused modules are easier to test, maintain, and reason about.",
+      "category": "large_files",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/inventory/views.py"
+      ],
+      "currentState": "Single 1251-line file containing 30+ view functions handling stocks, movements, warehouses, reservations, and inventory counts",
+      "proposedChange": "Split into domain-specific view modules:\n- apps/inventory/views/__init__.py (re-exports)\n- apps/inventory/views/dashboard.py (dashboard view)\n- apps/inventory/views/stocks.py (stock_list, stock_detail)\n- apps/inventory/views/movements.py (movements_list, create_movement)\n- apps/inventory/views/warehouses.py (warehouse_list, warehouse_detail, warehouse_create, warehouse_update)\n- apps/inventory/views/reservations.py (reservations_list, reservation_create, etc.)\n- apps/inventory/views/counts.py (inventory_count_list, inventory_count_create, etc.)",
+      "codeExample": "# Current structure:\n# apps/inventory/views.py (1251 lines, all domains mixed)\n\n# Proposed structure:\n# apps/inventory/views/__init__.py\nfrom .dashboard import dashboard\nfrom .stocks import stock_list, stock_detail\nfrom .movements import movements_list, create_movement\nfrom .warehouses import warehouse_list, warehouse_detail, warehouse_create, warehouse_update\nfrom .reservations import reservations_list, reservation_create\nfrom .counts import inventory_count_list, inventory_count_create",
+      "bestPractice": "Single Responsibility Principle - each module should have one reason to change. Django best practice is to organize views by domain/resource when they grow beyond ~300 lines.",
+      "metrics": {
+        "lineCount": 1251,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Ensure test coverage for inventory views before refactoring",
+        "Update URL imports after splitting"
+      ]
+    },
+    {
+      "id": "cq-002",
+      "type": "code_quality",
+      "title": "Add tests for production and purchasing apps",
+      "description": "The production (869 lines in views.py) and purchasing (1084 lines in views.py) apps have no test files, while other apps like inventory, materials, and accounts have comprehensive test coverage. This leaves critical business logic untested.",
+      "rationale": "Production orders and purchasing workflows are core business functionality that should have thorough test coverage. Without tests, refactoring becomes risky, bugs may go undetected, and there's no documentation of expected behavior. The existing test patterns in apps/inventory/tests.py and apps/materials/tests.py can serve as templates.",
+      "category": "testing",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/production/views.py",
+        "apps/production/models.py",
+        "apps/purchasing/views.py",
+        "apps/purchasing/models.py"
+      ],
+      "currentState": "No test files exist in apps/production/ or apps/purchasing/ directories. These apps contain:\n- Production: ProductionOrder, Bin, BinHistory, Batch, BatchItem models with 869 lines of view logic\n- Purchasing: PurchaseRequest, PurchaseOrder, Receiving models with 1084 lines of view logic",
+      "proposedChange": "Create comprehensive test files:\n- apps/production/tests.py (model tests for ProductionOrder, Bin, Batch)\n- apps/production/test_views.py (view tests for CRUD operations, status transitions)\n- apps/purchasing/tests.py (model tests for PurchaseRequest, PurchaseOrder, Receiving)\n- apps/purchasing/test_views.py (view tests for request/order workflow)",
+      "codeExample": "# apps/production/tests.py (following existing patterns from apps/inventory/tests.py)\nfrom django.test import TestCase\nfrom django.urls import reverse\nfrom apps.production.models import ProductionOrder, Batch\nfrom apps.materials.models import Material\nfrom apps.accounts.models import CustomUser\n\nclass ProductionOrderModelTests(TestCase):\n    def setUp(self):\n        self.user = CustomUser.objects.create_user(...)\n        self.material = Material.objects.create(...)\n    \n    def test_order_number_auto_generated(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100\n        )\n        self.assertTrue(order.order_number.startswith('OP'))\n    \n    def test_completion_percentage(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100,\n            produced_quantity=50\n        )\n        self.assertEqual(order.completion_percentage, 50)",
+      "bestPractice": "All business-critical functionality should have unit tests. Django's TestCase class provides database transactions that are rolled back after each test.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": 0
+      },
+      "estimatedEffort": "large",
+      "breakingChange": false,
+      "prerequisites": []
+    },
+    {
+      "id": "cq-003",
+      "type": "code_quality",
+      "title": "Extract duplicated list view pagination/filtering into reusable mixin or utility",
+      "description": "The codebase contains 14+ list views that all follow the same pattern: get filters from request.GET, apply filters to queryset, paginate results, and render template. This pattern is duplicated across inventory, purchasing, production, materials, and labels apps.",
+      "rationale": "Code duplication leads to inconsistencies when fixes are applied unevenly and increases maintenance burden. A reusable mixin or utility function would ensure consistent behavior, reduce boilerplate, and make adding new list views faster and less error-prone.",
+      "category": "duplication",
+      "severity": "minor",
+      "affectedFiles": [
+        "apps/inventory/views.py",
+        "apps/purchasing/views.py",
+        "apps/production/views.py",
+        "apps/materials/views.py",
+        "apps/labels/views.py"
+      ],
+      "currentState": "Each list view manually implements:\n1. Extract search/filter params from request.GET\n2. Build queryset with select_related/prefetch_related\n3. Apply search filter with Q objects\n4. Apply additional filters\n5. Create Paginator with hardcoded page size (20-50)\n6. Get paginated page\n7. Build context dict\n8. Render template\n\nThis pattern appears in: stock_list, movements_list, warehouse_list, reservations_list, inventory_count_list, request_list, order_list, receiving_list, production_order_list, bin_list, batch_list, material_list, supplier_list, template_list, printer_list, print_job_list",
+      "proposedChange": "Create a reusable ListView mixin in apps/core/views.py:\n1. BaseListView class that handles pagination, search, and common filter patterns\n2. FilterMixin for declaring filterable fields\n3. SearchMixin for Q-object based search\n\nAlternatively, use Django's built-in class-based ListView with custom mixins for the filtering logic.",
+      "codeExample": "# apps/core/mixins.py\nfrom django.core.paginator import Paginator\nfrom django.db.models import Q\n\nclass FilterableListMixin:\n    \"\"\"Mixin for list views with common filtering/pagination patterns\"\"\"\n    paginate_by = 20\n    search_fields = []  # Override in subclass\n    filter_fields = []  # Override in subclass\n    \n    def get_search_query(self, request):\n        return request.GET.get('search', '')\n    \n    def apply_search(self, queryset, search):\n        if search and self.search_fields:\n            q_objects = Q()\n            for field in self.search_fields:\n                q_objects |= Q(**{f'{field}__icontains': search})\n            return queryset.filter(q_objects)\n        return queryset\n    \n    def apply_filters(self, queryset, request):\n        for field in self.filter_fields:\n            value = request.GET.get(field)\n            if value:\n                queryset = queryset.filter(**{field: value})\n        return queryset\n    \n    def paginate(self, queryset, request):\n        paginator = Paginator(queryset, self.paginate_by)\n        page = request.GET.get('page')\n        return paginator.get_page(page)\n\n# Usage in apps/inventory/views.py\nclass StockListView(FilterableListMixin):\n    search_fields = ['material__code', 'material__name', 'warehouse__code']\n    filter_fields = ['warehouse_id', 'material__material_type']",
+      "bestPractice": "DRY (Don't Repeat Yourself) - extract common patterns into reusable components. Django class-based views and mixins are designed for exactly this use case.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": 280,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Good test coverage on existing list views before refactoring"
+      ]
+    },
+    {
+      "id": "cq-004",
+      "type": "code_quality",
+      "title": "Add Python linting and code quality configuration",
+      "description": "The project has no linting configuration files (flake8, pylint, mypy). Without automated code quality checks, inconsistent coding styles, unused imports, and type errors can accumulate over time.",
+      "rationale": "Linting tools catch common bugs, enforce consistent code style, and improve code readability. They are especially valuable in team environments and CI/CD pipelines. The project already uses pyproject.toml which can host most linting configuration.",
+      "category": "linting",
+      "severity": "minor",
+      "affectedFiles": [
+        "pyproject.toml"
+      ],
+      "currentState": "No linting tools configured. pyproject.toml only has basic project metadata and dependencies. No .flake8, .pylintrc, setup.cfg, or mypy.ini files exist.",
+      "proposedChange": "Add linting configuration to pyproject.toml and set up pre-commit hooks:\n1. Add ruff (modern, fast Python linter) configuration to pyproject.toml\n2. Configure basic rules: unused imports, line length, import sorting\n3. Add Django-specific rules\n4. Optionally add mypy for gradual type checking\n5. Set up pre-commit hooks for automatic linting",
+      "codeExample": "# Add to pyproject.toml\n[tool.ruff]\nline-length = 120\ntarget-version = \"py310\"\n\n[tool.ruff.lint]\nselect = [\n    \"E\",  # pycodestyle errors\n    \"W\",  # pycodestyle warnings\n    \"F\",  # pyflakes\n    \"I\",  # isort\n    \"B\",  # flake8-bugbear\n    \"C4\", # flake8-comprehensions\n    \"DJ\", # flake8-django\n]\nignore = [\n    \"E501\",  # line too long (handled by formatter)\n]\n\n[tool.ruff.lint.isort]\nknown-first-party = [\"apps\", \"config\"]\n\n[tool.mypy]\npython_version = \"3.10\"\nplugins = [\"mypy_django_plugin.main\"]\nignore_missing_imports = true\nstrict_optional = true\n\n# requirements-dev.txt addition\nruff>=0.1.0\nmypy>=1.0.0\ndjango-stubs>=4.0.0\npre-commit>=3.0.0",
+      "bestPractice": "Every Python project should have automated code quality checks. Ruff is the modern choice - it's faster than flake8/isort/black combined and supports Django-specific rules.",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "small",
+      "breakingChange": false,
+      "prerequisites": []
+    },
+    {
+      "id": "cq-005",
+      "type": "code_quality",
+      "title": "Split large purchasing views.py into domain-specific modules",
+      "description": "The file apps/purchasing/views.py has grown to 1084 lines and handles three distinct domains: Purchase Requests (solicitations), Purchase Orders, and Receiving. Each domain has its own set of CRUD operations, status transitions, and business logic.",
+      "rationale": "Like the inventory views, this file has grown too large to maintain effectively. The purchasing workflow has clear domain boundaries that map well to separate modules. This split would also make it easier to add the planned 'Supplier Search API Endpoint' feature without further bloating the file.",
+      "category": "large_files",
+      "severity": "major",
+      "affectedFiles": [
+        "apps/purchasing/views.py"
+      ],
+      "currentState": "Single 1084-line file containing:\n- Purchase Request views (lines ~60-400): request_list, request_detail, request_create, request_update, request_submit, request_approve, request_reject\n- Purchase Order views (lines ~400-700): order_list, order_detail, order_create, order_items, order_send, order_confirm\n- Receiving views (lines ~700-1084): receiving_list, receiving_detail, receiving_create, receiving_inspect, receiving_complete",
+      "proposedChange": "Split into domain-specific view modules:\n- apps/purchasing/views/__init__.py (re-exports for backward compatibility)\n- apps/purchasing/views/dashboard.py (dashboard view)\n- apps/purchasing/views/requests.py (PurchaseRequest CRUD and workflow)\n- apps/purchasing/views/orders.py (PurchaseOrder CRUD and workflow)\n- apps/purchasing/views/receiving.py (Receiving CRUD and workflow)",
+      "codeExample": "# apps/purchasing/views/__init__.py\nfrom .dashboard import dashboard\nfrom .requests import (\n    request_list, request_detail, request_create, \n    request_update, request_submit, request_approve, request_reject\n)\nfrom .orders import (\n    order_list, order_detail, order_create,\n    order_items, order_send, order_confirm\n)\nfrom .receiving import (\n    receiving_list, receiving_detail, receiving_create,\n    receiving_inspect, receiving_complete\n)\n\n# This maintains backward compatibility with existing URL imports\n__all__ = [\n    'dashboard', 'request_list', 'request_detail', ...\n]",
+      "bestPractice": "Single Responsibility Principle - each module should focus on one domain/resource. Django's URL dispatcher makes it easy to reorganize views while maintaining the same URL patterns.",
+      "metrics": {
+        "lineCount": 1084,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "medium",
+      "breakingChange": false,
+      "prerequisites": [
+        "Add tests for purchasing views before refactoring (see cq-002)",
+        "Update URL imports after splitting"
+      ]
+    }
+  ],
+  "metadata": {
+    "filesAnalyzed": 45,
+    "largeFilesFound": 3,
+    "duplicateBlocksFound": 14,
+    "lintingConfigured": false,
+    "testsPresent": true,
+    "testCoverageGaps": [
+      "apps/production/",
+      "apps/purchasing/"
+    ],
+    "generatedAt": "2026-01-27T10:36:30Z"
+  }
+}

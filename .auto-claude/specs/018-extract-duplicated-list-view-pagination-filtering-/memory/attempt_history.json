@@ -1,0 +1,249 @@
+{
+  "subtasks": {
+    "subtask-1-1": {
+      "attempts": [
+        {
+          "session": 2,
+          "timestamp": "2026-01-28T18:25:41.683102",
+          "approach": "Implemented: Create apps/core/list_utils.py with FilterConfig and apply_list_filters utility function",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-1-2": {
+      "attempts": [
+        {
+          "session": 3,
+          "timestamp": "2026-01-28T18:30:01.370779",
+          "approach": "Implemented: Create tests/test_list_utils.py with unit tests for the utility functions",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-1": {
+      "attempts": [
+        {
+          "session": 4,
+          "timestamp": "2026-01-28T18:31:53.609121",
+          "approach": "Implemented: Refactor inventory.views.stock_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-2": {
+      "attempts": [
+        {
+          "session": 5,
+          "timestamp": "2026-01-28T18:34:09.937480",
+          "approach": "Implemented: Refactor inventory.views.movements_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-3": {
+      "attempts": [
+        {
+          "session": 6,
+          "timestamp": "2026-01-28T18:37:24.584777",
+          "approach": "Implemented: Refactor inventory.views.warehouse_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-4": {
+      "attempts": [
+        {
+          "session": 7,
+          "timestamp": "2026-01-28T18:38:52.867215",
+          "approach": "Implemented: Refactor inventory.views.reservations_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-5": {
+      "attempts": [
+        {
+          "session": 8,
+          "timestamp": "2026-01-28T18:41:11.033975",
+          "approach": "Implemented: Refactor inventory.views.inventory_count_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-3-1": {
+      "attempts": [
+        {
+          "session": 9,
+          "timestamp": "2026-01-28T18:43:15.739784",
+          "approach": "Implemented: Refactor purchasing.views.request_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-3-2": {
+      "attempts": [
+        {
+          "session": 10,
+          "timestamp": "2026-01-28T18:45:14.523948",
+          "approach": "Implemented: Refactor purchasing.views.order_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-3-3": {
+      "attempts": [
+        {
+          "session": 11,
+          "timestamp": "2026-01-28T18:47:01.695097",
+          "approach": "Implemented: Refactor purchasing.views.receiving_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-1": {
+      "attempts": [
+        {
+          "session": 12,
+          "timestamp": "2026-01-28T18:49:22.713908",
+          "approach": "Implemented: Refactor production.views.production_order_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-2": {
+      "attempts": [
+        {
+          "session": 13,
+          "timestamp": "2026-01-28T18:52:50.637000",
+          "approach": "Implemented: Refactor production.views.bin_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-3": {
+      "attempts": [
+        {
+          "session": 14,
+          "timestamp": "2026-01-28T18:55:35.550250",
+          "approach": "Implemented: Refactor production.views.batch_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-4": {
+      "attempts": [
+        {
+          "session": 15,
+          "timestamp": "2026-01-28T18:57:11.056609",
+          "approach": "Implemented: Refactor production.views.bin_history to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-5-1": {
+      "attempts": [
+        {
+          "session": 16,
+          "timestamp": "2026-01-28T18:58:39.784199",
+          "approach": "Implemented: Refactor materials.views.material_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-5-2": {
+      "attempts": [
+        {
+          "session": 17,
+          "timestamp": "2026-01-28T18:59:56.742301",
+          "approach": "Implemented: Refactor materials.views.supplier_list to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-5-3": {
+      "attempts": [
+        {
+          "session": 18,
+          "timestamp": "2026-01-28T19:02:49.609965",
+          "approach": "Implemented: Refactor labels.views.quick_print (if applicable) to use apply_list_filters utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-6-1": {
+      "attempts": [
+        {
+          "session": 19,
+          "timestamp": "2026-01-28T19:04:16.462218",
+          "approach": "Implemented: Remove commented code from all refactored views across all apps",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-6-2": {
+      "attempts": [
+        {
+          "session": 20,
+          "timestamp": "2026-01-28T19:07:24.201834",
+          "approach": "Implemented: Add documentation to list_utils.py with usage examples",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-6-3": {
+      "attempts": [
+        {
+          "session": 21,
+          "timestamp": "2026-01-28T19:10:02.271868",
+          "approach": "Implemented: Create REFACTORING_NOTES.md documenting the changes and how to use the new utility",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    }
+  },
+  "stuck_subtasks": [],
+  "metadata": {
+    "created_at": "2026-01-28T18:17:45.568130",
+    "last_updated": "2026-01-28T19:10:02.271885"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "django_version": "5.2.4",
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql",
+    "docker_compose": true
+  },
+  "conventions": {
+    "view_style": "function_based_views",
+    "apps": ["core", "accounts", "materials", "inventory", "production", "labels", "purchasing"],
+    "base_template_dir": "templates/",
+    "static_files": "static/"
+  }
+}

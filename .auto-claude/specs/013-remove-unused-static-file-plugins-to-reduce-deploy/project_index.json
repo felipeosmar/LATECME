@@ -1,0 +1,30 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver 0.0.0.0:8000",
+      "test_command": "python manage.py test",
+      "docker_service": "django"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "docker_compose_dev": "docker-compose-dev.yml",
+    "docker_compose_prod": "docker-compose.yml",
+    "database": "postgresql",
+    "web_server": "nginx"
+  },
+  "conventions": {
+    "package_manager": "poetry",
+    "python_version": "3.12",
+    "django_version": "5.2.4",
+    "static_files": {
+      "source": "static/",
+      "collected": "staticfiles/",
+      "collectstatic_command": "python manage.py collectstatic --noinput"
+    }
+  }
+}

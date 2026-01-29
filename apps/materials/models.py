@@ -47,6 +47,9 @@ class Supplier(BaseModel):
         verbose_name = "Fornecedor"
         verbose_name_plural = "Fornecedores"
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['is_active']),
+        ]
     
     def __str__(self):
         return f"{self.code} - {self.name}"
@@ -128,6 +131,11 @@ class Material(BaseModel):
         verbose_name = "Material"
         verbose_name_plural = "Materiais"
         ordering = ['code']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['material_type']),
+            models.Index(fields=['is_active', 'material_type']),
+        ]
     
     def __str__(self):
         return f"{self.code} - {self.name}"
@@ -234,6 +242,9 @@ class MaterialCategory(BaseModel):
         verbose_name = "Categoria de Material"
         verbose_name_plural = "Categorias de Materiais"
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['is_active']),
+        ]
     
     def __str__(self):
         return self.name

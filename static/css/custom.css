@@ -72,6 +72,18 @@
     display: none !important;
 }
 
+/* Alpine.js + Bootstrap/Tabler Modal Integration
+   Bootstrap modals have display:none by default. Alpine's x-show only removes
+   inline display:none when true, it doesn't set display:block. We use x-bind:class
+   with d-block/d-none utility classes which have !important */
+.modal.d-block {
+    display: block !important;
+}
+
+.modal-backdrop.d-block {
+    display: block !important;
+}
+
 /* Form validation states */
 .form-control.is-invalid,
 .was-validated .form-control:invalid {

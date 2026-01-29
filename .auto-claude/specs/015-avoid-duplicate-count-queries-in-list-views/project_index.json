@@ -1,0 +1,34 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django"],
+      "framework_version": "5.2.4",
+      "database": "postgresql",
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "docker_compose": true,
+    "database": "postgresql",
+    "ci_cd": false
+  },
+  "conventions": {
+    "linter": "none",
+    "formatter": "none",
+    "testing": "django.test"
+  },
+  "apps": [
+    "apps/materials",
+    "apps/inventory",
+    "apps/purchasing",
+    "apps/production",
+    "apps/labels",
+    "apps/accounts",
+    "apps/core"
+  ]
+}

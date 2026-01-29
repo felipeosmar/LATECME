@@ -1,0 +1,13 @@
+{
+  "files": [
+    "apps/inventory/views/__init__.py",
+    "apps/inventory/views/count_views.py",
+    "apps/inventory/views/movement_views.py",
+    "apps/inventory/views/reservation_views.py",
+    "apps/inventory/views/stock_views.py",
+    "apps/inventory/views/warehouse_views.py",
+    "apps/production/tests.py",
+    "apps/purchasing/tests.py"
+  ],
+  "last_updated": "2026-01-28T18:16:26.709683"
+}

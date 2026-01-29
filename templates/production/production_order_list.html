@@ -12,8 +12,9 @@
 {% block page_subtitle %}<div class="page-subtitle">Gestao de Ordens de Producao</div>{% endblock %}
 
 {% block page_actions %}
-<button type="button" class="btn btn-primary" onclick="window.dispatchEvent(new CustomEvent('open-modal', {detail: {id: 'create-order'}}))">
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'create-order'})">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
     Nova Ordem
@@ -30,7 +31,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-blue text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-list"></use>
                                 </svg>
                             </span>
@@ -49,7 +52,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-yellow text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-settings"></use>
                                 </svg>
                             </span>
@@ -68,7 +73,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-green text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
                                 </svg>
                             </span>
@@ -87,7 +94,9 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-purple text-white avatar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-layers-intersect"></use>
                                 </svg>
                             </span>
@@ -105,20 +114,21 @@
     <!-- Filters -->
     <div class="card mb-3">
         <div class="card-body">
-            <form hx-get="{% url 'production:order_list' %}"
-                  hx-target="#orders-table"
-                  hx-push-url="true"
-                  hx-trigger="submit, change from:select">
+            <form hx-get="{% url 'production:order_list' %}" hx-target="#orders-table" hx-push-url="true"
+                hx-trigger="submit, change from:select">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label">Buscar</label>
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                                 </svg>
                             </span>
-                            <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por numero ou material...">
+                            <input type="text" name="search" value="{{ search }}" class="form-control"
+                                placeholder="Buscar por numero ou material...">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -126,15 +136,21 @@
                         <select name="status" class="form-select">
                             <option value="">Todos os Status</option>
                             <option value="DRAFT" {% if status_filter == 'DRAFT' %}selected{% endif %}>Rascunho</option>
-                            <option value="PLANNED" {% if status_filter == 'PLANNED' %}selected{% endif %}>Planejada</option>
-                            <option value="IN_PROGRESS" {% if status_filter == 'IN_PROGRESS' %}selected{% endif %}>Em Andamento</option>
-                            <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Concluida</option>
-                            <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelada</option>
+                            <option value="PLANNED" {% if status_filter == 'PLANNED' %}selected{% endif %}>Planejada
+                            </option>
+                            <option value="IN_PROGRESS" {% if status_filter == 'IN_PROGRESS' %}selected{% endif %}>Em
+                                Andamento</option>
+                            <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Concluida
+                            </option>
+                            <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelada
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-filter"></use>
                             </svg>
                             Filtrar
@@ -142,7 +158,9 @@
                     </div>
                     <div class="col-md-2">
                         <a href="{% url 'production:order_list' %}" class="btn btn-secondary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
                             </svg>
                             Limpar
@@ -153,16 +171,49 @@
         </div>
     </div>
 
+    <!-- Barra de Acoes em Lote -->
+    <div class="card mb-3 bg-primary-lt" x-show="selectedOrders.length > 0" x-cloak>
+        <div class="card-body py-2">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fw-bold" x-text="selectedOrders.length + ' ordem(ns) selecionada(s)'"></span>
+                </div>
+                <div class="btn-list">
+                    <button type="button" class="btn btn-primary" @click="openBulkStatusChangeModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                        Alterar Status
+                    </button>
+                    <button type="button" class="btn btn-secondary" @click="clearSelection()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-x"></use>
+                        </svg>
+                        Limpar Selecao
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Orders Table -->
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-list"></use>
                 </svg>
                 Ordens de Producao
                 <span class="badge bg-secondary ms-2">{{ orders.paginator.count }}</span>
             </h3>
+            <div class="card-actions">
+                <label class="form-check">
+                    <input type="checkbox" class="form-check-input" @change="toggleSelectAll($event)"
+                           :checked="selectedOrders.length === {{ orders|length }} && {{ orders|length }} > 0">
+                    <span class="form-check-label">Selecionar todos</span>
+                </label>
+            </div>
         </div>
         <div id="orders-table">
             {% if orders %}
@@ -170,6 +221,10 @@
                 <table class="table table-vcenter card-table table-hover">
                     <thead>
                         <tr>
+                            <th class="w-1">
+                                <input type="checkbox" class="form-check-input" @change="toggleSelectAll($event)"
+                                       :checked="selectedOrders.length === {{ orders|length }} && {{ orders|length }} > 0">
+                            </th>
                             <th>Numero</th>
                             <th>Material</th>
                             <th>Status</th>
@@ -185,6 +240,11 @@
                     <tbody>
                         {% for order in orders %}
                         <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input"
+                                       :checked="selectedOrders.includes('{{ order.id }}')"
+                                       @change="toggleOrderSelection('{{ order.id }}')">
+                            </td>
                             <td>
                                 <a href="{% url 'production:order_detail' order.id %}" class="text-reset">
                                     <strong>{{ order.order_number }}</strong>
@@ -209,7 +269,8 @@
                             </td>
                             <td>{{ order.planned_quantity|floatformat:3 }} kg</td>
                             <td>
-                                <strong class="{% if order.produced_quantity >= order.planned_quantity %}text-success{% else %}text-warning{% endif %}">
+                                <strong
+                                    class="{% if order.produced_quantity >= order.planned_quantity %}text-success{% else %}text-warning{% endif %}">
                                     {{ order.produced_quantity|floatformat:3 }} kg
                                 </strong>
                             </td>
@@ -217,8 +278,8 @@
                                 {% with progress=order.completion_percentage %}
                                 <div class="progress progress-sm">
                                     <div class="progress-bar {% if progress >= 100 %}bg-success{% elif progress >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
-                                         style="width: {% if progress > 100 %}100{% else %}{{ progress }}{% endif %}%"
-                                         role="progressbar">
+                                        style="width: {% if progress > 100 %}100{% else %}{{ progress }}{% endif %}%"
+                                        role="progressbar">
                                     </div>
                                 </div>
                                 <small class="text-muted">{{ progress|floatformat:0 }}%</small>
@@ -230,8 +291,10 @@
                             <td>
                                 {% if order.responsible %}
                                 <div class="d-flex align-items-center">
-                                    <span class="avatar avatar-xs me-2">{{ order.responsible.first_name|slice:":1" }}{{ order.responsible.last_name|slice:":1" }}</span>
-                                    <small>{{ order.responsible.get_full_name|default:order.responsible.username }}</small>
+                                    <span class="avatar avatar-xs me-2">{{ order.responsible.first_name|slice:":1" }}{{
+                                        order.responsible.last_name|slice:":1" }}</span>
+                                    <small>{{ order.responsible.get_full_name|default:order.responsible.username
+                                        }}</small>
                                 </div>
                                 {% else %}
                                 <span class="text-muted">-</span>
@@ -246,20 +309,29 @@
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <a href="{% url 'production:order_detail' order.id %}" class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <a href="{% url 'production:order_detail' order.id %}"
+                                        class="btn btn-icon btn-ghost-primary" title="Ver detalhes">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                                         </svg>
                                     </a>
                                     {% if order.status == 'PLANNED' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-warning" title="Iniciar producao" @click="startOrder('{{ order.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-warning"
+                                        title="Iniciar producao" @click="startOrder('{{ order.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                                         </svg>
                                     </button>
                                     {% elif order.status == 'IN_PROGRESS' %}
-                                    <button type="button" class="btn btn-icon btn-ghost-success" title="Marcar concluida" @click="completeOrder('{{ order.id }}')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="btn btn-icon btn-ghost-success"
+                                        title="Marcar concluida" @click="completeOrder('{{ order.id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                                         </svg>
                                     </button>
@@ -276,16 +348,19 @@
             {% if orders.has_other_pages %}
             <div class="card-footer d-flex align-items-center">
                 <p class="m-0 text-muted">
-                    Mostrando <span>{{ orders.start_index }}</span> a <span>{{ orders.end_index }}</span> de <span>{{ orders.paginator.count }}</span> ordens
+                    Mostrando <span>{{ orders.start_index }}</span> a <span>{{ orders.end_index }}</span> de <span>{{
+                        orders.paginator.count }}</span> ordens
                 </p>
                 <ul class="pagination m-0 ms-auto">
                     {% if orders.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.previous_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.previous_page_number }}"
-                           hx-target="#orders-table"
-                           hx-push-url="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.previous_page_number }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.previous_page_number }}"
+                            hx-target="#orders-table" hx-push-url="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
                             </svg>
                             Anterior
@@ -295,28 +370,29 @@
                     {% for num in orders.paginator.page_range %}
                     {% if orders.number == num %}
                     <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
-                           hx-target="#orders-table"
-                           hx-push-url="true">{{ num }}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                    {% if orders.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.next_page_number }}"
-                           hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.next_page_number }}"
-                           hx-target="#orders-table"
-                           hx-push-url="true">
-                            Proximo
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    {% endif %}
+                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %} <li class="page-item">
+                        <a class="page-link"
+                            href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
+                            hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}"
+                            hx-target="#orders-table" hx-push-url="true">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if orders.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.next_page_number }}"
+                                hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ orders.next_page_number }}"
+                                hx-target="#orders-table" hx-push-url="true">
+                                Proximo
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        {% endif %}
                 </ul>
             </div>
             {% endif %}
@@ -324,17 +400,23 @@
             <div class="card-body">
                 <div class="empty">
                     <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-list"></use>
                         </svg>
                     </div>
                     <p class="empty-title">Nenhuma ordem de producao encontrada</p>
                     <p class="empty-subtitle text-muted">
-                        {% if search or status_filter %}Nao ha ordens que correspondam aos filtros.{% else %}Nenhuma ordem foi criada ainda.{% endif %}
+                        {% if search or status_filter %}Nao ha ordens que correspondam aos filtros.{% else %}Nenhuma
+                        ordem foi criada ainda.{% endif %}
                     </p>
                     <div class="empty-action">
-                        <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-order'})">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="button" class="btn btn-primary"
+                            @click="$dispatch('open-modal', {id: 'create-order'})">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                             </svg>
                             Criar Primeira Ordem
@@ -348,12 +430,9 @@
 
     <!-- Create Order Modal -->
     <div class="modal modal-blur fade" tabindex="-1"
-         x-show="createModalOpen"
-         :class="{ 'show d-block': createModalOpen }"
-         x-cloak
-         @open-modal.window="if ($event.detail.id === 'create-order') createModalOpen = true"
-         @close-modal.window="createModalOpen = false"
-         @keydown.escape.window="createModalOpen = false">
+        :class="{ 'show d-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak
+        @open-modal.window="if ($event.detail.id === 'create-order') createModalOpen = true"
+        @close-modal.window="createModalOpen = false" @keydown.escape.window="createModalOpen = false">
         <div class="modal-dialog modal-lg" @click.outside="createModalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
@@ -368,13 +447,15 @@
                                 <select class="form-select" x-model="formData.material" required>
                                     <option value="">Selecione...</option>
                                     {% for material in materials %}
-                                    <option value="{{ material.id }}">{{ material.code }} - {{ material.name|truncatechars:40 }}</option>
+                                    <option value="{{ material.id }}">{{ material.code }} - {{
+                                        material.name|truncatechars:40 }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required">Quantidade Planejada (kg)</label>
-                                <input type="number" class="form-control" x-model="formData.planned_quantity" step="0.001" min="0.001" placeholder="Ex: 500.000" required>
+                                <input type="number" class="form-control" x-model="formData.planned_quantity"
+                                    step="0.001" min="0.001" placeholder="Ex: 500.000" required>
                             </div>
                         </div>
                         <div class="row">
@@ -393,7 +474,8 @@
                                 <select class="form-select" x-model="formData.responsible">
                                     <option value="">Selecione...</option>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}
+                                    </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -407,14 +489,18 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="3" x-model="formData.notes" placeholder="Observacoes sobre a ordem de producao..."></textarea>
+                            <textarea class="form-control" rows="3" x-model="formData.notes"
+                                placeholder="Observacoes sobre a ordem de producao..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
+                        <button type="button" class="btn btn-secondary"
+                            @click="createModalOpen = false">Cancelar</button>
                         <button type="submit" class="btn btn-primary" :disabled="submitting">
                             <span x-show="!submitting">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
                                 </svg>
                                 Criar Ordem
@@ -429,40 +515,100 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="createModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': createModalOpen, 'd-none': !createModalOpen }" x-cloak>
+    </div>
+
+    <!-- Bulk Status Change Modal -->
+    <div class="modal modal-blur fade" tabindex="-1"
+         x-show="bulkStatusModalOpen"
+         :class="{ 'show d-block': bulkStatusModalOpen }"
+         x-cloak
+         @keydown.escape.window="bulkStatusModalOpen = false">
+        <div class="modal-dialog modal-sm" @click.outside="bulkStatusModalOpen = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar Status em Lote</h5>
+                    <button type="button" class="btn-close" @click="bulkStatusModalOpen = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong x-text="selectedOrders.length"></strong> ordem(ns) selecionada(s).
+                    </p>
+                    <p class="text-muted">Escolha a acao desejada:</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-warning" @click="bulkStartOrders()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
+                            </svg>
+                            Iniciar Producao
+                        </button>
+                        <button type="button" class="btn btn-success" @click="bulkCompleteOrders()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
+                            </svg>
+                            Marcar como Concluida
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" @click="bulkStatusModalOpen = false">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show" x-show="bulkStatusModalOpen" x-cloak></div>
 
     <!-- Confirm Action Modal -->
     <div class="modal modal-blur fade" tabindex="-1"
-         x-show="confirmModalOpen"
-         :class="{ 'show d-block': confirmModalOpen }"
-         x-cloak
-         @keydown.escape.window="confirmModalOpen = false">
+        :class="{ 'show d-block': confirmModalOpen, 'd-none': !confirmModalOpen }" x-cloak
+        @keydown.escape.window="confirmModalOpen = false">
         <div class="modal-dialog modal-sm" @click.outside="confirmModalOpen = false">
             <div class="modal-content">
                 <div class="modal-status" :class="confirmAction === 'start' ? 'bg-warning' : 'bg-success'"></div>
                 <div class="modal-body text-center py-4">
                     <template x-if="confirmAction === 'start'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                         </svg>
                     </template>
                     <template x-if="confirmAction === 'complete'">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success mb-2" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                         </svg>
                     </template>
+<<<<<<< HEAD
                     <h3 x-text="confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?'"></h3>
-                    <div class="text-muted" x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'"></div>
+                    <div class="text-muted"
+                        x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'">
+=======
+                    <h3 x-text="isBulkOperation ? (confirmAction === 'start' ? 'Iniciar Producao em Lote?' : 'Marcar como Concluidas?') : (confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?')"></h3>
+                    <div class="text-muted">
+                        <template x-if="isBulkOperation">
+                            <span x-text="selectedOrders.length + (confirmAction === 'start' ? ' ordem(ns) serao marcadas como em andamento.' : ' ordem(ns) serao marcadas como concluidas.')"></span>
+                        </template>
+                        <template x-if="!isBulkOperation">
+                            <span x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'"></span>
+                        </template>
+>>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="w-100">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn w-100" @click="confirmModalOpen = false">Cancelar</button>
+                                <button type="button" class="btn w-100"
+                                    @click="confirmModalOpen = false">Cancelar</button>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn w-100" :class="confirmAction === 'start' ? 'btn-warning' : 'btn-success'" @click="executeAction" :disabled="submitting">
-                                    <span x-show="!submitting" x-text="confirmAction === 'start' ? 'Iniciar' : 'Concluir'"></span>
+                                <button type="button" class="btn w-100"
+                                    :class="confirmAction === 'start' ? 'btn-warning' : 'btn-success'"
+                                    @click="executeAction" :disabled="submitting">
+                                    <span x-show="!submitting"
+                                        x-text="confirmAction === 'start' ? 'Iniciar' : 'Concluir'"></span>
                                     <span x-show="submitting" x-cloak>
                                         <span class="spinner-border spinner-border-sm"></span>
                                     </span>
@@ -474,19 +620,56 @@
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show" x-show="confirmModalOpen" x-cloak></div>
+    <div class="modal-backdrop fade" :class="{ 'show d-block': confirmModalOpen, 'd-none': !confirmModalOpen }" x-cloak>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+<<<<<<< HEAD
+    function orderManager() {
+        return {
+            createModalOpen: false,
+            confirmModalOpen: false,
+            confirmAction: '',
+            selectedOrderId: null,
+            submitting: false,
+            formData: {
+                material: '',
+                planned_quantity: '',
+                planned_start_date: '',
+                planned_end_date: '',
+                responsible: '',
+                status: 'PLANNED',
+                notes: ''
+            },
+
+            startOrder(orderId) {
+                this.selectedOrderId = orderId;
+                this.confirmAction = 'start';
+                this.confirmModalOpen = true;
+            },
+
+            completeOrder(orderId) {
+                this.selectedOrderId = orderId;
+                this.confirmAction = 'complete';
+                this.confirmModalOpen = true;
+            },
+
+            async executeAction() {
+                if (!this.selectedOrderId) return;
+=======
 function orderManager() {
     return {
         createModalOpen: false,
         confirmModalOpen: false,
+        bulkStatusModalOpen: false,
         confirmAction: '',
         selectedOrderId: null,
+        selectedOrders: [],
         submitting: false,
+        isBulkOperation: false,
         formData: {
             material: '',
             planned_quantity: '',
@@ -497,36 +680,95 @@ function orderManager() {
             notes: ''
         },
 
+        // Selection management
+        toggleOrderSelection(orderId) {
+            const index = this.selectedOrders.indexOf(orderId);
+            if (index > -1) {
+                this.selectedOrders.splice(index, 1);
+            } else {
+                this.selectedOrders.push(orderId);
+            }
+        },
+
+        toggleSelectAll(event) {
+            if (event.target.checked) {
+                // Select all visible orders
+                this.selectedOrders = [{% for order in orders %}'{{ order.id }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+            } else {
+                this.selectedOrders = [];
+            }
+        },
+
+        clearSelection() {
+            this.selectedOrders = [];
+        },
+
+        openBulkStatusChangeModal() {
+            if (this.selectedOrders.length === 0) {
+                alert('Selecione pelo menos uma ordem para alterar o status.');
+                return;
+            }
+            this.bulkStatusModalOpen = true;
+        },
+
+        bulkStartOrders() {
+            this.isBulkOperation = true;
+            this.confirmAction = 'start';
+            this.bulkStatusModalOpen = false;
+            this.confirmModalOpen = true;
+        },
+
+        bulkCompleteOrders() {
+            this.isBulkOperation = true;
+            this.confirmAction = 'complete';
+            this.bulkStatusModalOpen = false;
+            this.confirmModalOpen = true;
+        },
+
         startOrder(orderId) {
             this.selectedOrderId = orderId;
+            this.isBulkOperation = false;
             this.confirmAction = 'start';
             this.confirmModalOpen = true;
         },
 
         completeOrder(orderId) {
             this.selectedOrderId = orderId;
+            this.isBulkOperation = false;
             this.confirmAction = 'complete';
             this.confirmModalOpen = true;
         },
 
         async executeAction() {
+            // Handle bulk operations
+            if (this.isBulkOperation) {
+                await this.executeBulkAction();
+                return;
+            }
+
+            // Handle single order operations
             if (!this.selectedOrderId) return;
+>>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
 
-            this.submitting = true;
-            const baseUrl = this.confirmAction === 'start'
-                ? '{% url "production:order_start" "00000000-0000-0000-0000-000000000000" %}'
-                : '{% url "production:order_complete" "00000000-0000-0000-0000-000000000000" %}';
-            const url = baseUrl.replace('00000000-0000-0000-0000-000000000000', this.selectedOrderId);
+                this.submitting = true;
+                const baseUrl = this.confirmAction === 'start'
+                    ? '{% url "production:order_start" "00000000-0000-0000-0000-000000000000" %}'
+                    : '{% url "production:order_complete" "00000000-0000-0000-0000-000000000000" %}';
+                const url = baseUrl.replace('00000000-0000-0000-0000-000000000000', this.selectedOrderId);
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
-                    }
-                });
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
+<<<<<<< HEAD
+                    const data = await response.json();
+                    if (data.success) {
+=======
                 const data = await response.json();
                 if (data.success) {
                     window.location.reload();
@@ -534,11 +776,58 @@ function orderManager() {
                     alert(data.message || 'Erro ao executar acao');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao executar acao');
+                alert('Erro ao executar acao: ' + error.message);
             } finally {
                 this.submitting = false;
                 this.confirmModalOpen = false;
+            }
+        },
+
+        async executeBulkAction() {
+            if (this.selectedOrders.length === 0) return;
+
+            this.submitting = true;
+            const url = this.confirmAction === 'start'
+                ? '{% url "production:order_batch_start" %}'
+                : '{% url "production:order_batch_complete" %}';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_ids: this.selectedOrders
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const actionLabel = this.confirmAction === 'start' ? 'iniciada(s)' : 'concluida(s)';
+                    const successCount = this.confirmAction === 'start' ? data.started : data.completed;
+                    let message = `${successCount} ordem(ns) ${actionLabel} com sucesso.`;
+
+                    if (data.failed > 0) {
+                        message += ` ${data.failed} falharam.`;
+                        if (data.errors && data.errors.length > 0) {
+                            message += '\n\nErros:\n' + data.errors.join('\n');
+                        }
+                    }
+
+                    alert(message);
+                    this.clearSelection();
+                    window.location.reload();
+                } else {
+                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro ao executar operacao em lote: ' + error.message);
+            } finally {
+                this.submitting = false;
+                this.confirmModalOpen = false;
+                this.isBulkOperation = false;
             }
         },
 
@@ -566,19 +855,57 @@ function orderManager() {
                     if (data.data && data.data.id) {
                         window.location.href = '{% url "production:order_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
                     } else {
+>>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
                         window.location.reload();
+                    } else {
+                        alert(data.message || 'Erro ao executar acao');
                     }
-                } else {
-                    alert(data.message || 'Erro ao criar ordem');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao executar acao');
+                } finally {
+                    this.submitting = false;
+                    this.confirmModalOpen = false;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Erro ao criar ordem');
-            } finally {
-                this.submitting = false;
+            },
+
+            async submitOrder() {
+                this.submitting = true;
+
+                const formData = new FormData();
+                Object.keys(this.formData).forEach(key => {
+                    if (this.formData[key]) {
+                        formData.append(key, this.formData[key]);
+                    }
+                });
+
+                try {
+                    const response = await fetch('{% url "production:order_create" %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        if (data.data && data.data.id) {
+                            window.location.href = '{% url "production:order_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert(data.message || 'Erro ao criar ordem');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Erro ao criar ordem');
+                } finally {
+                    this.submitting = false;
+                }
             }
         }
     }
-}
 </script>
 {% endblock %}

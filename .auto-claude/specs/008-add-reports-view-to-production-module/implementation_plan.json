@@ -1,0 +1,392 @@
+{
+  "feature": "Add Reports View to Production Module",
+  "workflow_type": "simple",
+  "workflow_rationale": "Single-service feature addition following well-established pattern. Production module already exists with all necessary models and data. Inventory module provides complete reference implementation. No complex dependencies or architectural changes needed.",
+  "phases": [
+    {
+      "id": "phase-1-implementation",
+      "name": "Implementation",
+      "type": "implementation",
+      "description": "Add reports view, URL route, and template to production module following inventory reports pattern",
+      "depends_on": [],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Add reports() view function to production/views.py",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/production/views.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [
+            "apps/inventory/views.py"
+          ],
+          "implementation_details": {
+            "location": "End of apps/production/views.py after existing views",
+            "requirements": [
+              "Import timezone and timedelta from django.utils and datetime",
+              "Add @login_required decorator",
+              "Accept date_from and date_to query parameters with 30-day default",
+              "Query production orders by status with counts",
+              "Aggregate batches by status with total quantities",
+              "Aggregate bin history movements by type",
+              "Find most active materials in production",
+              "Calculate bin utilization statistics",
+              "Pass all data to template in context dict"
+            ],
+            "aggregations_to_implement": [
+              "orders_by_status: ProductionOrder.objects.filter(created_at__date__range=[date_from, date_to]).values('status').annotate(count=Count('id'), total_planned=Sum('planned_quantity'), total_produced=Sum('produced_quantity'))",
+              "batches_by_status: Batch.objects.filter(created_at__date__range=[date_from, date_to]).values('status').annotate(count=Count('id'), total_quantity=Sum('actual_quantity'))",
+              "bin_movements_by_type: BinHistory.objects.filter(created_at__date__range=[date_from, date_to]).values('movement_type').annotate(count=Count('id'), total_quantity=Sum('quantity'))",
+              "top_materials_produced: Batch.objects.filter(created_at__date__range=[date_from, date_to]).values('material__code', 'material__name').annotate(total_batches=Count('id'), total_quantity=Sum('actual_quantity')).order_by('-total_quantity')[:10]",
+              "bin_utilization: Bin.objects.aggregate(total_bins=Count('id'), loaded_bins=Count('id', filter=Q(status='LOADED')), empty_bins=Count('id', filter=Q(status='EMPTY')), total_capacity=Sum('capacity'), total_current=Sum('current_quantity'))"
+            ]
+          },
+          "verification": {
+            "type": "command",
+            "command": "python manage.py check",
+            "expected": "System check identified no issues"
+          },
+          "status": "completed",
+          "notes": "Added reports() view function to apps/production/views.py following the pattern from apps/inventory/views.py. The function includes date filtering, statistics aggregation for production orders, batches, materials, and bin movements. All imports added and syntax validated.",
+          "updated_at": "2026-01-27T13:51:48.927774+00:00"
+        },
+        {
+          "id": "subtask-1-2",
+          "description": "Add reports URL route to production/urls.py",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/production/urls.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [
+            "apps/inventory/urls.py"
+          ],
+          "implementation_details": {
+            "location": "Add after existing URL patterns, before API section",
+            "route": "path('reports/', views.reports, name='reports')",
+            "note": "Follow the same pattern as inventory app: path('reports/', views.reports, name='reports')"
+          },
+          "verification": {
+            "type": "command",
+            "command": "python manage.py show_urls 2>/dev/null | grep 'production/reports' || python manage.py check",
+            "expected": "No errors, route registered"
+          },
+          "status": "completed",
+          "notes": "Added reports URL route to production/urls.py following the pattern from inventory/urls.py. Route registered: path('reports/', views.reports, name='reports')",
+          "updated_at": "2026-01-27T13:53:26.113680+00:00"
+        },
+        {
+          "id": "subtask-1-3",
+          "description": "Create reports.html template",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "templates/production/reports.html"
+          ],
+          "patterns_from": [
+            "templates/inventory/reports.html"
+          ],
+          "implementation_details": {
+            "template_structure": [
+              "Extend 'base/internal.html'",
+              "Set title, breadcrumb, page_title, page_subtitle blocks",
+              "Period filter card with date_from/date_to inputs and HTMX form",
+              "Summary cards row: Total Orders, Completed Orders, Active Batches, Bin Utilization %",
+              "Data tables section with two columns:",
+              "  - Left: Orders by Status table",
+              "  - Right: Batches by Status table",
+              "Second row:",
+              "  - Left: Bin Movements by Type table",
+              "  - Right: Top Materials Produced table",
+              "Third row:",
+              "  - Left: Bin Utilization Statistics card",
+              "  - Right: Export Options card (placeholder for future)",
+              "Detailed Analysis section with insights",
+              "Print styles in <style> block"
+            ],
+            "data_visualizations": [
+              "orders_by_status: Show status badge (color-coded), count, total planned kg, total produced kg",
+              "batches_by_status: Show status badge, count, total quantity",
+              "bin_movements_by_type: Show movement type badge (IN=green, OUT=red, etc), count, total kg",
+              "top_materials_produced: Show material code/name, number of batches, total quantity",
+              "bin_utilization: Show total bins, loaded %, empty %, capacity utilization %"
+            ],
+            "status_badge_colors": {
+              "ProductionOrder": {
+                "DRAFT": "secondary",
+                "PLANNED": "info",
+                "IN_PROGRESS": "primary",
+                "COMPLETED": "success",
+                "CANCELLED": "danger"
+              },
+              "Batch": {
+                "PREPARATION": "secondary",
+                "READY": "info",
+                "IN_PRODUCTION": "primary",
+                "COMPLETED": "success",
+                "CANCELLED": "danger"
+              },
+              "BinHistory": {
+                "IN": "success",
+                "OUT": "danger",
+                "EMPTY": "warning",
+                "TRANSFER": "info",
+                "ADJUSTMENT": "secondary"
+              }
+            }
+          },
+          "verification": {
+            "type": "browser",
+            "url": "http://localhost:8000/production/reports/",
+            "checks": [
+              "Page loads without errors",
+              "Date filter form is present",
+              "Summary cards display",
+              "Data tables render",
+              "No console errors"
+            ]
+          },
+          "status": "completed",
+          "notes": "Created production reports.html template following the inventory reports pattern. Template includes: period filter with date range, summary cards (Total Orders, Completed Orders, Active Batches, Bin Utilization %), data tables for orders/batches/bin movements/materials, bin utilization statistics with progress bar, export options placeholder, detailed analysis section with insights, and print-friendly styles. Template syntax validated with balanced opening/closing tags (30 each). File: 639 lines, 34KB.",
+          "updated_at": "2026-01-27T13:56:36.418352+00:00"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_phases": 1,
+    "total_subtasks": 3,
+    "services_involved": [
+      "backend"
+    ],
+    "parallelism": {
+      "max_parallel_phases": 1,
+      "parallel_groups": [],
+      "recommended_workers": 1,
+      "speedup_estimate": "Sequential execution required"
+    },
+    "startup_command": "python manage.py runserver"
+  },
+  "verification_strategy": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "test_creation_phase": "post_implementation",
+    "test_types_required": [
+      "manual"
+    ],
+    "security_scanning_required": false,
+    "staging_deployment_required": false,
+    "acceptance_criteria": [
+      "Reports view accessible at /production/reports/",
+      "Date range filtering works correctly",
+      "All aggregations display correct data",
+      "Template renders without errors",
+      "UI matches inventory reports style"
+    ],
+    "verification_steps": [
+      {
+        "name": "Django Check",
+        "command": "python manage.py check",
+        "expected_outcome": "System check identified no issues (0 silenced)",
+        "type": "test",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Browser Verification",
+        "command": "manual",
+        "expected_outcome": "Navigate to http://localhost:8000/production/reports/ and verify all sections render correctly",
+        "type": "manual",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Date Range Filter Test",
+        "command": "manual",
+        "expected_outcome": "Change date range and verify data updates correctly",
+        "type": "manual",
+        "required": true,
+        "blocking": false
+      }
+    ],
+    "reasoning": "Low-risk feature addition following established pattern. Manual browser testing sufficient for UI verification. No security implications as feature is behind login_required and only displays existing data."
+  },
+  "qa_acceptance": {
+    "unit_tests": {
+      "required": false,
+      "commands": [],
+      "minimum_coverage": null
+    },
+    "integration_tests": {
+      "required": false,
+      "commands": [],
+      "services_to_test": []
+    },
+    "e2e_tests": {
+      "required": false,
+      "commands": [],
+      "flows": []
+    },
+    "browser_verification": {
+      "required": true,
+      "pages": [
+        {
+          "url": "http://localhost:8000/production/reports/",
+          "checks": [
+            "renders",
+            "no-console-errors",
+            "date-filter-present",
+            "summary-cards-display",
+            "data-tables-render"
+          ]
+        }
+      ]
+    },
+    "database_verification": {
+      "required": false,
+      "checks": []
+    }
+  },
+  "qa_signoff": {
+    "status": "fixes_applied",
+    "timestamp": "2026-01-27T11:02:00.000000+00:00",
+    "qa_session": 1,
+    "fix_session": 1,
+    "report_file": "qa_report.md",
+    "fix_request_file": "QA_FIX_REQUEST.md",
+    "ready_for_qa_revalidation": true,
+    "issues_found": [
+      {
+        "type": "critical",
+        "title": "Missing bin_utilization data in view context",
+        "location": "apps/production/views.py:840-847",
+        "fix_required": "Add bin_utilization aggregate query with total_bins, loaded_bins, empty_bins, total_capacity, total_current fields and include in context dict",
+        "status": "fixed",
+        "fix_commit": "34d3da9"
+      },
+      {
+        "type": "critical",
+        "title": "Missing aggregation fields in orders_by_status",
+        "location": "apps/production/views.py:809-813",
+        "fix_required": "Add total_planned=Sum('planned_quantity') and total_produced=Sum('produced_quantity') to annotate()",
+        "status": "fixed",
+        "fix_commit": "34d3da9"
+      },
+      {
+        "type": "critical",
+        "title": "Field name mismatch in batches_by_status",
+        "location": "apps/production/views.py:816-822",
+        "fix_required": "Change to total_quantity=Sum('actual_quantity') instead of total_target/total_actual",
+        "status": "fixed",
+        "fix_commit": "34d3da9"
+      },
+      {
+        "type": "major",
+        "title": "Verify quantity_change field in BinHistory",
+        "location": "apps/production/views.py:837",
+        "fix_required": "Verify BinHistory model has quantity_change field, update if incorrect",
+        "status": "fixed",
+        "fix_commit": "34d3da9",
+        "fix_note": "Verified BinHistory model has 'quantity' field, not 'quantity_change'. Updated query to use correct field name."
+      }
+    ],
+    "verified_by": "qa_agent",
+    "tests_passed": {
+      "unit": "N/A",
+      "integration": "N/A",
+      "e2e": "N/A"
+    },
+    "checks_completed": {
+      "subtasks_complete": true,
+      "django_system_check": true,
+      "url_routing": true,
+      "template_exists": true,
+      "view_implementation": false,
+      "security_review": true,
+      "pattern_compliance": false
+    }
+  },
+  "status": "human_review",
+  "planStatus": "review",
+  "updated_at": "2026-01-27T14:11:12.367Z",
+  "last_updated": "2026-01-27T11:02:00.000000+00:00",
+  "qa_iteration_history": [
+    {
+      "iteration": 1,
+      "status": "rejected",
+      "timestamp": "2026-01-27T14:04:53.248127+00:00",
+      "issues": [
+        {
+          "type": "critical",
+          "title": "Missing bin_utilization data in view context",
+          "location": "apps/production/views.py:840-847",
+          "fix_required": "Add bin_utilization aggregate query with total_bins, loaded_bins, empty_bins, total_capacity, total_current fields and include in context dict"
+        },
+        {
+          "type": "critical",
+          "title": "Missing aggregation fields in orders_by_status",
+          "location": "apps/production/views.py:809-813",
+          "fix_required": "Add total_planned=Sum('planned_quantity') and total_produced=Sum('produced_quantity') to annotate()"
+        },
+        {
+          "type": "critical",
+          "title": "Field name mismatch in batches_by_status",
+          "location": "apps/production/views.py:816-822",
+          "fix_required": "Change to total_quantity=Sum('actual_quantity') instead of total_target/total_actual"
+        },
+        {
+          "type": "major",
+          "title": "Verify quantity_change field in BinHistory",
+          "location": "apps/production/views.py:837",
+          "fix_required": "Verify BinHistory model has quantity_change field, update if incorrect"
+        }
+      ],
+      "duration_seconds": 452.9
+    },
+    {
+      "iteration": 2,
+      "status": "error",
+      "timestamp": "2026-01-27T14:10:59.914856+00:00",
+      "issues": [
+        {
+          "title": "QA error",
+          "description": "QA agent did not update implementation_plan.json"
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "status": "error",
+      "timestamp": "2026-01-27T14:11:06.417864+00:00",
+      "issues": [
+        {
+          "title": "QA error",
+          "description": "QA agent did not update implementation_plan.json (No tools were used by agent)"
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "status": "error",
+      "timestamp": "2026-01-27T14:11:12.314511+00:00",
+      "issues": [
+        {
+          "title": "QA error",
+          "description": "QA agent did not update implementation_plan.json (No tools were used by agent)"
+        }
+      ]
+    }
+  ],
+  "qa_stats": {
+    "total_iterations": 4,
+    "last_iteration": 4,
+    "last_status": "error",
+    "issues_by_type": {
+      "critical": 3,
+      "major": 1,
+      "unknown": 3
+    }
+  }
+}

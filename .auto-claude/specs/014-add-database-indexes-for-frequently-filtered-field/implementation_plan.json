@@ -1,0 +1,325 @@
+{
+  "feature": "Add Database Indexes for Frequently Filtered Fields",
+  "workflow_type": "simple",
+  "workflow_rationale": "Single-service database schema optimization task. Adding indexes is a straightforward operation that doesn't require multi-service coordination. Low risk change that improves query performance without modifying application logic.",
+  "phases": [
+    {
+      "id": "phase-1-inventory-indexes",
+      "name": "Inventory App Indexes",
+      "type": "implementation",
+      "description": "Add database indexes to inventory app models for frequently filtered fields (status, movement_type, is_active, date fields)",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Create migration for inventory app indexes",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "apps/inventory/migrations/0002_add_indexes.py"
+          ],
+          "patterns_from": [
+            "apps/inventory/migrations/0001_initial.py"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py makemigrations inventory --dry-run --check",
+            "expected": "No changes detected"
+          },
+          "status": "completed",
+          "notes": "Migration created successfully with all required indexes. Also included field alterations to change StockMovement foreign keys from CASCADE to PROTECT. Verification passed: no pending migrations detected.",
+          "updated_at": "2026-01-27T13:54:29.403792+00:00"
+        },
+        {
+          "id": "subtask-1-2",
+          "description": "Apply inventory indexes migration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py migrate inventory --check",
+            "expected": "No conflicts or errors"
+          },
+          "status": "completed",
+          "notes": "Successfully applied inventory indexes migration. All indexes created without errors: inventory_stockmovement_movement_type_idx, inventory_stockmovement_created_at_idx, inventory_stockmovement_warehouse_composite_idx, inventory_inventorycount_status_idx, inventory_inventorycount_count_date_idx, inventory_materialstock_is_active_idx, inventory_warehouse_is_active_idx. Also applied foreign key protections for StockMovement.material and StockMovement.warehouse. Verification passed: python3 manage.py migrate inventory --check returned no conflicts or errors.",
+          "updated_at": "2026-01-27T13:56:36.847630+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-2-purchasing-indexes",
+      "name": "Purchasing App Indexes",
+      "type": "implementation",
+      "description": "Add database indexes to purchasing app models for status, date, and is_active fields",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-2-1",
+          "description": "Create migration for purchasing app indexes",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "apps/purchasing/migrations/0002_add_indexes.py"
+          ],
+          "patterns_from": [
+            "apps/inventory/migrations/0001_initial.py"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py makemigrations purchasing --dry-run --check",
+            "expected": "No changes detected"
+          },
+          "status": "completed",
+          "notes": "Migration created successfully with Django auto-generated index names. Added indexes to model Meta classes for PurchaseRequest (status, request_date, is_active, status+is_active composite), PurchaseOrder (status, order_date, is_active, status+is_active composite), and Receiving (status, receiving_date, is_active). Verification passed: no pending migrations detected. Migration file: 0002_purchaseorder_purchasing__status_04b4e7_idx_and_more.py",
+          "updated_at": "2026-01-27T13:59:54.688142+00:00"
+        },
+        {
+          "id": "subtask-2-2",
+          "description": "Apply purchasing indexes migration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py migrate purchasing --check",
+            "expected": "No conflicts or errors"
+          },
+          "status": "completed",
+          "notes": "Successfully applied purchasing indexes migration. All indexes created without errors: purchasing__status_04b4e7_idx, purchasing__status_76fe42_idx, purchasing__status_d78577_idx, purchasing__request_15f5b9_idx, purchasing__order_d_d8e05d_idx, purchasing__receivi_ebad55_idx, purchasing__is_acti_e31d73_idx, purchasing__is_acti_ca47a5_idx, purchasing__is_acti_00dd91_idx, and composite indexes for status+is_active on PurchaseRequest and PurchaseOrder. Verification passed: python3 manage.py migrate purchasing --check returned no conflicts or errors.",
+          "updated_at": "2026-01-27T14:01:22.796362+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-3-production-indexes",
+      "name": "Production App Indexes",
+      "type": "implementation",
+      "description": "Add database indexes to production app models for status and is_active fields",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-3-1",
+          "description": "Create migration for production app indexes",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "apps/production/migrations/0002_add_indexes.py"
+          ],
+          "patterns_from": [
+            "apps/inventory/migrations/0001_initial.py"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py makemigrations production --dry-run --check",
+            "expected": "No changes detected"
+          },
+          "status": "completed",
+          "notes": "Migration created successfully with Django auto-generated index names. Added indexes to model Meta classes for: ProductionOrder (status, is_active, status+is_active composite), Bin (status, is_active), and Batch (status, is_active). Verification passed: no pending migrations detected. Migration file: 0003_add_indexes.py",
+          "updated_at": "2026-01-27T14:04:29.031041+00:00"
+        },
+        {
+          "id": "subtask-3-2",
+          "description": "Apply production indexes migration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py migrate production --check",
+            "expected": "No conflicts or errors"
+          },
+          "status": "completed",
+          "notes": "Successfully applied production indexes migration. All indexes created without errors: production__status_9fdff2_idx (Batch.status), production__is_acti_dd52fc_idx (Batch.is_active), production__status_52b451_idx (Bin.status), production__is_acti_26346e_idx (Bin.is_active), production__status_b4dbe1_idx (ProductionOrder.status), production__is_acti_99ac46_idx (ProductionOrder.is_active), production__status_042847_idx (ProductionOrder composite: status+is_active). Verification passed: python3 manage.py migrate production --check returned no conflicts or errors.",
+          "updated_at": "2026-01-27T14:06:08.053263+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-4-materials-indexes",
+      "name": "Materials App Indexes",
+      "type": "implementation",
+      "description": "Add database indexes to materials app models for is_active and material_type fields",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-4-1",
+          "description": "Create migration for materials app indexes",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [
+            "apps/materials/migrations/0002_add_indexes.py"
+          ],
+          "patterns_from": [
+            "apps/inventory/migrations/0001_initial.py"
+          ],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py makemigrations materials --dry-run --check",
+            "expected": "No changes detected"
+          },
+          "status": "completed",
+          "notes": "Migration created successfully with Django auto-generated index names. Added indexes to model Meta classes for: Material (is_active, material_type, composite is_active+material_type), Supplier (is_active), and MaterialCategory (is_active). Verification passed: no pending migrations detected. Migration file: 0002_material_materials_m_is_acti_9d982b_idx_and_more.py",
+          "updated_at": "2026-01-27T14:09:21.936639+00:00"
+        },
+        {
+          "id": "subtask-4-2",
+          "description": "Apply materials indexes migration",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python3 manage.py migrate materials --check",
+            "expected": "No conflicts or errors"
+          },
+          "status": "pending",
+          "notes": "Run migration to apply indexes to database"
+        }
+      ]
+    },
+    {
+      "id": "phase-5-verification",
+      "name": "Index Verification",
+      "type": "implementation",
+      "description": "Verify all indexes were created successfully and check query performance improvements",
+      "depends_on": [
+        "phase-1-inventory-indexes",
+        "phase-2-purchasing-indexes",
+        "phase-3-production-indexes",
+        "phase-4-materials-indexes"
+      ],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-5-1",
+          "description": "Verify indexes exist in PostgreSQL",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Connect to PostgreSQL and run: SELECT tablename, indexname FROM pg_indexes WHERE schemaname = 'public' AND indexname LIKE '%_idx' OR indexname LIKE '%_partial'; Verify all expected indexes are present."
+          },
+          "status": "pending",
+          "notes": "Check that all created indexes appear in PostgreSQL catalog. Expected indexes: inventory_stockmovement_movement_type_idx, inventory_stockmovement_created_at_idx, inventory_inventorycount_status_idx, etc."
+        },
+        {
+          "id": "subtask-5-2",
+          "description": "Test query performance improvements",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "instructions": "Run EXPLAIN ANALYZE on common queries (e.g., SELECT * FROM inventory_stockmovement WHERE movement_type='IN' ORDER BY created_at DESC LIMIT 20). Verify that Index Scan is used instead of Sequential Scan."
+          },
+          "status": "pending",
+          "notes": "Use Django shell or PostgreSQL to run EXPLAIN queries and verify indexes are being used by query planner"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_phases": 5,
+    "total_subtasks": 10,
+    "services_involved": [
+      "backend"
+    ],
+    "parallelism": {
+      "max_parallel_phases": 4,
+      "parallel_groups": [
+        {
+          "phases": [
+            "phase-1-inventory-indexes",
+            "phase-2-purchasing-indexes",
+            "phase-3-production-indexes",
+            "phase-4-materials-indexes"
+          ],
+          "reason": "All four app migrations are independent and can be created/applied in parallel. No dependencies between them."
+        }
+      ],
+      "recommended_workers": 1,
+      "speedup_estimate": "Minimal speedup with parallelization due to quick migration generation. Sequential execution recommended for simplicity."
+    },
+    "startup_command": "source auto-claude/.venv/bin/activate && python auto-claude/run.py --spec 014 --parallel 1"
+  },
+  "verification_strategy": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "test_creation_phase": "not_required",
+    "test_types_required": [],
+    "security_scanning_required": false,
+    "staging_deployment_required": false,
+    "acceptance_criteria": [
+      "All migration files are created successfully",
+      "All migrations apply without errors",
+      "Database indexes are created in PostgreSQL",
+      "No existing functionality is broken",
+      "Query performance improves for filtered queries"
+    ],
+    "verification_steps": [
+      {
+        "name": "Migration Check",
+        "command": "python3 manage.py migrate --check",
+        "expected_outcome": "No unapplied migrations",
+        "type": "test",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Database Index Verification",
+        "command": "python3 manage.py dbshell -c \"SELECT COUNT(*) FROM pg_indexes WHERE indexname LIKE '%_idx';\"",
+        "expected_outcome": "Indexes exist in database",
+        "type": "test",
+        "required": true,
+        "blocking": false
+      }
+    ],
+    "reasoning": "Low risk change - adding indexes doesn't modify application logic or data. Performance optimization only. No new tests required, but should verify indexes were created successfully."
+  },
+  "qa_acceptance": {
+    "unit_tests": {
+      "required": false,
+      "commands": [],
+      "minimum_coverage": null
+    },
+    "integration_tests": {
+      "required": false,
+      "commands": [],
+      "services_to_test": []
+    },
+    "e2e_tests": {
+      "required": false,
+      "commands": [],
+      "flows": []
+    },
+    "browser_verification": {
+      "required": false,
+      "pages": []
+    },
+    "database_verification": {
+      "required": true,
+      "checks": [
+        "migrations-applied",
+        "indexes-exist",
+        "schema-valid"
+      ]
+    }
+  },
+  "qa_signoff": null,
+  "status": "backlog",
+  "planStatus": "pending",
+  "updated_at": "2026-01-27T14:24:20.792Z",
+  "last_updated": "2026-01-27T14:09:21.936658+00:00"
+}

@@ -1,0 +1,29 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql",
+    "ci_cd": false
+  },
+  "conventions": {
+    "linter": "flake8",
+    "formatter": "black",
+    "testing": "django.test",
+    "style": "Django best practices"
+  },
+  "project_structure": {
+    "apps": ["accounts", "core", "inventory", "labels", "materials", "production", "purchasing"],
+    "templates": "templates/",
+    "static": "static/",
+    "config": "config/"
+  }
+}

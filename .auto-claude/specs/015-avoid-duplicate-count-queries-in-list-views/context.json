@@ -1,0 +1,49 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/materials/views.py",
+      "apps/labels/views.py"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/views.py",
+    "apps/purchasing/views.py"
+  ],
+  "patterns": {
+    "list_view_pattern": "Django list views use Paginator for pagination. Paginator internally calls .count() on the queryset to determine total pages.",
+    "duplicate_count_pattern": "Views call queryset.count() separately and also pass queryset to Paginator, causing two COUNT queries",
+    "correct_pattern": "Use paginator.count property instead of queryset.count() to avoid duplicate queries"
+  },
+  "existing_implementations": {
+    "description": "Found 3 list views with duplicate count queries",
+    "affected_views": [
+      {
+        "file": "apps/materials/views.py",
+        "function": "material_list",
+        "line": 49,
+        "issue": "materials.count() called after Paginator(materials, 20)",
+        "context_key": "total_materials"
+      },
+      {
+        "file": "apps/materials/views.py",
+        "function": "supplier_list",
+        "line": 166,
+        "issue": "suppliers.count() called after Paginator(suppliers, 20)",
+        "context_key": "total_suppliers"
+      },
+      {
+        "file": "apps/labels/views.py",
+        "function": "quick_print",
+        "line": 315,
+        "issue": "bins.count() called after bins[:100] slice",
+        "context_key": "total_bins"
+      }
+    ],
+    "solution": "Replace queryset.count() with paginator.count to reuse the COUNT query already executed by Paginator"
+  },
+  "performance_impact": {
+    "issue": "Each duplicate COUNT query adds 50-100ms on large tables",
+    "affected_views": 3,
+    "potential_savings": "150-300ms total across all list views"
+  }
+}

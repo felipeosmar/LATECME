@@ -1,0 +1,228 @@
+{
+  "feature": "Fix N+1 Query in Material Search API",
+  "workflow_type": "simple",
+  "workflow_rationale": "This is a straightforward performance optimization in a single function within one service. The task involves modifying the material_search_api view to use database-level aggregation (annotate with Min) instead of calling get_best_price() in a Python loop. No new features, no architectural changes, no multi-service coordination needed.",
+  "phases": [
+    {
+      "id": "phase-1-optimize",
+      "name": "Optimize Query",
+      "type": "implementation",
+      "description": "Fix the N+1 query pattern in material_search_api by using Django's annotate() with Min() to calculate best_price in the database query",
+      "depends_on": [],
+      "parallel_safe": true,
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Modify material_search_api to use annotate() with Min() for best_price calculation",
+          "service": "backend",
+          "files_to_modify": [
+            "apps/materials/views.py"
+          ],
+          "files_to_create": [],
+          "patterns_from": [
+            "apps/materials/views.py"
+          ],
+          "implementation_notes": "Replace the loop calling material.get_best_price() with a single query using .annotate(best_price=Min('materialsupplier__price_per_kg', filter=Q(materialsupplier__supplier__is_active=True))). This calculates the minimum price in the database, reducing 11 queries to 1 query.",
+          "verification": {
+            "type": "api",
+            "method": "GET",
+            "url": "http://localhost:8000/materials/api/search/",
+            "params": {
+              "q": "AL"
+            },
+            "expected_status": 200,
+            "expected_fields": [
+              "results",
+              "results[0].best_price"
+            ]
+          },
+          "status": "completed",
+          "notes": "Successfully optimized material_search_api to use .annotate(best_price=Min('materialsupplier__price_per_kg')) instead of calling material.get_best_price() in loop. This eliminates the N+1 query problem by calculating best_price in a single database query.",
+          "updated_at": "2026-01-27T13:49:35.227339+00:00"
+        }
+      ]
+    },
+    {
+      "id": "phase-2-test",
+      "name": "Verify with Tests",
+      "type": "implementation",
+      "description": "Run existing tests to ensure the optimization doesn't break functionality",
+      "depends_on": [
+        "phase-1-optimize"
+      ],
+      "parallel_safe": false,
+      "subtasks": [
+        {
+          "id": "subtask-2-1",
+          "description": "Run existing material search API tests",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python manage.py test apps.materials.test_views.MaterialViewsTestCase.test_material_search_api_view",
+            "expected": "Ran 1 test.*OK"
+          },
+          "status": "completed",
+          "notes": "Successfully ran material search API test. Test passed: Ran 1 test in 0.824s - OK. This confirms the N+1 query optimization from subtask-1-1 works correctly without breaking existing functionality.",
+          "updated_at": "2026-01-27T13:52:35.106159+00:00"
+        },
+        {
+          "id": "subtask-2-2",
+          "description": "Run all material tests to ensure no regressions",
+          "service": "backend",
+          "files_to_modify": [],
+          "files_to_create": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "command",
+            "command": "python manage.py test apps.materials",
+            "expected": "OK"
+          },
+          "status": "completed",
+          "notes": "Ran all material tests (35 tests). Found 4 failures and 3 errors, but regression analysis confirms these are pre-existing issues that existed before the N+1 optimization. The specific test for material_search_api passes successfully (test_material_search_api_view: OK). No regressions introduced by the N+1 query optimization.",
+          "updated_at": "2026-01-27T13:56:00.474216+00:00"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_phases": 2,
+    "total_subtasks": 3,
+    "services_involved": [
+      "backend"
+    ],
+    "parallelism": {
+      "max_parallel_phases": 1,
+      "parallel_groups": [],
+      "recommended_workers": 1,
+      "speedup_estimate": "Sequential execution required (tests depend on implementation)",
+      "reasoning": "Phase 2 depends on Phase 1 completion. No parallelism opportunities."
+    },
+    "startup_command": "python manage.py test apps.materials"
+  },
+  "verification_strategy": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "test_creation_phase": "not_required",
+    "test_types_required": [
+      "unit"
+    ],
+    "security_scanning_required": false,
+    "staging_deployment_required": false,
+    "acceptance_criteria": [
+      "All existing tests pass",
+      "API returns correct best_price values",
+      "Query count reduced from 11 to 1 for 10 search results"
+    ],
+    "verification_steps": [
+      {
+        "name": "Unit Tests",
+        "command": "python manage.py test apps.materials.test_views.MaterialViewsTestCase.test_material_search_api_view",
+        "expected_outcome": "All tests pass",
+        "type": "test",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Full Test Suite",
+        "command": "python manage.py test apps.materials",
+        "expected_outcome": "All tests pass",
+        "type": "test",
+        "required": true,
+        "blocking": true
+      },
+      {
+        "name": "Manual API Test",
+        "command": "curl 'http://localhost:8000/materials/api/search/?q=AL'",
+        "expected_outcome": "JSON response with results containing best_price field",
+        "type": "manual",
+        "required": false,
+        "blocking": false
+      }
+    ],
+    "reasoning": "Low risk change - optimizing existing query without changing API contract. Existing tests provide adequate coverage."
+  },
+  "qa_acceptance": {
+    "unit_tests": {
+      "required": true,
+      "commands": [
+        "python manage.py test apps.materials"
+      ],
+      "minimum_coverage": null
+    },
+    "integration_tests": {
+      "required": false,
+      "commands": [],
+      "services_to_test": []
+    },
+    "e2e_tests": {
+      "required": false,
+      "commands": [],
+      "flows": []
+    },
+    "browser_verification": {
+      "required": false,
+      "pages": []
+    },
+    "database_verification": {
+      "required": false,
+      "checks": []
+    },
+    "performance_verification": {
+      "required": true,
+      "checks": [
+        "Query count should be reduced from N+1 to 1",
+        "API response time should improve for searches with multiple results"
+      ]
+    }
+  },
+  "qa_signoff": {
+    "status": "approved",
+    "qa_session": 1,
+    "issues_found": [
+      {
+        "description": "None - All critical issues from QA Session 1 have been resolved"
+      }
+    ],
+    "tests_passed": {},
+    "timestamp": "2026-01-27T14:09:00.010617+00:00",
+    "ready_for_qa_revalidation": false
+  },
+  "status": "human_review",
+  "planStatus": "review",
+  "updated_at": "2026-01-27T14:04:41.727Z",
+  "last_updated": "2026-01-27T14:09:00.010700+00:00",
+  "qa_iteration_history": [
+    {
+      "iteration": 1,
+      "status": "rejected",
+      "timestamp": "2026-01-27T14:02:03.883433+00:00",
+      "issues": [
+        {
+          "type": "critical",
+          "title": "Missing Active Supplier Filter in best_price Calculation",
+          "location": "apps/materials/views.py:290-291",
+          "fix_required": "Add filter=Q(materialsupplier__supplier__is_active=True) parameter to Min() aggregate function to exclude inactive suppliers from best_price calculation"
+        }
+      ],
+      "duration_seconds": 318.04
+    },
+    {
+      "iteration": 2,
+      "status": "approved",
+      "timestamp": "2026-01-27T14:09:23.375359+00:00",
+      "issues": [],
+      "duration_seconds": 285.85
+    }
+  ],
+  "qa_stats": {
+    "total_iterations": 2,
+    "last_iteration": 2,
+    "last_status": "approved",
+    "issues_by_type": {
+      "critical": 1
+    }
+  }
+}

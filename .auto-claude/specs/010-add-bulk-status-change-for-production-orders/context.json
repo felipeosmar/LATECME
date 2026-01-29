@@ -1,0 +1,41 @@
+{
+  "files_to_modify": {
+    "django_app": [
+      "apps/production/views.py",
+      "apps/production/urls.py",
+      "templates/production/production_order_list.html"
+    ]
+  },
+  "files_to_reference": [
+    "apps/production/views.py (lines 643-722: bin_batch_create and bin_batch_print)",
+    "apps/production/models.py (lines 120-140: ProductionOrder.start() and complete() methods)",
+    "templates/production/bin_list.html (checkbox selection pattern with Alpine.js)"
+  ],
+  "patterns": {
+    "bulk_operations": "Uses transaction.atomic() to wrap bulk operations, processes list of IDs in a loop, returns JsonResponse with success/failure counts",
+    "ajax_endpoints": "All AJAX endpoints use @login_required, @require_http_methods(['POST']), and return JsonResponse",
+    "url_pattern": "Bulk operations use /resource/batch-action/ pattern (e.g., bins/batch-create/, bins/batch-print/)",
+    "ui_selection": "Alpine.js manages selectedItems array, checkboxes on each row, toggleSelection() and toggleSelectAll() methods",
+    "status_methods": "ProductionOrder has start(user) and complete(user) methods that validate status transitions and return True/False"
+  },
+  "existing_implementations": {
+    "description": "Bulk operations pattern exists for bin batch creation and printing with transaction.atomic(), checkbox selection UI, and detailed result reporting",
+    "relevant_files": [
+      "apps/production/views.py (bin_batch_create, bin_batch_print, _print_bin_labels helper)",
+      "apps/production/urls.py (bin batch URL patterns)",
+      "templates/production/bin_list.html (Alpine.js selection manager)",
+      "apps/production/models.py (ProductionOrder model with start/complete methods)"
+    ]
+  },
+  "discovered_details": {
+    "order_status_flow": "DRAFT → PLANNED → IN_PROGRESS → COMPLETED",
+    "valid_start_statuses": ["DRAFT", "PLANNED"],
+    "valid_complete_status": ["IN_PROGRESS"],
+    "existing_single_endpoints": {
+      "start": "/orders/<uuid:order_id>/start/",
+      "complete": "/orders/<uuid:order_id>/complete/"
+    },
+    "alpine_js_function": "orderManager() already exists in production_order_list.html",
+    "csrf_token_handling": "All AJAX requests include X-CSRFToken header"
+  }
+}

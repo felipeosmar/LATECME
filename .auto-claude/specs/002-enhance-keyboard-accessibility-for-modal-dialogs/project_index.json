@@ -1,0 +1,34 @@
+{
+  "project_type": "single",
+  "services": {
+    "frontend": {
+      "path": ".",
+      "tech_stack": ["django", "alpine.js", "htmx", "tabler"],
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test",
+      "template_dirs": ["templates"],
+      "static_dirs": ["static"]
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql"
+  },
+  "conventions": {
+    "template_engine": "django",
+    "js_framework": "alpine.js",
+    "ajax_library": "htmx",
+    "css_framework": "tabler",
+    "modal_pattern": "alpine.js x-data with x-show directives",
+    "component_location": "templates/components/"
+  },
+  "accessibility": {
+    "current_level": "partial",
+    "target_level": "WCAG 2.1 Level A",
+    "known_issues": [
+      "Modals lack focus trapping",
+      "No focus restoration on modal close",
+      "Incomplete ARIA attributes"
+    ]
+  }
+}

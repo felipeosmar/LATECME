@@ -1,0 +1,16 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "ui_ux_improvements",
+  "ideaId": "uiux-003",
+  "rationale": "Search forms like in material_list.html trigger on form submit, requiring manual button clicks. For better UX, debounced auto-search with visual feedback would reduce friction. The debounce function exists in app.js but isn't being used.",
+  "category": "ui_ux",
+  "uiuxCategory": "usability",
+  "affectedFiles": [
+    "templates/materials/material_list.html",
+    "templates/inventory/stock_list.html",
+    "templates/production/production_order_list.html",
+    "static/js/app.js",
+    "static/css/custom.css"
+  ],
+  "problemSolved": "Search inputs require clicking the 'Filtrar' button or pressing Enter. No auto-search functionality. No visual indication that typing will trigger a search after a delay."
+}

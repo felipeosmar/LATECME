@@ -1,0 +1,9 @@
+{
+  "sourceType": "ideation",
+  "ideationType": "code_quality",
+  "ideaId": "cq-005",
+  "rationale": "Like the inventory views, this file has grown too large to maintain effectively. The purchasing workflow has clear domain boundaries that map well to separate modules. This split would also make it easier to add the planned 'Supplier Search API Endpoint' feature without further bloating the file.",
+  "category": "refactoring",
+  "codeQualitySeverity": "major",
+  "priority": "high"
+}

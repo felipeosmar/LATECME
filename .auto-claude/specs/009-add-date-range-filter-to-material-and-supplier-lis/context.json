@@ -1,0 +1,49 @@
+{
+  "files_to_modify": {
+    "backend": [
+      "apps/materials/views.py"
+    ],
+    "templates": [
+      "templates/materials/material_list.html",
+      "templates/materials/supplier_list.html"
+    ]
+  },
+  "files_to_reference": [
+    "apps/inventory/views.py",
+    "apps/production/views.py",
+    "templates/inventory/movements_list.html",
+    "templates/production/bin_list.html"
+  ],
+  "patterns": {
+    "date_filter_pattern": "Date range filters use date_from and date_to query parameters with datetime.strptime parsing",
+    "view_pattern": "Views retrieve date_from and date_to from request.GET, parse them, and filter queryset using created_at__date__gte and created_at__date__lte",
+    "template_pattern": "Templates use <input type='date' name='date_from'> and <input type='date' name='date_to'> fields, passing values to context and pagination links"
+  },
+  "existing_implementations": {
+    "description": "Found existing date range filter implementations in inventory/views.py movements_list() and production/views.py bin_list()",
+    "relevant_files": [
+      "apps/inventory/views.py",
+      "apps/production/views.py",
+      "templates/inventory/movements_list.html",
+      "templates/production/bin_list.html"
+    ],
+    "pattern_details": {
+      "backend": "inventory/views.py movements_list() - lines 158-193 - date_from and date_to with datetime parsing and try-except error handling",
+      "template": "inventory/movements_list.html - lines 65-70 - date input fields in filter form, lines 196-221 - date values in pagination URLs"
+    }
+  },
+  "models": {
+    "Material": {
+      "file": "apps/materials/models.py",
+      "inherits_from": "BaseModel",
+      "has_created_at": true,
+      "description": "Material model with created_at field from BaseModel (apps/core/models.py line 9)"
+    },
+    "Supplier": {
+      "file": "apps/materials/models.py",
+      "inherits_from": "BaseModel",
+      "has_created_at": true,
+      "description": "Supplier model with created_at field from BaseModel (apps/core/models.py line 9)"
+    }
+  }
+}

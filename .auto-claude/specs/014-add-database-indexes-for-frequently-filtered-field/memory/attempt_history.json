@@ -1,0 +1,623 @@
+{
+  "subtasks": {
+    "subtask-1-1": {
+      "attempts": [
+        {
+          "session": 2,
+          "timestamp": "2026-01-27T10:54:36.240489",
+          "approach": "Implemented: Create migration for inventory app indexes",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-1-2": {
+      "attempts": [
+        {
+          "session": 3,
+          "timestamp": "2026-01-27T10:56:59.222866",
+          "approach": "Implemented: Apply inventory indexes migration",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-1": {
+      "attempts": [
+        {
+          "session": 4,
+          "timestamp": "2026-01-27T11:00:03.644719",
+          "approach": "Implemented: Create migration for purchasing app indexes",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-2-2": {
+      "attempts": [
+        {
+          "session": 5,
+          "timestamp": "2026-01-27T11:01:35.490363",
+          "approach": "Implemented: Apply purchasing indexes migration",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-3-1": {
+      "attempts": [
+        {
+          "session": 6,
+          "timestamp": "2026-01-27T11:04:42.925835",
+          "approach": "Implemented: Create migration for production app indexes",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-3-2": {
+      "attempts": [
+        {
+          "session": 7,
+          "timestamp": "2026-01-27T11:06:34.377793",
+          "approach": "Implemented: Apply production indexes migration",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-1": {
+      "attempts": [
+        {
+          "session": 8,
+          "timestamp": "2026-01-27T11:09:32.203960",
+          "approach": "Implemented: Create migration for materials app indexes",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "subtask-4-2": {
+      "attempts": [
+        {
+          "session": 9,
+          "timestamp": "2026-01-27T11:10:56.843553",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 10,
+          "timestamp": "2026-01-27T11:11:07.579868",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 11,
+          "timestamp": "2026-01-27T11:11:17.520787",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 12,
+          "timestamp": "2026-01-27T11:11:27.713176",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 13,
+          "timestamp": "2026-01-27T11:11:37.856678",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 14,
+          "timestamp": "2026-01-27T11:11:47.880845",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 15,
+          "timestamp": "2026-01-27T11:11:58.060790",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 16,
+          "timestamp": "2026-01-27T11:12:08.354470",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 17,
+          "timestamp": "2026-01-27T11:12:18.216794",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 18,
+          "timestamp": "2026-01-27T11:12:28.106703",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 19,
+          "timestamp": "2026-01-27T11:12:38.164372",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 20,
+          "timestamp": "2026-01-27T11:12:48.102359",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 21,
+          "timestamp": "2026-01-27T11:12:58.049589",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 22,
+          "timestamp": "2026-01-27T11:13:08.325210",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 23,
+          "timestamp": "2026-01-27T11:13:18.178770",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 24,
+          "timestamp": "2026-01-27T11:13:27.957996",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 25,
+          "timestamp": "2026-01-27T11:13:38.301834",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 26,
+          "timestamp": "2026-01-27T11:13:48.310470",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 27,
+          "timestamp": "2026-01-27T11:13:59.862086",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 28,
+          "timestamp": "2026-01-27T11:14:10.203873",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 29,
+          "timestamp": "2026-01-27T11:14:20.923640",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 30,
+          "timestamp": "2026-01-27T11:14:32.374994",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 31,
+          "timestamp": "2026-01-27T11:14:43.047419",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 32,
+          "timestamp": "2026-01-27T11:14:54.561798",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 33,
+          "timestamp": "2026-01-27T11:15:04.597917",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 34,
+          "timestamp": "2026-01-27T11:15:17.105258",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 35,
+          "timestamp": "2026-01-27T11:15:27.131882",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 36,
+          "timestamp": "2026-01-27T11:15:37.498863",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 37,
+          "timestamp": "2026-01-27T11:15:48.195777",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 38,
+          "timestamp": "2026-01-27T11:15:59.174005",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 39,
+          "timestamp": "2026-01-27T11:16:09.275496",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 40,
+          "timestamp": "2026-01-27T11:16:19.655974",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 41,
+          "timestamp": "2026-01-27T11:16:30.652747",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 42,
+          "timestamp": "2026-01-27T11:16:41.213209",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 43,
+          "timestamp": "2026-01-27T11:16:51.802848",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 44,
+          "timestamp": "2026-01-27T11:17:02.200254",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 45,
+          "timestamp": "2026-01-27T11:17:12.715026",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 46,
+          "timestamp": "2026-01-27T11:17:23.297612",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 47,
+          "timestamp": "2026-01-27T11:17:33.701612",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 48,
+          "timestamp": "2026-01-27T11:17:44.543954",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 49,
+          "timestamp": "2026-01-27T11:17:54.963677",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 50,
+          "timestamp": "2026-01-27T11:18:05.690935",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 51,
+          "timestamp": "2026-01-27T11:18:16.248273",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 52,
+          "timestamp": "2026-01-27T11:18:27.054764",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 53,
+          "timestamp": "2026-01-27T11:18:37.773476",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 54,
+          "timestamp": "2026-01-27T11:18:48.211942",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 55,
+          "timestamp": "2026-01-27T11:18:59.455679",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 56,
+          "timestamp": "2026-01-27T11:19:14.534668",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 57,
+          "timestamp": "2026-01-27T11:19:25.173743",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 58,
+          "timestamp": "2026-01-27T11:19:36.062070",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 59,
+          "timestamp": "2026-01-27T11:19:46.735005",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 60,
+          "timestamp": "2026-01-27T11:19:57.487132",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 61,
+          "timestamp": "2026-01-27T11:20:08.102158",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 62,
+          "timestamp": "2026-01-27T11:20:18.836943",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 63,
+          "timestamp": "2026-01-27T11:20:29.977903",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 64,
+          "timestamp": "2026-01-27T11:20:40.639749",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 65,
+          "timestamp": "2026-01-27T11:20:51.721349",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 66,
+          "timestamp": "2026-01-27T11:21:02.886448",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 67,
+          "timestamp": "2026-01-27T11:21:13.458956",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 68,
+          "timestamp": "2026-01-27T11:21:24.230955",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 69,
+          "timestamp": "2026-01-27T11:21:35.120288",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 70,
+          "timestamp": "2026-01-27T11:21:45.909160",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 71,
+          "timestamp": "2026-01-27T11:21:56.777846",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 72,
+          "timestamp": "2026-01-27T11:22:07.798589",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 73,
+          "timestamp": "2026-01-27T11:22:19.444405",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 74,
+          "timestamp": "2026-01-27T11:22:31.888477",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 75,
+          "timestamp": "2026-01-27T11:22:43.134576",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 76,
+          "timestamp": "2026-01-27T11:22:54.022909",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 77,
+          "timestamp": "2026-01-27T11:23:05.253021",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 78,
+          "timestamp": "2026-01-27T11:23:16.581672",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 79,
+          "timestamp": "2026-01-27T11:23:27.613895",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 80,
+          "timestamp": "2026-01-27T11:23:39.486961",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 81,
+          "timestamp": "2026-01-27T11:23:51.660915",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        },
+        {
+          "session": 82,
+          "timestamp": "2026-01-27T11:24:03.259562",
+          "approach": "Session ended without progress",
+          "success": false,
+          "error": "Subtask status is pending"
+        }
+      ],
+      "status": "stuck"
+    }
+  },
+  "stuck_subtasks": [
+    {
+      "subtask_id": "subtask-4-2",
+      "reason": "Failed after 3 attempts",
+      "escalated_at": "2026-01-27T11:11:17.522577",
+      "attempt_count": 3
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-01-27T10:45:18.663252",
+    "last_updated": "2026-01-27T11:24:03.261814"
+  }
+}

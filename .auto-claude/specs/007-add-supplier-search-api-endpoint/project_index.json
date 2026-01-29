@@ -1,0 +1,23 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python manage.py runserver",
+      "test_command": "python manage.py test"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "database": "postgresql",
+    "docker_compose": "docker-compose-dev.yml"
+  },
+  "conventions": {
+    "testing": "django.test",
+    "url_naming": "app_name:view_name",
+    "view_decorators": "@login_required for all views",
+    "json_response": "JsonResponse from django.http"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "project_type": "single",
+  "services": {
+    "backend": {
+      "path": ".",
+      "tech_stack": ["python", "django", "postgresql"],
+      "port": 8000,
+      "dev_command": "python3 manage.py runserver",
+      "test_command": "python3 manage.py test",
+      "migration_command": "python3 manage.py makemigrations && python3 manage.py migrate"
+    }
+  },
+  "infrastructure": {
+    "docker": true,
+    "docker_compose": true,
+    "database": "postgresql",
+    "web_server": "gunicorn"
+  },
+  "conventions": {
+    "framework": "django",
+    "python_version": "3.12.3",
+    "django_version": "5.2.4",
+    "migrations": "django_migrations",
+    "models_location": "apps/*/models.py"
+  },
+  "apps": [
+    "accounts",
+    "core",
+    "materials",
+    "inventory",
+    "purchasing",
+    "production",
+    "labels"
+  ]
+}
