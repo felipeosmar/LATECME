@@ -21,4 +21,5 @@ urlpatterns = [
     
     # API
     path('api/search/', views.material_search_api, name='search_api'),
+    path('api/suppliers/search/', views.supplier_search_api, name='supplier_search_api'),
 ]

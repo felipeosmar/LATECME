@@ -48,3 +48,45 @@ O sistema possui um modelo de usuário customizado com os seguintes perfis:
 - **Operador**: Acesso ao estoque e movimentações
 - **Administrador**: Acesso completo ao sistema
 - **Comprador**: Acesso a compras e fornecedores
+
+### Qualidade de Código
+
+O projeto utiliza ferramentas modernas para garantir qualidade e consistência do código:
+
+#### Ferramentas Configuradas
+
+- **Ruff**: Linter e formatter extremamente rápido para Python
+  - Substitui ferramentas como flake8, isort, black
+  - Configuração em `pyproject.toml`
+  - Regras ativadas: pycodestyle, pyflakes, isort, bugbear, comprehensions, simplify
+
+- **mypy**: Verificador de tipos estáticos
+  - Garante type safety no código
+  - Configuração em `pyproject.toml`
+  - Modo strict ativado para máxima segurança
+
+#### Comandos Disponíveis
+
+```bash
+# Executar linting
+ruff check .
+
+# Aplicar correções automáticas
+ruff check --fix .
+
+# Formatar código
+ruff format .
+
+# Verificar tipos
+mypy .
+
+# Executar todas as verificações
+ruff check . && ruff format --check . && mypy .
+```
+
+#### Integração com Editor
+
+Recomenda-se configurar seu editor para executar ruff e mypy automaticamente:
+- **VS Code**: Instale as extensões "Ruff" e "Mypy"
+- **PyCharm**: Configure File Watchers para ruff e mypy
+- **Vim/Neovim**: Use plugins como ALE ou coc.nvim
