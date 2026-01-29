@@ -129,6 +129,7 @@
   ],
   "stack_commands": [
     "ar",
+    "bandit",
     "clang",
     "clang++",
     "cmake",
@@ -152,6 +153,7 @@
     "ld",
     "make",
     "meson",
+    "mypy",
     "ninja",
     "nm",
     "node",
@@ -177,6 +179,7 @@
     "redis-benchmark",
     "redis-cli",
     "redis-server",
+    "ruff",
     "strip",
     "uvicorn"
   ],
@@ -203,7 +206,10 @@
       "poetry"
     ],
     "frameworks": [
-      "django"
+      "django",
+      "mypy",
+      "ruff",
+      "bandit"
     ],
     "databases": [
       "postgresql",
@@ -241,7 +247,13 @@
       "rebuild",
       "status",
       "backup-db",
-      "restore-db"
+      "restore-db",
+      "lint",
+      "format",
+      "format-check",
+      "typecheck",
+      "security",
+      "quality"
     ],
     "poetry_scripts": [],
     "cargo_aliases": [],
@@ -252,7 +264,7 @@
       "fix_templates.sh"
     ]
   },
-  "project_dir": "/home/felipe/work/LATECME",
-  "created_at": "2026-01-27T10:30:57.529168",
-  "project_hash": "df3d14ad7d8f62e3b7106bf75a261650"
+  "project_dir": "/home/felipe/work/LATECME/.auto-claude/worktrees/tasks/022-verifique-todas-as-pendencias-de-git-existentes-ap",
+  "created_at": "2026-01-29T12:37:13.965122",
+  "project_hash": "63c5ae49967c3a0b7228852328c97f7a"
 }
