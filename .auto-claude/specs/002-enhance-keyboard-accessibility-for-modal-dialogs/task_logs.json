@@ -1,0 +1,289 @@
+{
+  "spec_id": "002-enhance-keyboard-accessibility-for-modal-dialogs",
+  "created_at": "2026-01-28T21:16:43.087710+00:00",
+  "updated_at": "2026-01-28T21:17:54.136814+00:00",
+  "phases": {
+    "planning": {
+      "phase": "planning",
+      "status": "active",
+      "started_at": "2026-01-28T21:16:43.089689+00:00",
+      "completed_at": null,
+      "entries": [
+        {
+          "timestamp": "2026-01-28T21:16:43.089740+00:00",
+          "type": "phase_start",
+          "content": "Starting implementation planning...",
+          "phase": "planning"
+        },
+        {
+          "timestamp": "2026-01-28T21:16:57.107825+00:00",
+          "type": "text",
+          "content": "I'll begin by acting as the Planner Agent for task 002. Let me start with the mandatory deep codebase investigation.\n\n## PHASE 0: DEEP CODEBASE INVESTIGATION\n\n### 0.1: Verify Working Directory and Understand Project Structure",
+          "phase": "planning",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:16:57.774852+00:00",
+          "type": "tool_start",
+          "content": "[Bash] pwd",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "pwd",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:16:58.157668+00:00",
+          "type": "tool_start",
+          "content": "[Bash] ls -la",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "ls -la",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:16:59.368698+00:00",
+          "type": "tool_start",
+          "content": "[Bash] find . -type f \\( -name \"*.py\" -o -name \"*.ts\" ...",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "find . -type f \\( -name \"*.py\" -o -name \"*.ts\" ...",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:16:59.658415+00:00",
+          "type": "tool_end",
+          "content": "[Bash] Done",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "session": 1,
+          "detail": "/home/felipe/work/LATECME/.auto-claude/worktrees/tasks/002-enhance-keyboard-accessibility-for-modal-dialogs",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:04.021549+00:00",
+          "type": "tool_start",
+          "content": "[Bash] ls -la apps/",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "ls -la apps/",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:04.859114+00:00",
+          "type": "tool_start",
+          "content": "[Bash] find ./apps -type f -name \"*.py\" | grep -v __py...",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "find ./apps -type f -name \"*.py\" | grep -v __py...",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:04.962712+00:00",
+          "type": "tool_end",
+          "content": "[Bash] Done",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "session": 1,
+          "detail": "total 48\ndrwxrwxr-x 11 felipe felipe 4096 Jan 28 18:16 .\ndrwxrwxr-x 11 felipe felipe 4096 Jan 28 18:16 ..\n-rw-rw-r--  1 felipe felipe  881 Jan 28 18:16 =5.2.4\ndrwxrwxr-x  4 felipe felipe 4096 Jan 28 18:16 accounts\ndrwxrwxr-x  4 felipe felipe 4096 Jan 28 18:16 apps\ndrwxrwxr-x  3 felipe felipe 4096 Jan 28 18:16 core\n-rw-rw-r--  1 felipe felipe    0 Jan 28 18:16 __init__.py\ndrwxrwxr-x  5 felipe felipe 4096 Jan 28 18:16 inventory\ndrwxrwxr-x  5 felipe felipe 4096 Jan 28 18:16 labels\ndrwxrwxr-x  4 felipe felipe 4096 Jan 28 18:16 materials\ndrwxrwxr-x  3 felipe felipe 4096 Jan 28 18:16 production\ndrwxrwxr-x  3 felipe felipe 4096 Jan 28 18:16 purchasing\ndrwxrwxr-x  2 felipe felipe 4096 Jan 28 18:16 __pycache__",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:15.989195+00:00",
+          "type": "text",
+          "content": "## PHASE 1: READ AND CREATE CONTEXT FILES\n\n### 1.1: Read the Project Specification",
+          "phase": "planning",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:17.098607+00:00",
+          "type": "tool_start",
+          "content": "[Read] ...eyboard-accessibility-for-modal-dialogs/spec.md",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "...eyboard-accessibility-for-modal-dialogs/spec.md",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:17.132686+00:00",
+          "type": "tool_end",
+          "content": "[Read] Done",
+          "phase": "planning",
+          "tool_name": "Read",
+          "session": 1,
+          "detail": "     1→# Enhance keyboard accessibility for modal dialogs\n     2→\n     3→## Overview\n     4→\n     5→Add proper focus trapping, focus restoration, and keyboard navigation to all Alpine.js modals\n     6→\n     7→## Rationale\n     8→\n     9→Current modals (like the movement modal in stock_list.html) lack focus trapping - users can tab out of the modal while it's open. This is both an accessibility issue (WCAG 2.1 Level A) and a usability problem\n    10→\n    11→---\n    12→*This spec was created from ideation and is pending detailed specification.*\n    13→\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:21.118713+00:00",
+          "type": "text",
+          "content": "### 0.2: Analyze Existing Patterns - Search for Alpine.js and Modals",
+          "phase": "planning",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:22.179928+00:00",
+          "type": "tool_start",
+          "content": "[Bash] find ./templates -type f -name \"*.html\" | head -30",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "find ./templates -type f -name \"*.html\" | head -30",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:23.339086+00:00",
+          "type": "tool_start",
+          "content": "[Grep] pattern: x-data|Alpine",
+          "phase": "planning",
+          "tool_name": "Grep",
+          "tool_input": "pattern: x-data|Alpine",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:23.935770+00:00",
+          "type": "tool_start",
+          "content": "[Grep] pattern: stock_list\\.html",
+          "phase": "planning",
+          "tool_name": "Grep",
+          "tool_input": "pattern: stock_list\\.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:24.055228+00:00",
+          "type": "tool_end",
+          "content": "[Grep] Done",
+          "phase": "planning",
+          "tool_name": "Grep",
+          "session": 1,
+          "detail": "./templates/materials/supplier_detail.html\n./templates/materials/material_detail.html\n./templates/materials/dashboard.html\n./templates/materials/material_list.html\n./templates/materials/supplier_form.html\n./templates/materials/supplier_list.html\n./templates/materials/material_form.html\n./templates/dashboard/index.html\n./templates/accounts/profile.html\n./templates/accounts/edit_profile.html\n./templates/accounts/login.html\n./templates/accounts/register.html\n./templates/accounts/register_success.html\n./templates/accounts/change_password.html\n./templates/purchasing/order_detail.html\n./templates/purchasing/receiving_detail.html\n./templates/purchasing/dashboard.html\n./templates/purchasing/request_list.html\n./templates/purchasing/request_detail.html\n./templates/purchasing/order_list.html\n./templates/purchasing/receiving_list.html\n./templates/purchasing/receiving_form.html\n./templates/base/internal.html\n./templates/base/base.html\n./templates/components/_empty.html\n./templates/components/_pagination.html\n./templates/components/_loading.html\n./templates/components/_modal.html\n./templates/components/_messages.html\n./templates/components/_table.html",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:29.544748+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./templates/inventory/stock_list.html",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./templates/inventory/stock_list.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:29.823316+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./templates/components/_modal.html",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./templates/components/_modal.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:29.851041+00:00",
+          "type": "tool_end",
+          "content": "[Read] Done",
+          "phase": "planning",
+          "tool_name": "Read",
+          "session": 1,
+          "detail": "     1→{% extends 'base/internal.html' %}\n     2→{% load static %}\n     3→\n     4→{% block title %}Lista de Estoques - LATECME{% endblock %}\n     5→\n     6→{% block breadcrumb %}\n     7→<li class=\"breadcrumb-item\"><a href=\"{% url 'inventory:dashboard' %}\">Inventario</a></li>\n     8→<li class=\"breadcrumb-item active\" aria-current=\"page\">Estoques</li>\n     9→{% endblock %}\n    10→\n    11→{% block page_title %}Lista de Estoques{% endblock %}\n    12→{% block page_subtitle %}<div class=\"page-subtitle\">Controle de Materiais em Estoque</div>{% endblock %}\n    13→\n    14→{% block page_actions %}\n    15→<button type=\"button\" class=\"btn btn-success\" @click=\"$dispatch('open-modal', {id: 'movement-modal'})\" x-data>\n    16→    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    17→        <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-plus\"></use>\n    18→    </svg>\n    19→    Nova Movimentacao\n    20→</button>\n    21→{% endblock %}\n    22→\n    23→{% block content_body %}\n    24→<!-- Filters -->\n    25→<div class=\"card mb-3\">\n    26→    <div class=\"card-header\">\n    27→        <h3 class=\"card-title\">\n    28→            <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon icon-tabler me-2\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    29→                <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-filter\"></use>\n    30→            </svg>\n    31→            Filtros\n    32→        </h3>\n    33→    </div>\n    34→    <div class=\"card-body\">\n    35→        <form method=\"get\" class=\"row g-2\"\n    36→              hx-get=\"{% url 'inventory:stock_list' %}\"\n    37→              hx-target=\"#stocks-table\"\n    38→              hx-push-url=\"true\"\n    39→              hx-trigger=\"submit\">\n    40→            <div class=\"col-md-3\">\n    41→                <input type=\"text\" name=\"search\" class=\"form-control\" placeholder=\"Buscar por codigo ou nome...\" value=\"{{ search }}\">\n    42→            </div>\n    43→            <div class=\"col-md-2\">\n    44→                <select name=\"warehouse\" class=\"form-select\">\n    45→                    <option value=\"\">Todos os Armazens</option>\n    46→                    {% for warehouse in warehouses %}\n    47→                    <option value=\"{{ warehouse.id }}\" {% if selected_warehouse == warehouse.id|stringformat:\"s\" %}selected{% endif %}>\n    48→                        {{ warehouse.code }} - {{ warehouse.name }}\n    49→                    </option>\n    50→                    {% endfor %}\n    51→                </select>\n    52→            </div>\n    53→            <div class=\"col-md-2\">\n    54→                <select name=\"material_type\" class=\"form-select\">\n    55→                    <option value=\"\">Todos os Tipos</option>\n    56→                    {% for type_code, type_name in material_types %}\n    57→                    <option value=\"{{ type_code }}\" {% if selected_material_type == type_code %}selected{% endif %}>\n    58→                        {{ type_name }}\n    59→                    </option>\n    60→                    {% endfor %}\n    61→                </select>\n    62→            </div>\n    63→            <div class=\"col-md-2\">\n    64→                <select name=\"stock_status\" class=\"form-select\">\n    65→                    <option value=\"\">Todos os Status</option>\n    66→                    <option value=\"normal\" {% if selected_stock_status == 'normal' %}selected{% endif %}>Normal</option>\n    67→                    <option value=\"low\" {% if selected_stock_status == 'low' %}selected{% endif %}>Estoque Baixo</option>\n    68→                    <option value=\"out\" {% if selected_stock_status == 'out' %}selected{% endif %}>Sem Estoque</option>\n    69→                </select>\n    70→            </div>\n    71→            <div class=\"col-md-3\">\n    72→                <button type=\"submit\" class=\"btn btn-primary\">\n    73→                    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    74→                        <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-search\"></use>\n    75→                    </svg>\n    76→                    Filtrar\n    77→                </button>\n    78→                <a href=\"{% url 'inventory:stock_list' %}\" class=\"btn btn-secondary\">\n    79→                    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    80→                        <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-x\"></use>\n    81→                    </svg>\n    82→                    Limpar\n    83→                </a>\n    84→            </div>\n    85→        </form>\n    86→    </div>\n    87→</div>\n    88→\n    89→<!-- Results -->\n    90→<div class=\"card\" id=\"stocks-table\">\n    91→    <div class=\"card-header\">\n    92→        <h3 class=\"card-title\">\n    93→            Estoques\n    94→            <span class=\"badge bg-secondary ms-2\">{{ stocks.paginator.count }} encontrado{{ stocks.paginator.count|pluralize:\"s\" }}</span>\n    95→        </h3>\n    96→    </div>\n    97→    {% if stocks %}\n    98→    <div class=\"table-responsive\">\n    99→        <table class=\"table table-vcenter card-table table-hover\">\n   100→            <thead>\n   101→                <tr>\n   102→                    <th>Material</th>\n   103→                    <th>Armazem</th>\n   104→                    <th class=\"text-center\">Estoque Atual</th>\n   105→                    <th class=\"text-center\">Reservado</th>\n   106→                    <th class=\"text-center\">Disponivel</th>\n   107→                    <th class=\"text-center\">Minimo</th>\n   108→                    <th>Localizacao</th>\n   109→                    <th class=\"text-center\">Status</th>\n   110→                    <th class=\"text-center\">Acoes</th>\n   111→                </tr>\n   112→            </thead>\n   113→            <tbody>\n   114→                {% for stock in stocks %}\n   115→                <tr>\n   116→                    <td>\n   117→                        <div class=\"font-weight-medium\">{{ stock.material.code }}</div>\n   118→                        <div class=\"text-muted small\">{{ stock.material.name|truncatechars:40 }}</div>\n   119→                    </td>\n   120→                    <td>\n   121→                        <div class=\"font-weight-medium\">{{ stock.warehouse.code }}</div>\n   122→                        <div class=\"text-muted small\">{{ stock.warehouse.name|truncatechars:30 }}</div>\n   123→                    </td>\n   124→                    <td class=\"text-center\">\n   125→                        <span class=\"badge bg-info\">{{ stock.current_quantity }} kg</span>\n   126→                    </td>\n   127→                    <td class=\"text-center\">\n   128→                        {% if stock.reserved_quantity > 0 %}\n   129→                        <span class=\"badge bg-warning\">{{ stock.reserved_quantity }} kg</span>\n   130→                        {% else %}\n   131→                        <span class=\"text-muted\">-</span>\n   132→                        {% endif %}\n   133→                    </td>\n   134→                    <td class=\"text-center\">\n   135→                        <span class=\"badge bg-success\">{{ stock.available_quantity }} kg</span>\n   136→                    </td>\n   137→                    <td class=\"text-center\">{{ stock.minimum_stock }} kg</td>\n   138→                    <td>\n   139→                        {% if stock.location_code %}\n   140→                        <span class=\"badge bg-secondary\">{{ stock.location_code }}</span>\n   141→                        {% else %}\n   142→                        <span class=\"text-muted\">-</span>\n   143→                        {% endif %}\n   144→                    </td>\n   145→                    <td class=\"text-center\">\n   146→                        {% if stock.is_out_of_stock %}\n   147→                        <span class=\"badge bg-danger\">Sem Estoque</span>\n   148→                        {% elif stock.is_low_stock %}\n   149→                        <span class=\"badge bg-warning\">Estoque Baixo</span>\n   150→                        {% else %}\n   151→                        <span class=\"badge bg-success\">Normal</span>\n   152→                        {% endif %}\n   153→                    </td>\n   154→                    <td class=\"text-center\">\n   155→                        <a href=\"{% url 'inventory:stock_detail' stock.id %}\" class=\"btn btn-primary btn-sm\">\n   156→                            <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n   157→                                <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-eye\"></use>\n   158→                            </svg>\n   159→                        </a>\n   160→                    </td>\n   161→                </tr>\n   162→                {% endfor %}\n   163→            </tbody>\n   164→        </table>\n   165→    </div>\n   166→\n   167→    <!-- Pagination -->\n   168→    {% if stocks.has_other_pages %}\n   169→    <div class=\"card-footer d-flex align-items-center\">\n   170→        <p class=\"m-0 text-muted\">\n   171→            Mostrando {{ stocks.start_index }} a {{ stocks.end_index }} de {{ stocks.paginator.count }} resultados\n   172→        </p>\n   173→        <ul class=\"pagination m-0 ms-auto\">\n   174→            {% if stocks.has_previous %}\n   175→            <li class=\"page-item\">\n   176→                <a class=\"page-link\" href=\"?{% if search %}search={{ search }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}{% if selected_material_type %}material_type={{ selected_material_type }}&{% endif %}{% if selected_stock_status %}stock_status={{ selected_stock_status }}&{% endif %}page={{ stocks.previous_page_number }\n\n... [truncated - full output was 23628 chars]",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:36.609787+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./templates/components/_confirm_dialog.html",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./templates/components/_confirm_dialog.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:38.159250+00:00",
+          "type": "tool_start",
+          "content": "[Grep] pattern: modal modal-blur|x-show.*open",
+          "phase": "planning",
+          "tool_name": "Grep",
+          "tool_input": "pattern: modal modal-blur|x-show.*open",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:38.201416+00:00",
+          "type": "tool_end",
+          "content": "[Grep] Done",
+          "phase": "planning",
+          "tool_name": "Grep",
+          "session": 1,
+          "detail": "     1→{% comment %}\n     2→Confirm Dialog Component - Alpine.js powered\n     3→Usage:\n     4→    Include once in your base template:\n     5→    {% include 'components/_confirm_dialog.html' %}\n     6→\n     7→    Then trigger from anywhere:\n     8→    <button @click=\"$dispatch('confirm', {\n     9→        title: 'Excluir item?',\n    10→        message: 'Esta acao nao pode ser desfeita.',\n    11→        confirmText: 'Excluir',\n    12→        cancelText: 'Cancelar',\n    13→        dangerous: true,\n    14→        onConfirm: () => { /* action */ }\n    15→    })\">Excluir</button>\n    16→\n    17→    Or use with HTMX:\n    18→    <button hx-delete=\"/item/1/\"\n    19→            hx-confirm=\"Tem certeza que deseja excluir?\">\n    20→        Excluir\n    21→    </button>\n    22→{% endcomment %}\n    23→{% load static %}\n    24→\n    25→<div x-data=\"{\n    26→        open: false,\n    27→        title: '',\n    28→        message: '',\n    29→        confirmText: 'Confirmar',\n    30→        cancelText: 'Cancelar',\n    31→        dangerous: false,\n    32→        processing: false,\n    33→        onConfirm: null,\n    34→\n    35→        show(options = {}) {\n    36→            this.title = options.title || 'Confirmar';\n    37→            this.message = options.message || 'Tem certeza que deseja continuar?';\n    38→            this.confirmText = options.confirmText || 'Confirmar';\n    39→            this.cancelText = options.cancelText || 'Cancelar';\n    40→            this.dangerous = options.dangerous || false;\n    41→            this.onConfirm = options.onConfirm || null;\n    42→            this.processing = false;\n    43→            this.open = true;\n    44→        },\n    45→\n    46→        async confirm() {\n    47→            if (typeof this.onConfirm === 'function') {\n    48→                this.processing = true;\n    49→                try {\n    50→                    await this.onConfirm();\n    51→                } catch (e) {\n    52→                    console.error('Confirm action failed:', e);\n    53→                } finally {\n    54→                    this.processing = false;\n    55→                }\n    56→            }\n    57→            this.open = false;\n    58→        },\n    59→\n    60→        cancel() {\n    61→            this.open = false;\n    62→        }\n    63→     }\"\n    64→     @confirm.window=\"show($event.detail)\"\n    65→     @keydown.escape.window=\"cancel()\"\n    66→     x-cloak>\n    67→\n    68→    <!-- Backdrop -->\n    69→    <div class=\"modal modal-blur fade\"\n    70→         :class=\"{ 'show d-block': open }\"\n    71→         tabindex=\"-1\"\n    72→         x-show=\"open\"\n    73→         x-transition.opacity>\n    74→        <div class=\"modal-backdrop fade show\"></div>\n    75→\n    76→        <div class=\"modal-dialog modal-sm modal-dialog-centered\" role=\"document\"\n    77→             x-show=\"open\"\n    78→             x-transition:enter=\"transition ease-out duration-200\"\n    79→             x-transition:enter-start=\"opacity-0 transform scale-95\"\n    80→             x-transition:enter-end=\"opacity-100 transform scale-100\"\n    81→             x-transition:leave=\"transition ease-in duration-150\"\n    82→             x-transition:leave-start=\"opacity-100 transform scale-100\"\n    83→             x-transition:leave-end=\"opacity-0 transform scale-95\"\n    84→             @click.outside=\"cancel()\">\n    85→\n    86→            <div class=\"modal-content\">\n    87→                <button type=\"button\" class=\"btn-close\" @click=\"cancel()\" aria-label=\"Close\"></button>\n    88→\n    89→                <div class=\"modal-status\" :class=\"dangerous ? 'bg-danger' : 'bg-primary'\"></div>\n    90→\n    91→                <div class=\"modal-body text-center py-4\">\n    92→                    <!-- Icon -->\n    93→                    <template x-if=\"dangerous\">\n    94→                        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon mb-2 text-danger icon-lg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    95→                            <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle\"></use>\n    96→                        </svg>\n    97→                    </template>\n    98→                    <template x-if=\"!dangerous\">\n    99→                        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon mb-2 text-primary icon-lg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n   100→                            <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-help\"></use>\n   101→                        </svg>\n   102→                    </template>\n   103→\n   104→                    <h3 x-text=\"title\"></h3>\n   105→                    <div class=\"text-muted\" x-text=\"message\"></div>\n   106→                </div>\n   107→\n   108→                <div class=\"modal-footer\">\n   109→                    <div class=\"w-100\">\n   110→                        <div class=\"row\">\n   111→                            <div class=\"col\">\n   112→                                <button type=\"button\"\n   113→                                        class=\"btn w-100\"\n   114→                                        @click=\"cancel()\"\n   115→                                        :disabled=\"processing\"\n   116→                                        x-text=\"cancelText\">\n   117→                                </button>\n   118→                            </div>\n   119→                            <div class=\"col\">\n   120→                                <button type=\"button\"\n   121→                                        class=\"btn w-100\"\n   122→                                        :class=\"dangerous ? 'btn-danger' : 'btn-primary'\"\n   123→                                        @click=\"confirm()\"\n   124→                                        :disabled=\"processing\">\n   125→                                    <span x-show=\"processing\" class=\"spinner-border spinner-border-sm me-2\"></span>\n   126→                                    <span x-text=\"confirmText\"></span>\n   127→                                </button>\n   128→                            </div>\n   129→                        </div>\n   130→                    </div>\n   131→                </div>\n   132→            </div>\n   133→        </div>\n   134→    </div>\n   135→</div>\n   136→\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:43.658005+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./templates/base/internal.html",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./templates/base/internal.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:43.974283+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./templates/base/base.html",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./templates/base/base.html",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:43.998139+00:00",
+          "type": "tool_end",
+          "content": "[Read] Done",
+          "phase": "planning",
+          "tool_name": "Read",
+          "session": 1,
+          "detail": "     1→{% extends 'base/base.html' %}\n     2→{% load static %}\n     3→\n     4→{% block body_class %}d-flex flex-column{% endblock %}\n     5→\n     6→{% block body %}\n     7→<div class=\"page\">\n     8→    <!-- Sidebar -->\n     9→    <aside class=\"navbar navbar-vertical navbar-expand-lg\"\n    10→           data-bs-theme=\"dark\"\n    11→           x-data=\"{ expanded: $store.sidebar.open }\"\n    12→           :class=\"{ 'show': expanded }\">\n    13→        <div class=\"container-fluid\">\n    14→            <!-- Brand -->\n    15→            <h1 class=\"navbar-brand navbar-brand-autodark\">\n    16→                <a href=\"{% url 'core:dashboard' %}\">\n    17→                    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon icon-tabler\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    18→                        <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-box\"></use>\n    19→                    </svg>\n    20→                    <span class=\"ms-2\">LATECME</span>\n    21→                </a>\n    22→            </h1>\n    23→\n    24→            <!-- Mobile toggle -->\n    25→            <button class=\"navbar-toggler\" type=\"button\"\n    26→                    @click=\"$store.sidebar.toggle()\"\n    27→                    aria-label=\"Toggle navigation\">\n    28→                <span class=\"navbar-toggler-icon\"></span>\n    29→            </button>\n    30→\n    31→            <!-- Sidebar content -->\n    32→            <div class=\"collapse navbar-collapse\" :class=\"{ 'show': expanded }\">\n    33→                <ul class=\"navbar-nav pt-lg-3\">\n    34→                    <!-- Dashboard -->\n    35→                    <li class=\"nav-item\">\n    36→                        <a class=\"nav-link {% if request.resolver_match.url_name == 'dashboard' and request.resolver_match.app_name == 'core' %}active{% endif %}\"\n    37→                           href=\"{% url 'core:dashboard' %}\">\n    38→                            <span class=\"nav-link-icon d-md-none d-lg-inline-block\">\n    39→                                <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    40→                                    <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-home\"></use>\n    41→                                </svg>\n    42→                            </span>\n    43→                            <span class=\"nav-link-title\">Dashboard</span>\n    44→                        </a>\n    45→                    </li>\n    46→\n    47→                    <!-- Materiais -->\n    48→                    <li class=\"nav-item dropdown\" x-data=\"{ open: {% if request.resolver_match.app_name == 'materials' %}true{% else %}false{% endif %} }\">\n    49→                        <a class=\"nav-link dropdown-toggle {% if request.resolver_match.app_name == 'materials' %}active{% endif %}\"\n    50→                           href=\"#\"\n    51→                           @click.prevent=\"open = !open\"\n    52→                           :class=\"{ 'show': open }\">\n    53→                            <span class=\"nav-link-icon d-md-none d-lg-inline-block\">\n    54→                                <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    55→                                    <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-packages\"></use>\n    56→                                </svg>\n    57→                            </span>\n    58→                            <span class=\"nav-link-title\">Materiais</span>\n    59→                        </a>\n    60→                        <div class=\"dropdown-menu\" :class=\"{ 'show': open }\" x-show=\"open\" x-cloak>\n    61→                            <a class=\"dropdown-item\" href=\"{% url 'materials:dashboard' %}\">Dashboard</a>\n    62→                            <a class=\"dropdown-item\" href=\"{% url 'materials:list' %}\">Lista de Materiais</a>\n    63→                            <a class=\"dropdown-item\" href=\"{% url 'materials:supplier_list' %}\">Fornecedores</a>\n    64→                            <div class=\"dropdown-divider\"></div>\n    65→                            <a class=\"dropdown-item\" href=\"{% url 'materials:create' %}\">Novo Material</a>\n    66→                            <a class=\"dropdown-item\" href=\"{% url 'materials:supplier_create' %}\">Novo Fornecedor</a>\n    67→                        </div>\n    68→                    </li>\n    69→\n    70→                    <!-- Estoque -->\n    71→                    <li class=\"nav-item dropdown\" x-data=\"{ open: {% if request.resolver_match.app_name == 'inventory' %}true{% else %}false{% endif %} }\">\n    72→                        <a class=\"nav-link dropdown-toggle {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}\"\n    73→                           href=\"#\"\n    74→                           @click.prevent=\"open = !open\"\n    75→                           :class=\"{ 'show': open }\">\n    76→                            <span class=\"nav-link-icon d-md-none d-lg-inline-block\">\n    77→                                <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n    78→                                    <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-archive\"></use>\n    79→                                </svg>\n    80→                            </span>\n    81→                            <span class=\"nav-link-title\">Estoque</span>\n    82→                        </a>\n    83→                        <div class=\"dropdown-menu\" :class=\"{ 'show': open }\" x-show=\"open\" x-cloak>\n    84→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:dashboard' %}\">Dashboard</a>\n    85→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:stock_list' %}\">Consultar Estoque</a>\n    86→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:movements_list' %}\">Movimentacoes</a>\n    87→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:inventory_count_list' %}\">Contagens</a>\n    88→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:warehouse_list' %}\">Armazens</a>\n    89→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:reservations_list' %}\">Reservas</a>\n    90→                            <a class=\"dropdown-item\" href=\"{% url 'inventory:reports' %}\">Relatorios</a>\n    91→                        </div>\n    92→                    </li>\n    93→\n    94→                    <!-- Producao -->\n    95→                    <li class=\"nav-item dropdown\" x-data=\"{ open: {% if request.resolver_match.app_name == 'production' %}true{% else %}false{% endif %} }\">\n    96→                        <a class=\"nav-link dropdown-toggle {% if request.resolver_match.app_name == 'production' %}active{% endif %}\"\n    97→                           href=\"#\"\n    98→                           @click.prevent=\"open = !open\"\n    99→                           :class=\"{ 'show': open }\">\n   100→                            <span class=\"nav-link-icon d-md-none d-lg-inline-block\">\n   101→                                <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n   102→                                    <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2\"></use>\n   103→                                </svg>\n   104→                            </span>\n   105→                            <span class=\"nav-link-title\">Producao</span>\n   106→                        </a>\n   107→                        <div class=\"dropdown-menu\" :class=\"{ 'show': open }\" x-show=\"open\" x-cloak>\n   108→                            <a class=\"dropdown-item\" href=\"{% url 'production:order_list' %}\">Ordens de Producao</a>\n   109→                            <a class=\"dropdown-item\" href=\"{% url 'production:batch_list' %}\">Bateladas</a>\n   110→                            <a class=\"dropdown-item\" href=\"{% url 'production:bin_list' %}\">Contentores</a>\n   111→                        </div>\n   112→                    </li>\n   113→\n   114→                    <!-- Compras -->\n   115→                    <li class=\"nav-item dropdown\" x-data=\"{ open: {% if request.resolver_match.app_name == 'purchasing' %}true{% else %}false{% endif %} }\">\n   116→                        <a class=\"nav-link dropdown-toggle {% if request.resolver_match.app_name == 'purchasing' %}active{% endif %}\"\n   117→                           href=\"#\"\n   118→                           @click.prevent=\"open = !open\"\n   119→                           :class=\"{ 'show': open }\">\n   120→                            <span class=\"nav-link-icon d-md-none d-lg-inline-block\">\n   121→                                <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n   122→                                    <use href=\"{% static 'icons/tabler-sprite.svg' %}#tabler-shopping-cart\"></use>\n   123→                                </svg>\n   124→                            </span>\n   125→                            <span class=\"nav-link-title\">Compras</span>\n   126→                        </a>\n   127→                        <div class=\"dropdown-menu\" :class=\"{ 'show': open }\" x-show=\"open\" x-cloak>\n   128→                            <a class=\"dropdown-item\" href=\"{% url 'purchasing:dashboard' %}\">Dashboard</a>\n   129→                            <a class=\"dropdown-item\" href=\"{% url 'purchasing:request_list' %}\">Solicitacoes</a>\n   130→                            <a class=\"dropdown-item\" href=\"{% url 'purchasing:order_list' %}\">Pedidos</a>\n   131→                            <a class=\"d\n\n... [truncated - full output was 20751 chars]",
+          "collapsed": true
+        },
+        {
+          "timestamp": "2026-01-28T21:17:53.848490+00:00",
+          "type": "tool_start",
+          "content": "[Bash] find ./static -name \"*.js\" -type f | grep -v ve...",
+          "phase": "planning",
+          "tool_name": "Bash",
+          "tool_input": "find ./static -name \"*.js\" -type f | grep -v ve...",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:54.094837+00:00",
+          "type": "tool_start",
+          "content": "[Read] ./static/js/app.js",
+          "phase": "planning",
+          "tool_name": "Read",
+          "tool_input": "./static/js/app.js",
+          "session": 1
+        },
+        {
+          "timestamp": "2026-01-28T21:17:54.136688+00:00",
+          "type": "tool_end",
+          "content": "[Read] Done",
+          "phase": "planning",
+          "tool_name": "Read",
+          "session": 1,
+          "detail": "     1→/**\n     2→ * LATECME Application JavaScript\n     3→ * Global configuration for HTMX and Alpine.js\n     4→ */\n     5→\n     6→// =============================================================================\n     7→// HTMX Configuration\n     8→// =============================================================================\n     9→\n    10→// Configure HTMX to include CSRF token in all requests\n    11→document.addEventListener('DOMContentLoaded', function() {\n    12→    // Get CSRF token from cookie\n    13→    function getCookie(name) {\n    14→        let cookieValue = null;\n    15→        if (document.cookie && document.cookie !== '') {\n    16→            const cookies = document.cookie.split(';');\n    17→            for (let i = 0; i < cookies.length; i++) {\n    18→                const cookie = cookies[i].trim();\n    19→                if (cookie.substring(0, name.length + 1) === (name + '=')) {\n    20→                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));\n    21→                    break;\n    22→                }\n    23→            }\n    24→        }\n    25→        return cookieValue;\n    26→    }\n    27→\n    28→    const csrftoken = getCookie('csrftoken');\n    29→\n    30→    // Add CSRF token to all HTMX requests\n    31→    document.body.addEventListener('htmx:configRequest', function(event) {\n    32→        event.detail.headers['X-CSRFToken'] = csrftoken;\n    33→    });\n    34→\n    35→    // Handle HTMX errors\n    36→    document.body.addEventListener('htmx:responseError', function(event) {\n    37→        console.error('HTMX Error:', event.detail);\n    38→        // You could show a toast notification here\n    39→    });\n    40→\n    41→    // Add loading class to body during HTMX requests\n    42→    document.body.addEventListener('htmx:beforeRequest', function(event) {\n    43→        const indicator = event.detail.elt.querySelector('.htmx-indicator');\n    44→        if (indicator) {\n    45→            indicator.style.display = 'inline-block';\n    46→        }\n    47→    });\n    48→\n    49→    document.body.addEventListener('htmx:afterRequest', function(event) {\n    50→        const indicator = event.detail.elt.querySelector('.htmx-indicator');\n    51→        if (indicator) {\n    52→            indicator.style.display = 'none';\n    53→        }\n    54→    });\n    55→\n    56→    // Handle HTMX redirect responses (for Django login required)\n    57→    document.body.addEventListener('htmx:beforeSwap', function(event) {\n    58→        // Check if response is a redirect to login page\n    59→        if (event.detail.xhr.status === 403 || event.detail.xhr.status === 401) {\n    60→            window.location.href = '/accounts/login/';\n    61→        }\n    62→    });\n    63→});\n    64→\n    65→// =============================================================================\n    66→// Alpine.js Global Data and Utilities\n    67→// =============================================================================\n    68→\n    69→// Register Alpine.js global stores when Alpine is ready\n    70→document.addEventListener('alpine:init', () => {\n    71→    // Toast notification store\n    72→    Alpine.store('toasts', {\n    73→        items: [],\n    74→\n    75→        add(message, type = 'info', duration = 5000) {\n    76→            const id = Date.now();\n    77→            this.items.push({ id, message, type });\n    78→\n    79→            if (duration > 0) {\n    80→                setTimeout(() => this.remove(id), duration);\n    81→            }\n    82→        },\n    83→\n    84→        remove(id) {\n    85→            this.items = this.items.filter(item => item.id !== id);\n    86→        },\n    87→\n    88→        success(message) {\n    89→            this.add(message, 'success');\n    90→        },\n    91→\n    92→        error(message) {\n    93→            this.add(message, 'danger');\n    94→        },\n    95→\n    96→        warning(message) {\n    97→            this.add(message, 'warning');\n    98→        },\n    99→\n   100→        info(message) {\n   101→            this.add(message, 'info');\n   102→        }\n   103→    });\n   104→\n   105→    // Sidebar state store\n   106→    Alpine.store('sidebar', {\n   107→        open: false,\n   108→\n   109→        toggle() {\n   110→            this.open = !this.open;\n   111→        },\n   112→\n   113→        close() {\n   114→            this.open = false;\n   115→        }\n   116→    });\n   117→\n   118→    // Global modal helper\n   119→    Alpine.data('modal', (initialOpen = false) => ({\n   120→        open: initialOpen,\n   121→\n   122→        show() {\n   123→            this.open = true;\n   124→            document.body.classList.add('modal-open');\n   125→        },\n   126→\n   127→        hide() {\n   128→            this.open = false;\n   129→            document.body.classList.remove('modal-open');\n   130→        },\n   131→\n   132→        toggle() {\n   133→            this.open ? this.hide() : this.show();\n   134→        }\n   135→    }));\n   136→\n   137→    // Dropdown helper\n   138→    Alpine.data('dropdown', () => ({\n   139→        open: false,\n   140→\n   141→        toggle() {\n   142→            this.open = !this.open;\n   143→        },\n   144→\n   145→        close() {\n   146→            this.open = false;\n   147→        }\n   148→    }));\n   149→\n   150→    // Confirm dialog helper\n   151→    Alpine.data('confirmDialog', () => ({\n   152→        open: false,\n   153→        title: '',\n   154→        message: '',\n   155→        confirmText: 'Confirmar',\n   156→        cancelText: 'Cancelar',\n   157→        onConfirm: null,\n   158→\n   159→        show(options = {}) {\n   160→            this.title = options.title || 'Confirmar';\n   161→            this.message = options.message || 'Tem certeza?';\n   162→            this.confirmText = options.confirmText || 'Confirmar';\n   163→            this.cancelText = options.cancelText || 'Cancelar';\n   164→            this.onConfirm = options.onConfirm || null;\n   165→            this.open = true;\n   166→        },\n   167→\n   168→        confirm() {\n   169→            if (typeof this.onConfirm === 'function') {\n   170→                this.onConfirm();\n   171→            }\n   172→            this.open = false;\n   173→        },\n   174→\n   175→        cancel() {\n   176→            this.open = false;\n   177→        }\n   178→    }));\n   179→});\n   180→\n   181→// =============================================================================\n   182→// Utility Functions\n   183→// =============================================================================\n   184→\n   185→// Format currency (Brazilian Real)\n   186→function formatCurrency(value) {\n   187→    return new Intl.NumberFormat('pt-BR', {\n   188→        style: 'currency',\n   189→        currency: 'BRL'\n   190→    }).format(value);\n   191→}\n   192→\n   193→// Format date (Brazilian format)\n   194→function formatDate(dateString) {\n   195→    const date = new Date(dateString);\n   196→    return new Intl.DateTimeFormat('pt-BR').format(date);\n   197→}\n   198→\n   199→// Format datetime (Brazilian format)\n   200→function formatDateTime(dateString) {\n   201→    const date = new Date(dateString);\n   202→    return new Intl.DateTimeFormat('pt-BR', {\n   203→        dateStyle: 'short',\n   204→        timeStyle: 'short'\n   205→    }).format(date);\n   206→}\n   207→\n   208→// Debounce function for search inputs\n   209→function debounce(func, wait) {\n   210→    let timeout;\n   211→    return function executedFunction(...args) {\n   212→        const later = () => {\n   213→            clearTimeout(timeout);\n   214→            func(...args);\n   215→        };\n   216→        clearTimeout(timeout);\n   217→        timeout = setTimeout(later, wait);\n   218→    };\n   219→}\n   220→\n   221→// =============================================================================\n   222→// HTMX Extensions\n   223→// =============================================================================\n   224→\n   225→// Custom HTMX extension for handling Django messages\n   226→htmx.defineExtension('django-messages', {\n   227→    onEvent: function(name, evt) {\n   228→        if (name === 'htmx:afterSwap') {\n   229→            // Look for messages in the response\n   230→            const messagesContainer = evt.detail.elt.querySelector('[data-messages]');\n   231→            if (messagesContainer && window.Alpine) {\n   232→                const messages = JSON.parse(messagesContainer.dataset.messages || '[]');\n   233→                messages.forEach(msg => {\n   234→                    Alpine.store('toasts').add(msg.message, msg.tags);\n   235→                });\n   236→            }\n   237→        }\n   238→    }\n   239→});\n   240→\n   241→// =============================================================================\n   242→// Icon Helper\n   243→// =============================================================================\n   244→\n   245→// Function to use Tabler icons from sprite\n   246→function icon(name, size = 24, strokeWidth = 2) {\n   247→    return `<svg class=\"icon icon-tabler\" width=\"${size}\" height=\"${size}\" viewBox=\"0 0 24 24\" stroke-width=\"${strokeWidth}\" stroke=\"currentColor\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n   248→        <use href=\"/static/icons/tabler-sprite.svg#tabler-${name}\"></use>\n   249→    </svg>`;\n   250→}\n   251→\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n",
+          "collapsed": true
+        }
+      ]
+    },
+    "coding": {
+      "phase": "coding",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "entries": []
+    },
+    "validation": {
+      "phase": "validation",
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "entries": []
+    }
+  }
+}
