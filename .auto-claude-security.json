@@ -129,7 +129,6 @@
   ],
   "stack_commands": [
     "ar",
-    "bandit",
     "clang",
     "clang++",
     "cmake",
@@ -153,7 +152,6 @@
     "ld",
     "make",
     "meson",
-    "mypy",
     "ninja",
     "nm",
     "node",
@@ -179,7 +177,6 @@
     "redis-benchmark",
     "redis-cli",
     "redis-server",
-    "ruff",
     "strip",
     "uvicorn"
   ],
@@ -206,14 +203,11 @@
       "poetry"
     ],
     "frameworks": [
-      "django",
-      "mypy",
-      "ruff",
-      "bandit"
+      "django"
     ],
     "databases": [
-      "redis",
-      "postgresql"
+      "postgresql",
+      "redis"
     ],
     "infrastructure": [
       "docker"
@@ -247,13 +241,7 @@
       "rebuild",
       "status",
       "backup-db",
-      "restore-db",
-      "lint",
-      "format",
-      "format-check",
-      "typecheck",
-      "security",
-      "quality"
+      "restore-db"
     ],
     "poetry_scripts": [],
     "cargo_aliases": [],
@@ -265,6 +253,7 @@
     ]
   },
   "project_dir": "/home/felipe/work/LATECME",
-  "created_at": "2026-01-29T12:31:19.305363",
-  "project_hash": "221cd1d8042d74b5c07421aa8cb46970"
+  "created_at": "2026-01-27T10:30:57.529168",
+  "project_hash": "df3d14ad7d8f62e3b7106bf75a261650",
+  "inherited_from": "/home/felipe/work/LATECME"
 }
