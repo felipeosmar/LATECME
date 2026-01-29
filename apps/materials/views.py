@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.db.models import Q, Count, Min, Avg
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from datetime import datetime
+from django.views.decorators.cache import cache_page
 from .models import Material, Supplier, MaterialSupplier, MaterialCategory, MaterialComposition
 from .forms import MaterialForm, SupplierForm, MaterialCompositionFormSet
 
@@ -17,18 +19,34 @@ def material_list(request):
     search = request.GET.get('search', '')
     material_type = request.GET.get('type', '')
     category_id = request.GET.get('category', '')
-    
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
     if search:
         materials = materials.filter(
-            Q(code__icontains=search) | 
+            Q(code__icontains=search) |
             Q(name__icontains=search)
         )
-    
+
     if material_type:
         materials = materials.filter(material_type=material_type)
-    
+
     if category_id:
         materials = materials.filter(category_id=category_id)
+
+    if date_from:
+        try:
+            date_from_parsed = datetime.strptime(date_from, '%Y-%m-%d').date()
+            materials = materials.filter(created_at__date__gte=date_from_parsed)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            date_to_parsed = datetime.strptime(date_to, '%Y-%m-%d').date()
+            materials = materials.filter(created_at__date__lte=date_to_parsed)
+        except ValueError:
+            pass
     
     # Paginação
     paginator = Paginator(materials, 20)
@@ -47,6 +65,8 @@ def material_list(request):
         'categories': categories,
         'material_types': material_types,
         'total_materials': paginator.count,
+        'date_from': date_from,
+        'date_to': date_to,
     }
     
     return render(request, 'materials/material_list.html', context)
@@ -145,27 +165,46 @@ def supplier_list(request):
     suppliers = Supplier.objects.filter(is_active=True).annotate(
         material_count=Count('materials')
     )
-    
-    # Busca
+
+    # Filtros
     search = request.GET.get('search', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
     if search:
         suppliers = suppliers.filter(
-            Q(name__icontains=search) | 
+            Q(name__icontains=search) |
             Q(code__icontains=search) |
             Q(cnpj__icontains=search)
         )
-    
+
+    if date_from:
+        try:
+            date_from_parsed = datetime.strptime(date_from, '%Y-%m-%d').date()
+            suppliers = suppliers.filter(created_at__date__gte=date_from_parsed)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            date_to_parsed = datetime.strptime(date_to, '%Y-%m-%d').date()
+            suppliers = suppliers.filter(created_at__date__lte=date_to_parsed)
+        except ValueError:
+            pass
+
     # Paginação
     paginator = Paginator(suppliers, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'page_obj': page_obj,
         'search': search,
         'total_suppliers': paginator.count,
+        'date_from': date_from,
+        'date_to': date_to,
     }
-    
+
     return render(request, 'materials/supplier_list.html', context)
 
 
@@ -239,6 +278,7 @@ def supplier_edit(request, supplier_id):
     })
 
 
+@cache_page(300)
 @login_required
 def dashboard_materials(request):
     """Dashboard do módulo de materiais"""
@@ -287,6 +327,11 @@ def material_search_api(request):
     materials = Material.objects.filter(
         Q(code__icontains=query) | Q(name__icontains=query),
         is_active=True
+    ).annotate(
+        best_price=Min(
+            'materialsupplier__price_per_kg',
+            filter=Q(materialsupplier__supplier__is_active=True)
+        )
     )[:10]
 
     results = []
@@ -296,32 +341,7 @@ def material_search_api(request):
             'code': material.code,
             'name': material.name,
             'type': material.get_material_type_display(),
-            'best_price': float(material.get_best_price()) if material.get_best_price() else None
-        })
-
-    return JsonResponse({'results': results})
-
-
-@login_required
-def supplier_search_api(request):
-    """API para busca de fornecedores (AJAX)"""
-    query = request.GET.get('q', '')
-    if len(query) < 2:
-        return JsonResponse({'results': []})
-
-    suppliers = Supplier.objects.filter(
-        Q(name__icontains=query) | Q(code__icontains=query) | Q(cnpj__icontains=query),
-        is_active=True
-    ).annotate(material_count=Count('materials'))[:10]
-
-    results = []
-    for supplier in suppliers:
-        results.append({
-            'id': supplier.id,
-            'code': supplier.code,
-            'name': supplier.name,
-            'cnpj': supplier.cnpj,
-            'material_count': supplier.material_count
+            'best_price': float(material.best_price) if material.best_price else None
         })
 
     return JsonResponse({'results': results})

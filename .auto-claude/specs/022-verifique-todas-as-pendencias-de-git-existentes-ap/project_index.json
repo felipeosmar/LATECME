@@ -1,0 +1,18 @@
+{
+  "project_root": "/home/felipe/work/LATECME",
+  "project_type": "monorepo",
+  "services": {},
+  "infrastructure": {
+    "docker_compose": "docker-compose.yml",
+    "docker_services": [
+      "django",
+      "postgres",
+      "redis",
+      "nginx"
+    ],
+    "dockerfile": "Dockerfile"
+  },
+  "conventions": {
+    "python_linting": "Ruff"
+  }
+}

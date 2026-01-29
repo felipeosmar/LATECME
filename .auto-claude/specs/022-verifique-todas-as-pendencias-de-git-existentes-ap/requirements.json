@@ -1,0 +1,4 @@
+{
+  "task_description": "Verifique todas as pendencias de GIT existentes, aplique todo o codigo na branche \"dev\". Resolva todas as worktrees pendentes.",
+  "workflow_type": "feature"
+}
