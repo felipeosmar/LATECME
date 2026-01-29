@@ -224,9 +224,9 @@
       "invalid_dates_handled": true
     }
   },
-  "status": "human_review",
-  "planStatus": "review",
-  "updated_at": "2026-01-27T14:01:24.750Z",
+  "status": "done",
+  "planStatus": "completed",
+  "updated_at": "2026-01-29T17:26:10.593Z",
   "last_updated": "2026-01-27T13:56:07.326928+00:00",
   "qa_iteration_history": [
     {

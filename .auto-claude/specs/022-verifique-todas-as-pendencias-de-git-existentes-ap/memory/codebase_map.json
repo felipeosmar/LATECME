@@ -1,0 +1,10 @@
+{
+  "discovered_files": {
+    ".auto-claude/": {
+      "description": "Auto-claude task directories (.auto-claude/specs/ and .auto-claude/worktrees/) for the current task remain untracked in the main repository until the task is completed and finalized. This is expected behavior.",
+      "category": "pattern",
+      "discovered_at": "2026-01-29T15:51:34.659003+00:00"
+    }
+  },
+  "last_updated": "2026-01-29T15:51:34.659023+00:00"
+}
