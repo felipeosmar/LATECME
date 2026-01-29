@@ -1,0 +1,639 @@
+{% extends 'base/internal.html' %}
+{% load static %}
+
+{% block title %}Relatorios de Producao - LATECME{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Producao</a></li>
+<li class="breadcrumb-item active" aria-current="page">Relatorios</li>
+{% endblock %}
+
+{% block page_title %}Relatorios de Producao{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Analise e Estatisticas de Ordens de Producao</div>{% endblock %}
+
+{% block content_body %}
+<!-- Period Filter -->
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-calendar"></use>
+            </svg>
+            Periodo de Analise
+        </h3>
+    </div>
+    <div class="card-body">
+        <form hx-get="{% url 'production:reports' %}"
+              hx-target="#report-content"
+              hx-push-url="true"
+              class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">De:</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Ate:</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
+                        </svg>
+                        Gerar Relatorio
+                    </button>
+                    <a href="{% url 'production:reports' %}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-refresh"></use>
+                        </svg>
+                        Ultimo Mes
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <span class="text-muted small">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
+                    </svg>
+                    {{ date_from|date:"d/m/Y" }} a {{ date_to|date:"d/m/Y" }}
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="report-content">
+    <!-- Summary Cards -->
+    <div class="row row-deck row-cards mb-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="subheader">Total de Ordens</div>
+                    </div>
+                    <div class="h1 mb-3">
+                        {% if orders_by_status %}
+                            {{ orders_by_status|length }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'production:production_order_list' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="btn btn-link btn-sm p-0">
+                        Ver Detalhes
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex">
+                        <span class="avatar bg-primary-lt">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-list"></use>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="subheader">Ordens Completas</div>
+                    </div>
+                    <div class="h1 mb-3 text-success">
+                        {% for item in orders_by_status %}
+                            {% if item.status == 'COMPLETED' %}{{ item.count }}{% endif %}
+                        {% empty %}
+                            0
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex">
+                        <span class="avatar bg-success-lt">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-check"></use>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="subheader">Lotes Ativos</div>
+                    </div>
+                    <div class="h1 mb-3 text-primary">
+                        {% for item in batches_by_status %}
+                            {% if item.status == 'IN_PRODUCTION' %}{{ item.count }}{% endif %}
+                        {% empty %}
+                            0
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex">
+                        <span class="avatar bg-primary-lt">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="subheader">Utilizacao de Bins</div>
+                    </div>
+                    <div class="h1 mb-3 text-info">
+                        {% if bin_utilization.total_bins > 0 %}
+                            {{ bin_utilization.total_current|default:0|floatformat:0|add:"0" }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex">
+                        <span class="avatar bg-info-lt">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-deck row-cards mb-3">
+        <!-- Orders by Status -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-pie"></use>
+                        </svg>
+                        Ordens por Status
+                    </h3>
+                </div>
+                {% if orders_by_status %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th class="text-center">Qtd. Ordens</th>
+                                <th class="text-center">Planejado (kg)</th>
+                                <th class="text-center">Produzido (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in orders_by_status %}
+                            <tr>
+                                <td>
+                                    {% if item.status == 'DRAFT' %}
+                                    <span class="badge bg-secondary">Rascunho</span>
+                                    {% elif item.status == 'PLANNED' %}
+                                    <span class="badge bg-info">Planejado</span>
+                                    {% elif item.status == 'IN_PROGRESS' %}
+                                    <span class="badge bg-primary">Em Progresso</span>
+                                    {% elif item.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completo</span>
+                                    {% elif item.status == 'CANCELLED' %}
+                                    <span class="badge bg-danger">Cancelado</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ item.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.count }}</td>
+                                <td class="text-center">{{ item.total_planned|floatformat:2|default:"0.00" }}</td>
+                                <td class="text-center">{{ item.total_produced|floatformat:2|default:"0.00" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clipboard-off"></use>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Nenhuma ordem encontrada</p>
+                        <p class="empty-subtitle text-muted">
+                            Não há ordens de producao no periodo selecionado.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Batches by Status -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package"></use>
+                        </svg>
+                        Lotes por Status
+                    </h3>
+                </div>
+                {% if batches_by_status %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th class="text-center">Qtd. Lotes</th>
+                                <th class="text-center">Quantidade (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in batches_by_status %}
+                            <tr>
+                                <td>
+                                    {% if item.status == 'PREPARATION' %}
+                                    <span class="badge bg-secondary">Preparacao</span>
+                                    {% elif item.status == 'READY' %}
+                                    <span class="badge bg-info">Pronto</span>
+                                    {% elif item.status == 'IN_PRODUCTION' %}
+                                    <span class="badge bg-primary">Em Producao</span>
+                                    {% elif item.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completo</span>
+                                    {% elif item.status == 'CANCELLED' %}
+                                    <span class="badge bg-danger">Cancelado</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ item.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.count }}</td>
+                                <td class="text-center">{{ item.total_quantity|floatformat:2|default:"0.00" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-package-off"></use>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Nenhum lote encontrado</p>
+                        <p class="empty-subtitle text-muted">
+                            Não há lotes no periodo selecionado.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-deck row-cards mb-3">
+        <!-- Bin Movements by Type -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
+                        </svg>
+                        Movimentacoes de Bins por Tipo
+                    </h3>
+                </div>
+                {% if bin_movements_by_type %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th class="text-center">Qtd. Movim.</th>
+                                <th class="text-center">Quantidade (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in bin_movements_by_type %}
+                            <tr>
+                                <td>
+                                    {% if item.movement_type == 'IN' %}
+                                    <span class="badge bg-success">Entrada</span>
+                                    {% elif item.movement_type == 'OUT' %}
+                                    <span class="badge bg-danger">Saida</span>
+                                    {% elif item.movement_type == 'EMPTY' %}
+                                    <span class="badge bg-warning">Esvaziamento</span>
+                                    {% elif item.movement_type == 'TRANSFER' %}
+                                    <span class="badge bg-info">Transferencia</span>
+                                    {% elif item.movement_type == 'ADJUSTMENT' %}
+                                    <span class="badge bg-secondary">Ajuste</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ item.movement_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.count }}</td>
+                                <td class="text-center">{{ item.total_quantity|floatformat:2|default:"0.00" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange-2"></use>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Nenhuma movimentacao encontrada</p>
+                        <p class="empty-subtitle text-muted">
+                            Não há movimentacoes de bins no periodo selecionado.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top Materials Produced -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-trophy"></use>
+                        </svg>
+                        Top 10 Materiais Produzidos
+                    </h3>
+                </div>
+                {% if top_materials_produced %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th class="text-center">Lotes</th>
+                                <th class="text-center">Total (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in top_materials_produced %}
+                            <tr>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 250px;">
+                                        <strong>{{ item.material__code }}</strong>
+                                        <div class="text-muted small">{{ item.material__name }}</div>
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ item.total_batches }}</td>
+                                <td class="text-center">{{ item.total_quantity|floatformat:2|default:"0.00" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box-off"></use>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Nenhum material encontrado</p>
+                        <p class="empty-subtitle text-muted">
+                            Não há materiais produzidos no periodo selecionado.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-deck row-cards mb-3">
+        <!-- Bin Utilization Statistics -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
+                        </svg>
+                        Estatisticas de Bins
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <div class="text-muted">Total de Bins</div>
+                                <div class="h2 mb-0">{{ bin_utilization.total_bins|default:0 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <div class="text-muted">Bins Carregados</div>
+                                <div class="h2 mb-0 text-success">{{ bin_utilization.loaded_bins|default:0 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <div class="text-muted">Bins Vazios</div>
+                                <div class="h2 mb-0 text-warning">{{ bin_utilization.empty_bins|default:0 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <div class="text-muted">Capacidade Total</div>
+                                <div class="h2 mb-0">{{ bin_utilization.total_capacity|floatformat:2|default:"0.00" }} kg</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <div class="text-muted">Quantidade Atual</div>
+                                <div class="h2 mb-0 text-primary">{{ bin_utilization.total_current|floatformat:2|default:"0.00" }} kg</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="progress">
+                                {% if bin_utilization.total_capacity > 0 %}
+                                {% widthratio bin_utilization.total_current bin_utilization.total_capacity 100 as utilization_pct %}
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ utilization_pct }}%"
+                                     aria-valuenow="{{ utilization_pct }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ utilization_pct }}%
+                                </div>
+                                {% else %}
+                                <div class="progress-bar bg-secondary" role="progressbar" style="width: 0%"
+                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    0%
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-export"></use>
+                        </svg>
+                        Opcoes de Exportacao
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-download"></use>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Exportacao em Desenvolvimento</p>
+                        <p class="empty-subtitle text-muted">
+                            Em breve voce podera exportar estes relatorios para PDF e Excel.
+                        </p>
+                        <div class="empty-action">
+                            <button class="btn btn-secondary" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-type-pdf"></use>
+                                </svg>
+                                Exportar PDF
+                            </button>
+                            <button class="btn btn-secondary ms-2" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-type-xls"></use>
+                                </svg>
+                                Exportar Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis Section -->
+    <div class="row row-deck row-cards">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bulb"></use>
+                        </svg>
+                        Analise Detalhada
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="markdown">
+                        <h4>Insights do Periodo</h4>
+                        <ul>
+                            {% if orders_by_status %}
+                            <li>
+                                <strong>Producao Geral:</strong>
+                                Total de {{ orders_by_status|length }} tipos de status de ordens registrados no periodo.
+                            </li>
+                            {% endif %}
+                            {% if batches_by_status %}
+                            <li>
+                                <strong>Lotes:</strong>
+                                {{ batches_by_status|length }} diferentes status de lotes identificados.
+                            </li>
+                            {% endif %}
+                            {% if bin_movements_by_type %}
+                            <li>
+                                <strong>Movimentacoes:</strong>
+                                {{ bin_movements_by_type|length }} tipos de movimentacoes de bins registradas.
+                            </li>
+                            {% endif %}
+                            {% if top_materials_produced %}
+                            <li>
+                                <strong>Materiais:</strong>
+                                {{ top_materials_produced|length }} materiais foram produzidos no periodo selecionado.
+                            </li>
+                            {% endif %}
+                            <li>
+                                <strong>Utilizacao de Bins:</strong>
+                                {% if bin_utilization.total_bins > 0 %}
+                                {{ bin_utilization.loaded_bins }} bins carregados de {{ bin_utilization.total_bins }} totais
+                                ({% widthratio bin_utilization.loaded_bins bin_utilization.total_bins 100 %}% de ocupacao).
+                                {% else %}
+                                Nenhum bin registrado no sistema.
+                                {% endif %}
+                            </li>
+                        </ul>
+
+                        <h4>Recomendacoes</h4>
+                        <ul>
+                            {% if bin_utilization.loaded_bins > 0 and bin_utilization.total_bins > 0 %}
+                                {% widthratio bin_utilization.loaded_bins bin_utilization.total_bins 100 as loaded_pct %}
+                                {% if loaded_pct > 80 %}
+                                <li class="text-warning">
+                                    <strong>Atencao:</strong> A taxa de ocupacao de bins esta alta ({{ loaded_pct }}%).
+                                    Considere adicionar mais bins ou otimizar a rotatividade.
+                                </li>
+                                {% elif loaded_pct < 30 %}
+                                <li class="text-info">
+                                    <strong>Oportunidade:</strong> A taxa de ocupacao de bins esta baixa ({{ loaded_pct }}%).
+                                    Ha capacidade disponivel para aumento de producao.
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                            <li>
+                                Monitore regularmente os relatorios para identificar tendencias e gargalos na producao.
+                            </li>
+                            <li>
+                                Utilize os filtros de data para comparar diferentes periodos e avaliar o desempenho.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .card-header,
+        .page-header,
+        .navbar,
+        .btn,
+        form {
+            display: none !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+            page-break-inside: avoid;
+        }
+
+        .row-cards {
+            page-break-before: auto;
+            page-break-after: auto;
+        }
+    }
+</style>
+{% endblock %}

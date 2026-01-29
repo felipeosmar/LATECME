@@ -1,0 +1,22 @@
+================================================================================
+DATABASE INDEX PERFORMANCE TEST
+================================================================================
+
+                                                            QUERY PLAN                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.660..0.662 rows=2.00 loops=1)
+   Buffers: shared hit=3 read=1
+   ->  Sort  (cost=1.05..1.05 rows=1 width=1019) (actual time=0.657..0.658 rows=2.00 loops=1)
+         Sort Key: created_at DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=3 read=1
+         ->  Seq Scan on inventory_stockmovement  (cost=0.00..1.04 rows=1 width=1019) (actual time=0.603..0.605 rows=2.00 loops=1)
+               Filter: ((movement_type)::text = 'IN'::text)
+               Rows Removed by Filter: 1
+               Buffers: shared read=1
+ Planning:
+   Buffers: shared hit=307 read=17
+ Planning Time: 3.258 ms
+ Execution Time: 0.717 ms
+(14 rows)
+
