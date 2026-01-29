@@ -1,0 +1,83 @@
+{
+  "complexity": "simple",
+  "workflow_type": "investigation",
+  "confidence": 0.90,
+  "reasoning": "This is a Git operations/maintenance task, not a code development task. It involves running diagnostic commands (git status, git worktree list, git branch), analyzing the state, and executing standard Git operations to consolidate work onto the dev branch. No application code modifications are needed.",
+
+  "analysis": {
+    "scope": {
+      "estimated_files": 0,
+      "estimated_services": 0,
+      "is_cross_cutting": false,
+      "notes": "No application code files will be modified. This is purely Git state management and worktree cleanup."
+    },
+    "integrations": {
+      "external_services": [],
+      "new_dependencies": [],
+      "research_needed": false,
+      "notes": "Standard Git operations only - no external integrations required."
+    },
+    "infrastructure": {
+      "docker_changes": false,
+      "database_changes": false,
+      "config_changes": false,
+      "notes": "No infrastructure changes. Only Git repository state will be modified."
+    },
+    "knowledge": {
+      "patterns_exist": true,
+      "research_required": false,
+      "unfamiliar_tech": [],
+      "notes": "Standard Git commands: status, worktree, branch, merge/rebase, stash. Well-documented and widely known."
+    },
+    "risk": {
+      "level": "medium",
+      "concerns": [
+        "Uncommitted changes could be lost if not handled carefully",
+        "Worktree cleanup could lose work if not reviewed",
+        "Merge conflicts possible when consolidating to dev",
+        "Force operations could cause irreversible data loss"
+      ],
+      "notes": "Git operations require care to avoid losing uncommitted work. Need to verify state before any destructive operations."
+    }
+  },
+
+  "recommended_phases": [
+    "discovery",
+    "quick_spec",
+    "validation"
+  ],
+
+  "flags": {
+    "needs_research": false,
+    "needs_self_critique": false,
+    "needs_infrastructure_setup": false
+  },
+
+  "validation_recommendations": {
+    "risk_level": "low",
+    "skip_validation": true,
+    "minimal_mode": true,
+    "test_types_required": [],
+    "security_scan_required": false,
+    "staging_deployment_required": false,
+    "reasoning": "This is a Git operations task with no application code changes. No tests can or should be run for Git operations. Validation is inherent in the Git commands themselves (verifying status after operations)."
+  },
+
+  "execution_notes": {
+    "key_commands": [
+      "git status - check uncommitted changes",
+      "git worktree list - identify all worktrees",
+      "git branch -a - review all branches",
+      "git stash list - check for stashed changes",
+      "git log --oneline dev..HEAD - see commits ahead of dev"
+    ],
+    "safety_steps": [
+      "Review all uncommitted changes before any operations",
+      "Verify worktree contents before removal",
+      "Create backup branches before merge operations",
+      "Test merge with --no-commit first if conflicts expected"
+    ]
+  },
+
+  "created_at": "2025-01-29T12:00:00Z"
+}
