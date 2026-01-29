@@ -1,0 +1,15 @@
+{
+  "task_description": "Verifique todas as pendencias de GIT existentes, aplique todo o codigo na branche \"dev\". Resolva todas as worktrees pendentes.",
+  "scoped_services": [],
+  "files_to_modify": [
+    ".auto-claude-security.json",
+    ".auto-claude/project_index.json",
+    ".claude_settings.json"
+  ],
+  "files_to_reference": [],
+  "patterns": {
+    "git_operations": "Sequential commit, merge, cleanup workflow"
+  },
+  "service_contexts": {},
+  "created_at": "2026-01-29T15:29:31.334Z"
+}

@@ -1,0 +1,122 @@
+# Build Progress - Git Cleanup and Merge to Dev
+
+## Session: 2026-01-29
+
+### Subtask 1.1: Commit pending changes in worktree 014 (database indexes)
+**Status:** COMPLETED
+
+**Actions:**
+- Checked worktree 014 status - found 6 modified files (status, implementation_plan, task logs, session insights)
+- Staged all changes with `git add -A`
+- Committed with message: "auto-claude: 014 - Complete database indexes implementation"
+- Branch now has 4 commits ahead of origin/main (was 3, now 4)
+
+**Result:** Worktree 014 now has clean working tree
+
+---
+
+### Subtask 1.2: Merge worktree 014 branch to dev
+**Status:** COMPLETED
+
+**Actions:**
+- Merged branch auto-claude/014-add-database-indexes-for-frequently-filtered-field into dev
+- Resolved merge conflict in .auto-claude-security.json
+- Merge commit: 3568e5b
+
+**Result:** Dev branch is 6 commits ahead of origin/dev with all 014 database indexes work
+
+---
+
+### Subtask 1.3: Remove worktree 014
+**Status:** COMPLETED
+
+**Actions:**
+- Removed worktree 014-add-database-indexes-for-frequently-filtered-field
+- Verified worktree list shows only main and 022 worktrees
+
+**Result:** Clean worktree list
+
+---
+
+### Subtask 2.1: Commit uncommitted config changes in main branch
+**Status:** COMPLETED
+
+**Actions:**
+- Committed config changes: .auto-claude-security.json, .auto-claude/project_index.json, .claude_settings.json
+- Removed worktree 014 reference
+- Commit: 5b0c2b9
+
+**Result:** Main branch has clean working tree with updated config
+
+---
+
+### Subtask 2.2: Checkout dev branch (create from origin/dev if needed)
+**Status:** COMPLETED
+
+**Actions:**
+- Verified dev branch exists locally (created during subtask 1.2)
+- Confirmed tracking origin/dev properly
+- Verified sync status - both at commit 3568e5b
+- Branch ready for phase 3 merge operations
+
+**Result:** Dev branch verified and ready for merges
+
+---
+
+### Subtask 3.1: Merge auto-claude/* branches with real work to dev
+**Status:** COMPLETED
+
+**Analysis:**
+Analyzed 16 auto-claude/* branches to identify which have real work not in dev:
+- Branches with work to merge: 008, 009, 011, 012, 013
+- Branches already in dev or just specs: 002, 007, 010, 015, 016, 017, 018, 019, 020
+
+**Actions:**
+1. Merged auto-claude/008-add-reports-view-to-production-module
+   - 4 commits: production reports feature
+   - Files: apps/production/urls.py, views.py, templates/production/reports.html
+
+2. Merged auto-claude/009-add-date-range-filter-to-material-and-supplier-lis
+   - 5 commits: date range filter for materials and suppliers
+   - Files: apps/materials/views.py, templates/materials/material_list.html, supplier_list.html
+
+3. Merged auto-claude/011-fix-n-1-query-in-material-search-api
+   - 4 commits: N+1 query fix using annotate() with Min()
+   - Files: apps/materials/views.py
+
+4. Merged auto-claude/012-add-redis-caching-for-dashboard-statistics
+   - 5 commits: Redis caching for dashboard
+   - Resolved merge conflict in apps/materials/views.py (kept datetime + cache_page imports, paginator.count + date_from/date_to)
+   - Files: apps/production/views.py, apps/materials/views.py
+
+5. Merged auto-claude/013-remove-unused-static-file-plugins-to-reduce-deploy
+   - 2 commits: removed unused DataTables static files
+   - Deleted many minified JS/CSS files from staticfiles/plugins/DataTables/
+
+**Result:** Dev branch now 31 commits ahead of origin/dev with all feature branches merged
+
+---
+
+### Subtask 3.2: Push dev branch to origin
+**Status:** COMPLETED
+
+**Actions:**
+- Configured gh CLI as git credential helper (gh auth setup-git)
+- Pushed dev branch to origin
+- Pushed 31 commits (3568e5b -> 8a39295)
+- Verified local dev and origin/dev are now in sync (0 commits difference)
+
+**Commits included:**
+- Merge of branch 008 (production reports)
+- Merge of branch 009 (date range filter)
+- Merge of branch 011 (N+1 query fix)
+- Merge of branch 012 (Redis caching)
+- Merge of branch 013 (static files cleanup)
+- Plus all previous dev commits
+
+**Result:** origin/dev is now up-to-date with all merged work
+
+---
+
+## Next Steps
+- 3.3: Delete merged local auto-claude/* branches
