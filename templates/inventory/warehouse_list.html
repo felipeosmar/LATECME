@@ -1,15 +1,15 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Lista de Armazens - LATECME{% endblock %}
+{% block title %}Lista de Armazéns - LATECME{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
-<li class="breadcrumb-item active" aria-current="page">Armazens</li>
+<li class="breadcrumb-item active" aria-current="page">Armazéns</li>
 {% endblock %}
 
-{% block page_title %}Lista de Armazens{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Armazens e Depositos</div>{% endblock %}
+{% block page_title %}Lista de Armazéns{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Armazéns e Depositos</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-success" x-data @click="$dispatch('open-modal', {id: 'warehouse-modal'})">
@@ -17,7 +17,7 @@
         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
-    Novo Armazem
+    Novo Armazém
 </button>
 {% endblock %}
 
@@ -31,7 +31,7 @@
                 stroke-linejoin="round">
                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
             </svg>
-            Buscar Armazens
+            Buscar Armazéns
         </h3>
     </div>
     <div class="card-body">
@@ -39,7 +39,7 @@
             hx-push-url="true" hx-trigger="submit">
             <div class="col-md-8">
                 <input type="text" name="search" class="form-control"
-                    placeholder="Buscar por codigo, nome ou localizacao..." value="{{ search }}">
+                    placeholder="Buscar por código, nome ou localização..." value="{{ search }}">
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-primary">
@@ -68,7 +68,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                Armazens
+                Armazéns
                 <span class="badge bg-secondary ms-2">{{ warehouses.paginator.count }} encontrado{{
                     warehouses.paginator.count|pluralize:"s" }}</span>
             </h3>
@@ -207,7 +207,7 @@
                             href="?{% if search %}search={{ search }}&{% endif %}page={{ warehouses.next_page_number }}"
                             hx-get="?{% if search %}search={{ search }}&{% endif %}page={{ warehouses.next_page_number }}"
                             hx-target="#warehouses-grid" hx-push-url="true">
-                            Proximo
+                            Próximo
                         </a>
                     </li>
                     {% endif %}
@@ -224,9 +224,9 @@
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                     </svg>
                 </div>
-                <p class="empty-title">Nenhum armazem encontrado</p>
+                <p class="empty-title">Nenhum armazém encontrado</p>
                 <p class="empty-subtitle text-muted">
-                    {% if search %}Nao ha armazens que correspondam a sua busca.{% else %}Nenhum armazem foi cadastrado
+                    {% if search %}Nao ha armazéns que correspondam a sua busca.{% else %}Nenhum armazém foi cadastrado
                     ainda.{% endif %}
                 </p>
                 <div class="empty-action">
@@ -237,7 +237,7 @@
                             stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                         </svg>
-                        Cadastrar Primeiro Armazem
+                        Cadastrar Primeiro Armazém
                     </button>
                 </div>
             </div>
@@ -254,7 +254,7 @@
     <div class="modal-dialog modal-lg" @click.outside="open = false">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" x-text="isEdit ? 'Editar Armazem' : 'Novo Armazem'"></h5>
+                <h5 class="modal-title" x-text="isEdit ? 'Editar Armazém' : 'Novo Armazém'"></h5>
                 <button type="button" class="btn-close" @click="open = false"></button>
             </div>
             <form @submit.prevent="submitForm">
@@ -262,19 +262,19 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Codigo</label>
+                            <label class="form-label required">Código</label>
                             <input type="text" name="code" class="form-control" required maxlength="20"
                                 placeholder="Ex: ARM01, DEP02" x-model="formData.code">
-                            <small class="form-hint">Codigo unico para identificacao</small>
+                            <small class="form-hint">Código unico para identificação</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label required">Nome</label>
                             <input type="text" name="name" class="form-control" required maxlength="100"
-                                placeholder="Ex: Armazem Principal" x-model="formData.name">
+                                placeholder="Ex: Armazém Principal" x-model="formData.name">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label required">Localizacao</label>
+                        <label class="form-label required">Localização</label>
                         <input type="text" name="location" class="form-control" required maxlength="200"
                             placeholder="Ex: Galpao A - Rua das Industrias, 123" x-model="formData.location">
                     </div>
@@ -285,15 +285,15 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Descricao</label>
+                        <label class="form-label">Descrição</label>
                         <textarea name="description" class="form-control" rows="3"
-                            placeholder="Descricao detalhada do armazem..." x-model="formData.description"></textarea>
+                            placeholder="Descrição detalhada do armazém..." x-model="formData.description"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-check">
                             <input type="checkbox" name="is_active" class="form-check-input"
                                 x-model="formData.is_active">
-                            <span class="form-check-label">Armazem ativo</span>
+                            <span class="form-check-label">Armazém ativo</span>
                         </label>
                     </div>
                 </div>
@@ -306,7 +306,7 @@
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
                             </svg>
-                            <span x-text="isEdit ? 'Atualizar Armazem' : 'Salvar Armazem'"></span>
+                            <span x-text="isEdit ? 'Atualizar Armazém' : 'Salvar Armazém'"></span>
                         </span>
                         <span x-show="submitting" x-cloak>
                             <span class="spinner-border spinner-border-sm me-2"></span>
@@ -409,7 +409,7 @@
                         location.reload();
                     } else {
                         const data = await response.json().catch(() => ({}));
-                        alert(data.message || 'Erro ao salvar armazem.');
+                        alert(data.message || 'Erro ao salvar armazém.');
                     }
                 } catch (error) {
                     console.error('Error saving:', error);

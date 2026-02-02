@@ -345,3 +345,30 @@ def material_search_api(request):
         })
 
     return JsonResponse({'results': results})
+
+
+@login_required
+def supplier_search_api(request):
+    """API para busca de fornecedores (AJAX)"""
+    query = request.GET.get('q', '')
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+
+    suppliers = Supplier.objects.filter(
+        Q(name__icontains=query) | Q(code__icontains=query) | Q(cnpj__icontains=query),
+        is_active=True
+    ).annotate(
+        material_count=Count('materials')
+    )[:10]
+
+    results = []
+    for supplier in suppliers:
+        results.append({
+            'id': supplier.id,
+            'code': supplier.code,
+            'name': supplier.name,
+            'cnpj': supplier.cnpj,
+            'material_count': supplier.material_count
+        })
+
+    return JsonResponse({'results': results})

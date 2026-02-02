@@ -71,7 +71,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
                         </svg>
-                        Informacoes do Pedido
+                        Informações do Pedido
                     </h3>
                 </div>
                 <div class="card-body">
@@ -81,14 +81,14 @@
                                 <dt class="col-5">Fornecedor:</dt>
                                 <dd class="col-7">{{ order.supplier.name }}</dd>
 
-                                <dt class="col-5">Data Emissao:</dt>
+                                <dt class="col-5">Data Emissão:</dt>
                                 <dd class="col-7">{{ order.order_date|date:"d/m/Y" }}</dd>
 
-                                <dt class="col-5">Previsao Entrega:</dt>
+                                <dt class="col-5">Previsão Entrega:</dt>
                                 <dd class="col-7">{{ order.expected_delivery_date|date:"d/m/Y"|default:"-" }}</dd>
 
                                 {% if order.purchase_request %}
-                                <dt class="col-5">Solicitacao:</dt>
+                                <dt class="col-5">Solicitação:</dt>
                                 <dd class="col-7">
                                     <a href="{% url 'purchasing:request_detail' order.purchase_request.id %}">
                                         {{ order.purchase_request.reference_number }}
@@ -102,7 +102,7 @@
                                 <dt class="col-5">Pagamento:</dt>
                                 <dd class="col-7">{{ order.payment_terms|default:"-" }}</dd>
 
-                                <dt class="col-5">Armazem:</dt>
+                                <dt class="col-5">Armazém:</dt>
                                 <dd class="col-7">{{ order.warehouse.code }} - {{ order.warehouse.name }}</dd>
 
                                 <dt class="col-5">Total:</dt>
@@ -117,7 +117,7 @@
                     {% if order.shipping_address %}
                     <hr>
                     <div>
-                        <strong>Endereco de Entrega:</strong>
+                        <strong>Endereço de Entrega:</strong>
                         <p class="mb-0">{{ order.shipping_address }}</p>
                     </div>
                     {% endif %}
@@ -125,7 +125,7 @@
                     {% if order.notes %}
                     <hr>
                     <div>
-                        <strong>Observacoes:</strong>
+                        <strong>Observações:</strong>
                         <p class="mb-0">{{ order.notes }}</p>
                     </div>
                     {% endif %}
@@ -272,7 +272,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
                         </svg>
-                        Historico
+                        Histórico
                     </h3>
                 </div>
                 <div class="card-body">

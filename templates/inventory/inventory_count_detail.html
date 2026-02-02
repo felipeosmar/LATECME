@@ -69,7 +69,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Informacoes da Contagem</h3>
+                    <h3 class="card-title">Informações da Contagem</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -80,7 +80,7 @@
                                     <div class="datagrid-content"><strong>{{ count.reference_number }}</strong></div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Armazem</div>
+                                    <div class="datagrid-title">Armazém</div>
                                     <div class="datagrid-content">{{ count.warehouse.code }} - {{ count.warehouse.name }}</div>
                                 </div>
                                 <div class="datagrid-item">
@@ -122,7 +122,7 @@
                     </div>
                     {% if count.notes %}
                     <div class="mt-3">
-                        <div class="datagrid-title">Observacoes</div>
+                        <div class="datagrid-title">Observações</div>
                         <div class="datagrid-content">{{ count.notes }}</div>
                     </div>
                     {% endif %}
@@ -146,11 +146,11 @@
                         </div>
                         <div class="col-6">
                             <div class="h1 m-0 text-warning">{{ items_with_variance }}</div>
-                            <div class="text-muted">Com Variacao</div>
+                            <div class="text-muted">Com Variação</div>
                         </div>
                         <div class="col-6">
                             <div class="h1 m-0 text-danger">{{ total_variance|floatformat:3 }} kg</div>
-                            <div class="text-muted">Variacao Total</div>
+                            <div class="text-muted">Variação Total</div>
                         </div>
                     </div>
                     {% if total_items > 0 %}
@@ -180,14 +180,14 @@
             <table class="table table-vcenter card-table" id="items-table">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">Codigo</th>
+                        <th style="width: 120px;">Código</th>
                         <th>Material</th>
-                        <th style="width: 100px;">Localizacao</th>
+                        <th style="width: 100px;">Localização</th>
                         <th style="width: 130px;" class="text-end">Qtd. Sistema</th>
                         <th style="width: 150px;" class="text-center">Qtd. Contada</th>
-                        <th style="width: 120px;" class="text-end">Variacao</th>
+                        <th style="width: 120px;" class="text-end">Variação</th>
                         <th style="width: 80px;" class="text-end">%</th>
-                        <th>Observacoes</th>
+                        <th>Observações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -430,7 +430,7 @@ function countDetail() {
                 this.confirmMessage = 'Certifique-se de que todos os itens foram contados.';
             } else if (type === 'adjustments') {
                 this.confirmTitle = 'Gerar Ajustes de Estoque?';
-                this.confirmMessage = 'Serao criadas movimentacoes de ajuste para corrigir as variacoes.';
+                this.confirmMessage = 'Serao criadas movimentações de ajuste para corrigir as variações.';
             }
             this.confirmModalOpen = true;
         },
@@ -461,11 +461,11 @@ function countDetail() {
                     this.confirmModalOpen = false;
                     window.location.reload();
                 } else {
-                    this.showToast('error', 'Erro', data.message || 'Erro ao executar acao');
+                    this.showToast('error', 'Erro', data.message || 'Erro ao executar ação');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                this.showToast('error', 'Erro', 'Erro ao executar acao');
+                this.showToast('error', 'Erro', 'Erro ao executar ação');
             } finally {
                 this.submitting = false;
             }

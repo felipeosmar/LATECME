@@ -61,7 +61,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
                         </svg>
-                        Informacoes do Recebimento
+                        Informações do Recebimento
                     </h3>
                 </div>
                 <div class="card-body">
@@ -80,7 +80,7 @@
                                     {{ receiving.purchase_order.supplier.trade_name }}
                                 </dd>
 
-                                <dt class="col-5">Armazem:</dt>
+                                <dt class="col-5">Armazém:</dt>
                                 <dd class="col-7">{{ receiving.purchase_order.warehouse.code }} - {{ receiving.purchase_order.warehouse.name }}</dd>
 
                                 <dt class="col-5">Recebido em:</dt>
@@ -111,7 +111,7 @@
                     {% if receiving.notes %}
                     <hr>
                     <div>
-                        <strong>Observacoes:</strong>
+                        <strong>Observações:</strong>
                         <p class="mb-0">{{ receiving.notes }}</p>
                     </div>
                     {% endif %}
@@ -253,7 +253,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-clock"></use>
                         </svg>
-                        Historico
+                        Histórico
                     </h3>
                 </div>
                 <div class="card-body">
@@ -307,7 +307,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
                         </svg>
-                        Acoes Rapidas
+                        Ações Rapidas
                     </h3>
                 </div>
                 <div class="card-body">
@@ -315,7 +315,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                         </svg>
-                        Ver Movimentacoes
+                        Ver Movimentações
                     </a>
                     <a href="{% url 'inventory:dashboard' %}" class="btn btn-outline-secondary w-100">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -381,7 +381,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Lote</label>
-                                <input type="text" class="form-control" x-model="itemData.batch_number" placeholder="Numero do lote">
+                                <input type="text" class="form-control" x-model="itemData.batch_number" placeholder="Número do lote">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Validade</label>
@@ -389,8 +389,8 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="2" x-model="itemData.notes" placeholder="Observacoes sobre o item..."></textarea>
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" rows="2" x-model="itemData.notes" placeholder="Observações sobre o item..."></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-check form-switch">

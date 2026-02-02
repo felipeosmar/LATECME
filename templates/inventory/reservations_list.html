@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_title %}Lista de Reservas{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Reservas de Estoque</div>{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Reservas de Estoque</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'reservation-modal'})">
@@ -98,7 +98,7 @@
                     <thead>
                         <tr>
                             <th>Material</th>
-                            <th>Armazem</th>
+                            <th>Armazém</th>
                             <th>Quantidade</th>
                             <th>Reservado por</th>
                             <th>Finalidade</th>
@@ -226,7 +226,7 @@
                                 href="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
                                 hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ reservations.next_page_number }}"
                                 hx-target="#reservations-results" hx-push-url="true">
-                                Proximo
+                                Próximo
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -296,10 +296,10 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Armazem</label>
+                                <label class="form-label required">Armazém</label>
                                 <select x-model="formData.warehouse_id" class="form-select" required
                                     @change="updateAvailableQuantity()">
-                                    <option value="">Selecione um armazem...</option>
+                                    <option value="">Selecione um armazém...</option>
                                     <template x-for="warehouse in warehouses" :key="warehouse.id">
                                         <option :value="warehouse.id" x-text="`${warehouse.code} - ${warehouse.name}`">
                                         </option>
@@ -317,7 +317,7 @@
                                     x-text="`Disponivel: ${availableQuantity} kg`"></small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Data de Expiracao</label>
+                                <label class="form-label required">Data de Expiração</label>
                                 <input type="datetime-local" x-model="formData.expiry_date" class="form-control"
                                     required>
                             </div>
@@ -326,19 +326,19 @@
                         <div class="mb-3">
                             <label class="form-label required">Finalidade</label>
                             <input type="text" x-model="formData.purpose" class="form-control" required maxlength="200"
-                                placeholder="Ex: Projeto ABC, Ordem de Producao 123, etc.">
+                                placeholder="Ex: Projeto ABC, Ordem de Produção 123, etc.">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Documento de Referencia</label>
                             <input type="text" x-model="formData.reference_document" class="form-control"
-                                maxlength="100" placeholder="Numero do projeto, ordem, etc.">
+                                maxlength="100" placeholder="Número do projeto, ordem, etc.">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea x-model="formData.notes" class="form-control" rows="3"
-                                placeholder="Informacoes adicionais sobre a reserva..."></textarea>
+                                placeholder="Informações adicionais sobre a reserva..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -386,7 +386,7 @@
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Armazem</div>
+                                    <div class="datagrid-title">Armazém</div>
                                     <div class="datagrid-content">
                                         <strong x-text="currentReservation?.warehouse_code"></strong> - <span
                                             x-text="currentReservation?.warehouse_name"></span>
@@ -420,7 +420,7 @@
                                     <div class="datagrid-content" x-text="currentReservation?.reservation_date"></div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Data de Expiracao</div>
+                                    <div class="datagrid-title">Data de Expiração</div>
                                     <div class="datagrid-content" x-text="currentReservation?.expiry_date"></div>
                                 </div>
                                 <div class="datagrid-item">
@@ -446,14 +446,14 @@
                     <template x-if="currentReservation?.notes">
                         <div class="mt-3">
                             <hr>
-                            <h4>Observacoes</h4>
+                            <h4>Observações</h4>
                             <p x-text="currentReservation?.notes"></p>
                         </div>
                     </template>
 
                     <div class="mt-3">
                         <hr>
-                        <h4>Informacoes de Criacao</h4>
+                        <h4>Informações de Criação</h4>
                         <div class="row">
                             <div class="col-md-6">
                                 <small class="text-muted">Criada em:</small>
@@ -511,7 +511,7 @@
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-alert-triangle"></use>
                     </svg>
                     <h3>Cancelar Reserva?</h3>
-                    <div class="text-muted">Tem certeza que deseja cancelar esta reserva? Esta acao nao pode ser
+                    <div class="text-muted">Tem certeza que deseja cancelar esta reserva? Esta ação nao pode ser
                         desfeita.</div>
                 </div>
                 <div class="modal-footer">

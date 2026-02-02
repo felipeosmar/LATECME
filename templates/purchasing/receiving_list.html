@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_title %}Recebimentos{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Recebimento de Materiais</div>{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Recebimento de Materiais</div>{% endblock %}
 
 {% block page_actions %}
 <a href="{% url 'purchasing:receiving_create' %}" class="btn btn-primary">
@@ -161,12 +161,12 @@
             <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
-                        <th>Numero</th>
+                        <th>Número</th>
                         <th>Status</th>
                         <th>Pedido</th>
                         <th>Fornecedor</th>
                         <th>Data Recebimento</th>
-                        <th>Armazem</th>
+                        <th>Armazém</th>
                         <th>Itens</th>
                         <th class="w-1"></th>
                     </tr>
@@ -238,7 +238,7 @@
                 {% endif %}
                 {% if receivings.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.next_page_number }}">Proximo</a>
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.next_page_number }}">Próximo</a>
                 </li>
                 {% endif %}
             </ul>

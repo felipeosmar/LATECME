@@ -23,7 +23,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
                     </svg>
-                    Informacoes do Estoque
+                    Informações do Estoque
                 </h3>
             </div>
             <div class="card-body">
@@ -44,14 +44,14 @@
                                 </div>
                             </div>
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Armazem</div>
+                                <div class="datagrid-title">Armazém</div>
                                 <div class="datagrid-content">
                                     <strong>{{ stock.warehouse.code }}</strong>
                                     <div class="text-muted small">{{ stock.warehouse.name }}</div>
                                 </div>
                             </div>
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Localizacao</div>
+                                <div class="datagrid-title">Localização</div>
                                 <div class="datagrid-content">
                                     {% if stock.location_code %}
                                     <span class="badge bg-secondary">{{ stock.location_code }}</span>
@@ -156,7 +156,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                     </svg>
-                    Historico de Movimentacoes
+                    Histórico de Movimentações
                     <span class="badge bg-secondary ms-2">ultimas 20</span>
                 </h3>
             </div>
@@ -217,7 +217,7 @@
             </div>
             <div class="card-footer">
                 <a href="{% url 'inventory:movements_list' %}?search={{ stock.material.code }}" class="btn btn-primary btn-sm">
-                    Ver Todas as Movimentacoes
+                    Ver Todas as Movimentações
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrow-right"></use>
                     </svg>
@@ -231,7 +231,7 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                         </svg>
                     </div>
-                    <p class="empty-title">Nenhuma movimentacao registrada</p>
+                    <p class="empty-title">Nenhuma movimentação registrada</p>
                 </div>
             </div>
             {% endif %}
@@ -281,7 +281,7 @@
         <!-- Quick Actions -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Acoes Rapidas</h3>
+                <h3 class="card-title">Ações Rapidas</h3>
             </div>
             <div class="card-body">
                 <div class="row g-2">
@@ -324,7 +324,7 @@
         <!-- Material Info -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Informacoes do Material</h3>
+                <h3 class="card-title">Informações do Material</h3>
             </div>
             <div class="card-body">
                 <div class="datagrid">
@@ -373,12 +373,12 @@
         <!-- Warehouse Info -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Informacoes do Armazem</h3>
+                <h3 class="card-title">Informações do Armazém</h3>
             </div>
             <div class="card-body">
                 <div class="datagrid">
                     <div class="datagrid-item">
-                        <div class="datagrid-title">Localizacao</div>
+                        <div class="datagrid-title">Localização</div>
                         <div class="datagrid-content">{{ stock.warehouse.location }}</div>
                     </div>
                     {% if stock.warehouse.manager %}
@@ -403,7 +403,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                         </svg>
-                        Ver Armazem
+                        Ver Armazém
                     </a>
                 </div>
             </div>
@@ -453,7 +453,7 @@
                             <input type="text" name="reference_document" class="form-control" placeholder="NF, Pedido, etc.">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea name="notes" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
@@ -501,7 +501,7 @@
                         <div class="mb-3">
                             <label class="form-label required">Motivo</label>
                             <select name="reason" class="form-select" required>
-                                <option value="PRODUCTION">Producao</option>
+                                <option value="PRODUCTION">Produção</option>
                                 <option value="SALE">Venda</option>
                                 <option value="INTERNAL_USE">Uso Interno</option>
                                 <option value="LOSS">Perda</option>
@@ -515,10 +515,10 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Documento de Referencia</label>
-                            <input type="text" name="reference_document" class="form-control" placeholder="NF, Ordem de Producao, etc.">
+                            <input type="text" name="reference_document" class="form-control" placeholder="NF, Ordem de Produção, etc.">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea name="notes" class="form-control" rows="3"></textarea>
                         </div>
                     </div>

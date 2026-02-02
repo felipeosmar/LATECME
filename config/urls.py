@@ -20,6 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
+from django.views.generic import RedirectView
 
 def redirect_to_login(request):
     return redirect('accounts:login')
@@ -33,6 +34,7 @@ urlpatterns = [
     path("production/", include('apps.production.urls')),
     path("labels/", include('apps.labels.urls')),
     path("purchasing/", include('apps.purchasing.urls')),
+    path("favicon.ico", RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.svg', permanent=True)),
     path("", redirect_to_login),
 ]
 

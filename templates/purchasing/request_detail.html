@@ -5,7 +5,7 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'purchasing:dashboard' %}">Compras</a></li>
-<li class="breadcrumb-item"><a href="{% url 'purchasing:request_list' %}">Solicitacoes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchasing:request_list' %}">Solicitações</a></li>
 <li class="breadcrumb-item active" aria-current="page">{{ purchase_request.reference_number }}</li>
 {% endblock %}
 
@@ -15,7 +15,7 @@
     {% if purchase_request.status == 'DRAFT' %}
     <span class="badge bg-secondary">Rascunho</span>
     {% elif purchase_request.status == 'PENDING' %}
-    <span class="badge bg-yellow">Aguardando Aprovacao</span>
+    <span class="badge bg-yellow">Aguardando Aprovação</span>
     {% elif purchase_request.status == 'APPROVED' %}
     <span class="badge bg-green">Aprovada</span>
     {% elif purchase_request.status == 'REJECTED' %}
@@ -35,7 +35,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-send"></use>
     </svg>
-    Submeter para Aprovacao
+    Submeter para Aprovação
 </button>
 {% elif purchase_request.status == 'PENDING' %}
 <button type="button" class="btn btn-success" id="btn-approve">
@@ -73,7 +73,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Informacoes da Solicitacao</h3>
+                    <h3 class="card-title">Informações da Solicitação</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -88,11 +88,11 @@
                                     <div class="datagrid-content">{{ purchase_request.requester.get_full_name|default:purchase_request.requester.username }}</div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Armazem Destino</div>
+                                    <div class="datagrid-title">Armazém Destino</div>
                                     <div class="datagrid-content">{{ purchase_request.warehouse.code }} - {{ purchase_request.warehouse.name }}</div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Data da Solicitacao</div>
+                                    <div class="datagrid-title">Data da Solicitação</div>
                                     <div class="datagrid-content">{{ purchase_request.request_date|date:"d/m/Y" }}</div>
                                 </div>
                             </div>
@@ -105,7 +105,7 @@
                                         {% if purchase_request.status == 'DRAFT' %}
                                         <span class="badge bg-secondary">Rascunho</span>
                                         {% elif purchase_request.status == 'PENDING' %}
-                                        <span class="badge bg-yellow">Aguardando Aprovacao</span>
+                                        <span class="badge bg-yellow">Aguardando Aprovação</span>
                                         {% elif purchase_request.status == 'APPROVED' %}
                                         <span class="badge bg-green">Aprovada</span>
                                         {% elif purchase_request.status == 'REJECTED' %}
@@ -150,7 +150,7 @@
                     {% endif %}
                     {% if purchase_request.notes %}
                     <div class="mt-3">
-                        <div class="datagrid-title">Observacoes</div>
+                        <div class="datagrid-title">Observações</div>
                         <div class="datagrid-content">{{ purchase_request.notes }}</div>
                     </div>
                     {% endif %}
@@ -191,7 +191,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-list"></use>
                 </svg>
-                Itens da Solicitacao
+                Itens da Solicitação
             </h3>
             {% if purchase_request.can_edit %}
             <div class="card-actions">
@@ -209,7 +209,7 @@
             <table class="table table-vcenter card-table">
                 <thead>
                     <tr>
-                        <th>Codigo</th>
+                        <th>Código</th>
                         <th>Material</th>
                         <th class="text-end">Quantidade</th>
                         <th class="text-end">Preco Est.</th>
@@ -308,7 +308,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea class="form-control" rows="2" x-model="itemForm.notes"></textarea>
                         </div>
                     </div>
@@ -410,7 +410,7 @@ function requestDetail() {
         },
 
         async submitRequest() {
-            if (!confirm('Submeter esta solicitacao para aprovacao?')) return;
+            if (!confirm('Submeter esta solicitação para aprovação?')) return;
 
             try {
                 const response = await fetch('{% url "purchasing:request_submit" purchase_request.id %}', {
@@ -422,15 +422,15 @@ function requestDetail() {
                 if (data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Erro ao submeter solicitacao');
+                    alert(data.message || 'Erro ao submeter solicitação');
                 }
             } catch (error) {
-                alert('Erro ao submeter solicitacao');
+                alert('Erro ao submeter solicitação');
             }
         },
 
         async approveRequest() {
-            if (!confirm('Aprovar esta solicitacao?')) return;
+            if (!confirm('Aprovar esta solicitação?')) return;
 
             try {
                 const response = await fetch('{% url "purchasing:request_approve" purchase_request.id %}', {
@@ -442,10 +442,10 @@ function requestDetail() {
                 if (data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Erro ao aprovar solicitacao');
+                    alert(data.message || 'Erro ao aprovar solicitação');
                 }
             } catch (error) {
-                alert('Erro ao aprovar solicitacao');
+                alert('Erro ao aprovar solicitação');
             }
         },
 
@@ -467,10 +467,10 @@ function requestDetail() {
                 if (data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Erro ao rejeitar solicitacao');
+                    alert(data.message || 'Erro ao rejeitar solicitação');
                 }
             } catch (error) {
-                alert('Erro ao rejeitar solicitacao');
+                alert('Erro ao rejeitar solicitação');
             }
         }
     }

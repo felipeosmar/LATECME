@@ -23,7 +23,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-info-circle"></use>
                             </svg>
-                            Informacoes do Recebimento
+                            Informações do Recebimento
                         </h3>
                     </div>
                     <div class="card-body">
@@ -51,7 +51,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Armazem Destino</label>
+                                <label class="form-label required">Armazém Destino</label>
                                 <select class="form-select" x-model="formData.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for warehouse in warehouses %}
@@ -60,13 +60,13 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Numero da NF-e</label>
-                                <input type="text" class="form-control" x-model="formData.invoice_number" placeholder="Numero da nota fiscal">
+                                <label class="form-label">Número da NF-e</label>
+                                <input type="text" class="form-control" x-model="formData.invoice_number" placeholder="Número da nota fiscal">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="3" x-model="formData.notes" placeholder="Observacoes sobre o recebimento..."></textarea>
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" rows="3" x-model="formData.notes" placeholder="Observações sobre o recebimento..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
                             </svg>
-                            Acoes
+                            Ações
                         </h3>
                     </div>
                     <div class="card-body">
@@ -245,7 +245,7 @@ function receivingForm() {
 
         async submitForm() {
             if (!this.formData.warehouse) {
-                alert('Selecione um armazem destino');
+                alert('Selecione um armazém destino');
                 return;
             }
 

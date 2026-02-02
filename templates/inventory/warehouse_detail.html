@@ -5,11 +5,11 @@
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
-<li class="breadcrumb-item"><a href="{% url 'inventory:warehouse_list' %}">Armazens</a></li>
+<li class="breadcrumb-item"><a href="{% url 'inventory:warehouse_list' %}">Armazéns</a></li>
 <li class="breadcrumb-item active" aria-current="page">{{ warehouse.code }}</li>
 {% endblock %}
 
-{% block page_title %}Armazem {{ warehouse.code }}{% endblock %}
+{% block page_title %}Armazém {{ warehouse.code }}{% endblock %}
 {% block page_subtitle %}<div class="page-subtitle">{{ warehouse.name }}</div>{% endblock %}
 
 {% block page_actions %}
@@ -32,7 +32,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                     </svg>
-                    Informacoes do Armazem
+                    Informações do Armazém
                 </h3>
             </div>
             <div class="card-body">
@@ -40,7 +40,7 @@
                     <div class="col-md-6">
                         <div class="datagrid">
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Codigo</div>
+                                <div class="datagrid-title">Código</div>
                                 <div class="datagrid-content">
                                     <strong>{{ warehouse.code }}</strong>
                                     {% if not warehouse.is_active %}
@@ -53,7 +53,7 @@
                                 <div class="datagrid-content">{{ warehouse.name }}</div>
                             </div>
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Localizacao</div>
+                                <div class="datagrid-title">Localização</div>
                                 <div class="datagrid-content">{{ warehouse.location }}</div>
                             </div>
                             <div class="datagrid-item">
@@ -96,7 +96,7 @@
                 </div>
                 {% if warehouse.description %}
                 <hr class="my-3">
-                <h4>Descricao</h4>
+                <h4>Descrição</h4>
                 <p class="text-muted">{{ warehouse.description }}</p>
                 {% endif %}
             </div>
@@ -208,9 +208,9 @@
                             <th class="text-center">Reservado</th>
                             <th class="text-center">Disponivel</th>
                             <th>Minimo</th>
-                            <th>Localizacao</th>
+                            <th>Localização</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Acoes</th>
+                            <th class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -267,7 +267,7 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
                         </svg>
                     </div>
-                    <p class="empty-title">Nenhum material em estoque neste armazem</p>
+                    <p class="empty-title">Nenhum material em estoque neste armazém</p>
                 </div>
             </div>
             {% endif %}
@@ -280,7 +280,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                     </svg>
-                    Movimentacoes Recentes
+                    Movimentações Recentes
                     <span class="badge bg-secondary ms-2">ultimas 10</span>
                 </h3>
                 <div class="card-actions">
@@ -338,7 +338,7 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                         </svg>
                     </div>
-                    <p class="empty-title">Nenhuma movimentacao recente</p>
+                    <p class="empty-title">Nenhuma movimentação recente</p>
                 </div>
             </div>
             {% endif %}
@@ -350,7 +350,7 @@
         <!-- Quick Actions -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Acoes Rapidas</h3>
+                <h3 class="card-title">Ações Rapidas</h3>
             </div>
             <div class="card-body">
                 <div class="row g-2">
@@ -359,7 +359,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                             </svg>
-                            Nova Movimentacao
+                            Nova Movimentação
                         </button>
                     </div>
                     <div class="col-6">
@@ -375,7 +375,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                             </svg>
-                            Movimentacoes
+                            Movimentações
                         </a>
                     </div>
                     <div class="col-6">
@@ -393,7 +393,7 @@
         <!-- Warehouse Status -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title">Status do Armazem</h3>
+                <h3 class="card-title">Status do Armazém</h3>
             </div>
             <div class="card-body text-center">
                 {% if warehouse.is_active %}
@@ -401,16 +401,16 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-circle-check"></use>
                     </svg>
-                    <h4 class="alert-title">Armazem Ativo</h4>
-                    <div class="text-muted">Este armazem esta operacional e aceita movimentacoes.</div>
+                    <h4 class="alert-title">Armazém Ativo</h4>
+                    <div class="text-muted">Este armazém esta operacional e aceita movimentações.</div>
                 </div>
                 {% else %}
                 <div class="alert alert-warning">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-pause"></use>
                     </svg>
-                    <h4 class="alert-title">Armazem Inativo</h4>
-                    <div class="text-muted">Este armazem esta temporariamente desativado.</div>
+                    <h4 class="alert-title">Armazém Inativo</h4>
+                    <div class="text-muted">Este armazém esta temporariamente desativado.</div>
                 </div>
                 {% endif %}
 

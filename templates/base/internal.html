@@ -83,15 +83,15 @@
                         <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
                             <a class="dropdown-item" href="{% url 'inventory:dashboard' %}">Dashboard</a>
                             <a class="dropdown-item" href="{% url 'inventory:stock_list' %}">Consultar Estoque</a>
-                            <a class="dropdown-item" href="{% url 'inventory:movements_list' %}">Movimentacoes</a>
+                            <a class="dropdown-item" href="{% url 'inventory:movements_list' %}">Movimentações</a>
                             <a class="dropdown-item" href="{% url 'inventory:inventory_count_list' %}">Contagens</a>
-                            <a class="dropdown-item" href="{% url 'inventory:warehouse_list' %}">Armazens</a>
+                            <a class="dropdown-item" href="{% url 'inventory:warehouse_list' %}">Armazéns</a>
                             <a class="dropdown-item" href="{% url 'inventory:reservations_list' %}">Reservas</a>
-                            <a class="dropdown-item" href="{% url 'inventory:reports' %}">Relatorios</a>
+                            <a class="dropdown-item" href="{% url 'inventory:reports' %}">Relatórios</a>
                         </div>
                     </li>
 
-                    <!-- Producao -->
+                    <!-- Produção -->
                     <li class="nav-item dropdown" x-data="{ open: {% if request.resolver_match.app_name == 'production' %}true{% else %}false{% endif %} }">
                         <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'production' %}active{% endif %}"
                            href="#"
@@ -102,10 +102,10 @@
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-factory-2"></use>
                                 </svg>
                             </span>
-                            <span class="nav-link-title">Producao</span>
+                            <span class="nav-link-title">Produção</span>
                         </a>
                         <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
-                            <a class="dropdown-item" href="{% url 'production:order_list' %}">Ordens de Producao</a>
+                            <a class="dropdown-item" href="{% url 'production:order_list' %}">Ordens de Produção</a>
                             <a class="dropdown-item" href="{% url 'production:batch_list' %}">Bateladas</a>
                             <a class="dropdown-item" href="{% url 'production:bin_list' %}">Contentores</a>
                         </div>
@@ -126,7 +126,7 @@
                         </a>
                         <div class="dropdown-menu" :class="{ 'show': open }" x-show="open" x-cloak>
                             <a class="dropdown-item" href="{% url 'purchasing:dashboard' %}">Dashboard</a>
-                            <a class="dropdown-item" href="{% url 'purchasing:request_list' %}">Solicitacoes</a>
+                            <a class="dropdown-item" href="{% url 'purchasing:request_list' %}">Solicitações</a>
                             <a class="dropdown-item" href="{% url 'purchasing:order_list' %}">Pedidos</a>
                             <a class="dropdown-item" href="{% url 'purchasing:receiving_list' %}">Recebimentos</a>
                         </div>
@@ -150,7 +150,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'labels:printer_list' %}">Impressoras</a>
                             <a class="dropdown-item" href="{% url 'labels:template_list' %}">Templates</a>
-                            <a class="dropdown-item" href="{% url 'labels:print_job_list' %}">Historico</a>
+                            <a class="dropdown-item" href="{% url 'labels:print_job_list' %}">Histórico</a>
                         </div>
                     </li>
 
@@ -269,7 +269,7 @@
                     <div class="col-lg-auto ms-lg-auto">
                         <ul class="list-inline list-inline-dots mb-0">
                             <li class="list-inline-item">
-                                <a href="#" class="link-secondary">Documentacao</a>
+                                <a href="#" class="link-secondary">Documentação</a>
                             </li>
                         </ul>
                     </div>

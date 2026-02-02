@@ -17,7 +17,7 @@
         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
-    Nova Movimentacao
+    Nova Movimentação
 </button>
 {% endblock %}
 
@@ -38,12 +38,12 @@
         <form method="get" class="row g-2" hx-get="{% url 'inventory:stock_list' %}" hx-target="#stocks-table"
             hx-push-url="true" hx-trigger="submit">
             <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Buscar por codigo ou nome..."
+                <input type="text" name="search" class="form-control" placeholder="Buscar por código ou nome..."
                     value="{{ search }}">
             </div>
             <div class="col-md-2">
                 <select name="warehouse" class="form-select">
-                    <option value="">Todos os Armazens</option>
+                    <option value="">Todos os Armazéns</option>
                     {% for warehouse in warehouses %}
                     <option value="{{ warehouse.id }}" {% if selected_warehouse == warehouse.id|stringformat:"s" %}selected{% endif %}>
                         {{ warehouse.code }} - {{ warehouse.name }}
@@ -106,14 +106,14 @@
             <thead>
                 <tr>
                     <th>Material</th>
-                    <th>Armazem</th>
+                    <th>Armazém</th>
                     <th class="text-center">Estoque Atual</th>
                     <th class="text-center">Reservado</th>
                     <th class="text-center">Disponivel</th>
                     <th class="text-center">Minimo</th>
-                    <th>Localizacao</th>
+                    <th>Localização</th>
                     <th class="text-center">Status</th>
-                    <th class="text-center">Acoes</th>
+                    <th class="text-center">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -158,7 +158,7 @@
                         {% endif %}
                     </td>
                     <td class="text-center">
-                        <a href="{% url 'inventory:stock_detail' stock.id %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'inventory:stock_detail' stock.id %}" class="btn btn-icon btn-ghost-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                 stroke-linecap="round" stroke-linejoin="round">
@@ -208,7 +208,7 @@
                         href="?{% if search %}search={{ search }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}{% if selected_material_type %}material_type={{ selected_material_type }}&{% endif %}{% if selected_stock_status %}stock_status={{ selected_stock_status }}&{% endif %}page={{ stocks.next_page_number }}"
                         hx-get="?{% if search %}search={{ search }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}{% if selected_material_type %}material_type={{ selected_material_type }}&{% endif %}{% if selected_stock_status %}stock_status={{ selected_stock_status }}&{% endif %}page={{ stocks.next_page_number }}"
                         hx-target="#stocks-table" hx-push-url="true">
-                        Proximo
+                        Próximo
                     </a>
                 </li>
                 {% endif %}
@@ -238,7 +238,7 @@
     <div class="modal-dialog modal-lg" @click.outside="open = false">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nova Movimentacao</h5>
+                <h5 class="modal-title">Nova Movimentação</h5>
                 <button type="button" class="btn-close" @click="open = false"></button>
             </div>
             <form hx-post="{% url 'inventory:create_movement' %}" hx-target="body" hx-swap="none"
@@ -253,9 +253,9 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Armazem</label>
+                            <label class="form-label required">Armazém</label>
                             <select name="warehouse_id" class="form-select" required>
-                                <option value="">Selecione um armazem...</option>
+                                <option value="">Selecione um armazém...</option>
                                 {% for warehouse in warehouses %}
                                 <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}</option>
                                 {% endfor %}
@@ -264,7 +264,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Tipo de Movimentacao</label>
+                            <label class="form-label required">Tipo de Movimentação</label>
                             <select name="movement_type" class="form-select" required x-model="movementType"
                                 @change="updateReasons()">
                                 <option value="">Selecione...</option>
@@ -296,7 +296,7 @@
                     </div>
                     <div class="row" x-show="movementType === 'TRANSFER'" x-cloak>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Armazem Destino</label>
+                            <label class="form-label required">Armazém Destino</label>
                             <select name="destination_warehouse_id" class="form-select"
                                 :required="movementType === 'TRANSFER'">
                                 <option value="">Selecione o destino...</option>
@@ -313,12 +313,12 @@
                                 placeholder="NF, Pedido, etc.">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Numero do Lote</label>
+                            <label class="form-label">Número do Lote</label>
                             <input type="text" name="batch_number" class="form-control">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Observacoes</label>
+                        <label class="form-label">Observações</label>
                         <textarea name="notes" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
@@ -362,7 +362,7 @@
                     { value: 'OTHER', text: 'Outros' }
                 ],
                 'OUT': [
-                    { value: 'PRODUCTION', text: 'Producao' },
+                    { value: 'PRODUCTION', text: 'Produção' },
                     { value: 'SALE', text: 'Venda' },
                     { value: 'INTERNAL_USE', text: 'Uso Interno' },
                     { value: 'LOSS', text: 'Perda' },

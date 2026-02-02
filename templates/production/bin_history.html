@@ -1,17 +1,17 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Historico - {{ bin.code }} - LATECME{% endblock %}
+{% block title %}Histórico - {{ bin.code }} - LATECME{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
 <li class="breadcrumb-item"><a href="{% url 'production:bin_list' %}">Contentores</a></li>
 <li class="breadcrumb-item"><a href="{% url 'production:bin_detail' bin.id %}">{{ bin.code }}</a></li>
-<li class="breadcrumb-item active">Historico</li>
+<li class="breadcrumb-item active">Histórico</li>
 {% endblock %}
 
-{% block page_title %}Historico do Contentor {{ bin.code }}{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">{{ bin.warehouse.code }} - Historico completo de movimentacoes</div>{% endblock %}
+{% block page_title %}Histórico do Contentor {{ bin.code }}{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">{{ bin.warehouse.code }} - Histórico completo de movimentações</div>{% endblock %}
 
 {% block page_actions %}
 <a href="{% url 'production:bin_detail' bin.id %}" class="btn btn-secondary">
@@ -164,7 +164,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
                 </svg>
-                Historico de Movimentacoes
+                Histórico de Movimentações
                 <span class="text-muted ms-1">({{ history.paginator.count }} registro{{ history.paginator.count|pluralize:"s" }})</span>
             </h3>
         </div>
@@ -343,7 +343,7 @@
                        hx-get="{% url 'production:bin_history' bin.id %}?{% if type_filter %}type={{ type_filter }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ history.next_page_number }}"
                        hx-target="#history-results"
                        hx-push-url="true">
-                        Proximo
+                        Próximo
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
                         </svg>
@@ -361,12 +361,12 @@
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
                     </svg>
                 </div>
-                <p class="empty-title">Nenhum historico encontrado</p>
+                <p class="empty-title">Nenhum histórico encontrado</p>
                 <p class="empty-subtitle text-muted">
                     {% if type_filter or date_from or date_to %}
                     Nao ha registros que correspondam aos filtros.
                     {% else %}
-                    Este contentor ainda nao possui movimentacoes registradas.
+                    Este contentor ainda nao possui movimentações registradas.
                     {% endif %}
                 </p>
             </div>

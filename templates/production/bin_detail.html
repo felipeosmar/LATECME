@@ -42,7 +42,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-box"></use>
                         </svg>
-                        Informacoes do Contentor
+                        Informações do Contentor
                     </h3>
                 </div>
                 <div class="card-body">
@@ -50,7 +50,7 @@
                         <div class="col-md-6">
                             <div class="datagrid">
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Codigo</div>
+                                    <div class="datagrid-title">Código</div>
                                     <div class="datagrid-content">
                                         <strong>{{ bin.code }}</strong>
                                         {% if not bin.is_active %}
@@ -59,7 +59,7 @@
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Armazem</div>
+                                    <div class="datagrid-title">Armazém</div>
                                     <div class="datagrid-content">
                                         <a href="{% url 'inventory:warehouse_detail' bin.warehouse.id %}">
                                             {{ bin.warehouse.code }} - {{ bin.warehouse.name }}
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Localizacao</div>
+                                    <div class="datagrid-title">Localização</div>
                                     <div class="datagrid-content">
                                         {% if bin.location_code %}
                                         <span class="badge bg-info">{{ bin.location_code }}</span>
@@ -114,7 +114,7 @@
 
                     {% if bin.notes %}
                     <div class="mt-4">
-                        <h4 class="mb-2">Observacoes</h4>
+                        <h4 class="mb-2">Observações</h4>
                         <p class="text-muted mb-0">{{ bin.notes }}</p>
                     </div>
                     {% endif %}
@@ -245,7 +245,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
                         </svg>
-                        Historico Recente
+                        Histórico Recente
                         <span class="text-muted ms-1">(ultimos 10)</span>
                     </h3>
                     <div class="card-actions">
@@ -253,7 +253,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                             </svg>
-                            Ver Historico Completo
+                            Ver Histórico Completo
                         </a>
                     </div>
                 </div>
@@ -318,7 +318,7 @@
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
                             </svg>
                         </div>
-                        <p class="empty-title">Nenhum historico registrado</p>
+                        <p class="empty-title">Nenhum histórico registrado</p>
                     </div>
                 </div>
                 {% endif %}
@@ -330,7 +330,7 @@
             <!-- Quick Actions -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h3 class="card-title">Acoes Rapidas</h3>
+                    <h3 class="card-title">Ações Rapidas</h3>
                 </div>
                 <div class="card-body">
                     <div class="row g-2">
@@ -358,7 +358,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-history"></use>
                                 </svg>
-                                Historico
+                                Histórico
                             </a>
                         </div>
                         <div class="col-6">
@@ -442,7 +442,7 @@
                     </div>
                     <hr>
                     <div class="text-center text-muted">
-                        Total de Movimentacoes: <strong>{{ history_stats.total|default:0 }}</strong>
+                        Total de Movimentações: <strong>{{ history_stats.total|default:0 }}</strong>
                     </div>
                 </div>
             </div>
@@ -495,7 +495,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea class="form-control" x-model="loadForm.notes" rows="2"></textarea>
                         </div>
                     </div>
@@ -546,7 +546,7 @@
                                 </div>
                                 <div>
                                     <h4 class="alert-title">Atencao!</h4>
-                                    <div class="text-muted">Esta acao ira esvaziar todo o conteudo do contentor.</div>
+                                    <div class="text-muted">Esta ação ira esvaziar todo o conteudo do contentor.</div>
                                 </div>
                             </div>
                         </div>
@@ -557,7 +557,7 @@
                         </div>
                         {% endif %}
                         <div class="mb-3">
-                            <label class="form-label">Motivo / Observacoes</label>
+                            <label class="form-label">Motivo / Observações</label>
                             <textarea class="form-control" x-model="emptyForm.notes" rows="3"
                                       placeholder="Informe o motivo do esvaziamento..."></textarea>
                         </div>

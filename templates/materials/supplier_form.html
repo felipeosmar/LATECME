@@ -81,7 +81,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-address-book"></use>
                         </svg>
-                        Informacoes de Contato
+                        Informações de Contato
                     </h4>
 
                     <div class="mb-3">
@@ -111,7 +111,7 @@
                         <label class="form-label" for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
                         <textarea name="address" id="{{ form.address.id_for_label }}" rows="2"
                                   class="form-control{% if form.address.errors %} is-invalid{% endif %}"
-                                  placeholder="Endereco completo">{{ form.address.value|default:'' }}</textarea>
+                                  placeholder="Endereço completo">{{ form.address.value|default:'' }}</textarea>
                         {% if form.address.errors %}
                         <div class="invalid-feedback">{% for e in form.address.errors %}{{ e }}{% endfor %}</div>
                         {% endif %}
@@ -124,14 +124,14 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-notes"></use>
                         </svg>
-                        Observacoes
+                        Observações
                     </h4>
 
                     <div class="mb-3">
                         <label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
                         <textarea name="notes" id="{{ form.notes.id_for_label }}" rows="3"
                                   class="form-control{% if form.notes.errors %} is-invalid{% endif %}"
-                                  placeholder="Informacoes adicionais sobre o fornecedor">{{ form.notes.value|default:'' }}</textarea>
+                                  placeholder="Informações adicionais sobre o fornecedor">{{ form.notes.value|default:'' }}</textarea>
                         {% if form.notes.errors %}
                         <div class="invalid-feedback">{% for e in form.notes.errors %}{{ e }}{% endfor %}</div>
                         {% endif %}
@@ -179,7 +179,7 @@
                         Dicas de Preenchimento
                     </h4>
                     <ul class="mb-0">
-                        <li><strong>Codigo:</strong> Use padrao unico (ex: FOR001, FOR002)</li>
+                        <li><strong>Código:</strong> Use padrao unico (ex: FOR001, FOR002)</li>
                         <li><strong>CNPJ:</strong> Formato XX.XXX.XXX/XXXX-XX</li>
                         <li><strong>Telefone:</strong> Formato (XX) XXXXX-XXXX</li>
                         <li><strong>E-mail:</strong> E-mail valido para contato comercial</li>
@@ -194,7 +194,7 @@
                         Campos Obrigatorios
                     </h4>
                     <ul class="mb-0">
-                        <li>Codigo interno</li>
+                        <li>Código interno</li>
                         <li>Nome da empresa</li>
                         <li>CNPJ</li>
                         <li>E-mail de contato</li>
@@ -208,7 +208,7 @@
                         </svg>
                         Sugestoes
                     </h4>
-                    <p class="mb-0">Preencha todos os dados disponiveis para facilitar o contato e a gestao de compras.</p>
+                    <p class="mb-0">Preencha todos os dados disponiveis para facilitar o contato e a gestão de compras.</p>
                 </div>
             </div>
         </div>

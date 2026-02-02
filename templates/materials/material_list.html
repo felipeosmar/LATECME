@@ -42,7 +42,7 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-search"></use>
                         </svg>
                     </span>
-                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por codigo ou nome...">
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por código ou nome...">
                 </div>
             </div>
             <div class="col-md-2">
@@ -91,14 +91,14 @@
             <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
-                        <th style="width: 12%">Codigo</th>
+                        <th style="width: 12%">Código</th>
                         <th style="width: 25%">Nome</th>
                         <th style="width: 12%">Tipo</th>
                         <th style="width: 15%">Categoria</th>
                         <th class="text-center" style="width: 8%">Densidade</th>
                         <th class="text-center" style="width: 8%">Fornecedores</th>
                         <th class="text-center" style="width: 12%">Melhor Preco</th>
-                        <th class="text-center" style="width: 8%">Acoes</th>
+                        <th class="text-center" style="width: 8%">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,12 +148,12 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-list flex-nowrap">
-                                <a href="{% url 'materials:detail' material.id %}" class="btn btn-icon btn-sm btn-primary" title="Ver Detalhes">
+                                <a href="{% url 'materials:detail' material.id %}" class="btn btn-icon btn-ghost-primary" title="Ver Detalhes">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                                     </svg>
                                 </a>
-                                <a href="{% url 'materials:edit' material.id %}" class="btn btn-icon btn-sm btn-warning" title="Editar">
+                                <a href="{% url 'materials:edit' material.id %}" class="btn btn-icon btn-ghost-warning" title="Editar">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-edit"></use>
                                     </svg>

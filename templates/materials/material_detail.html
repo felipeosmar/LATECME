@@ -31,7 +31,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-packages"></use>
                     </svg>
-                    Informacoes do Material
+                    Informações do Material
                 </h3>
             </div>
             <div class="card-body">
@@ -39,7 +39,7 @@
                     <div class="col-md-6">
                         <div class="datagrid">
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Codigo</div>
+                                <div class="datagrid-title">Código</div>
                                 <div class="datagrid-content">
                                     <strong>{{ material.code }}</strong>
                                     {% if material.requires_certificate %}
@@ -146,7 +146,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-settings"></use>
                     </svg>
-                    Especificacoes Tecnicas
+                    Especificações Tecnicas
                 </h4>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table">
@@ -231,7 +231,7 @@
                         </h4>
                         <div class="row g-2">
                             <div class="col-6">
-                                <small class="text-muted d-block">Codigo Fornecedor:</small>
+                                <small class="text-muted d-block">Código Fornecedor:</small>
                                 <strong>{{ supplier_rel.supplier_code }}</strong>
                             </div>
                             <div class="col-6">
@@ -249,7 +249,7 @@
                         </div>
                         {% if supplier_rel.notes %}
                         <div class="mt-2">
-                            <small class="text-muted d-block">Observacoes:</small>
+                            <small class="text-muted d-block">Observações:</small>
                             <small>{{ supplier_rel.notes }}</small>
                         </div>
                         {% endif %}
@@ -282,7 +282,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
                     </svg>
-                    Acoes Rapidas
+                    Ações Rapidas
                 </h3>
             </div>
             <div class="card-body">

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_title %}Contagens de Inventario{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Contagens Fisicas de Estoque</div>{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Contagens Fisicas de Estoque</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'create-count'})">
@@ -128,7 +128,7 @@
                                 </svg>
                             </span>
                             <input type="text" name="search" value="{{ search }}" class="form-control"
-                                placeholder="Buscar por referencia ou armazem...">
+                                placeholder="Buscar por referencia ou armazém...">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -142,7 +142,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Armazem</label>
+                        <label class="form-label">Armazém</label>
                         <select name="warehouse" class="form-select">
                             <option value="">Todos</option>
                             {% for warehouse in warehouses %}
@@ -194,7 +194,7 @@
                     <thead>
                         <tr>
                             <th>Referencia</th>
-                            <th>Armazem</th>
+                            <th>Armazém</th>
                             <th>Data</th>
                             <th>Status</th>
                             <th>Contador</th>
@@ -324,7 +324,7 @@
                                 href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
                                 hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}page={{ counts.next_page_number }}"
                                 hx-target="#counts-table" hx-push-url="true">
-                                Proximo
+                                Próximo
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -382,7 +382,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Armazem</label>
+                                <label class="form-label required">Armazém</label>
                                 <select class="form-select" x-model="formData.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for warehouse in warehouses %}
@@ -419,9 +419,9 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea class="form-control" rows="3" x-model="formData.notes"
-                                placeholder="Observacoes sobre a contagem..."></textarea>
+                                placeholder="Observações sobre a contagem..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -558,11 +558,11 @@
                             window.location.reload();
                         }
                     } else {
-                        alert(data.message || 'Erro ao executar acao');
+                        alert(data.message || 'Erro ao executar ação');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Erro ao executar acao');
+                    alert('Erro ao executar ação');
                 } finally {
                     this.submitting = false;
                     this.confirmModalOpen = false;

@@ -1,15 +1,15 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Relatorios de Producao - LATECME{% endblock %}
+{% block title %}Relatórios de Produção - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Producao</a></li>
-<li class="breadcrumb-item active" aria-current="page">Relatorios</li>
+<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Produção</a></li>
+<li class="breadcrumb-item active" aria-current="page">Relatórios</li>
 {% endblock %}
 
-{% block page_title %}Relatorios de Producao{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Analise e Estatisticas de Ordens de Producao</div>{% endblock %}
+{% block page_title %}Relatórios de Produção{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Analise e Estatisticas de Ordens de Produção</div>{% endblock %}
 
 {% block content_body %}
 <!-- Period Filter -->
@@ -41,7 +41,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
                         </svg>
-                        Gerar Relatorio
+                        Gerar Relatório
                     </button>
                     <a href="{% url 'production:reports' %}" class="btn btn-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -151,7 +151,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="subheader">Utilizacao de Bins</div>
+                        <div class="subheader">Utilização de Bins</div>
                     </div>
                     <div class="h1 mb-3 text-info">
                         {% if bin_utilization.total_bins > 0 %}
@@ -233,7 +233,7 @@
                         </div>
                         <p class="empty-title">Nenhuma ordem encontrada</p>
                         <p class="empty-subtitle text-muted">
-                            Não há ordens de producao no periodo selecionado.
+                            Não há ordens de produção no periodo selecionado.
                         </p>
                     </div>
                 </div>
@@ -267,11 +267,11 @@
                             <tr>
                                 <td>
                                     {% if item.status == 'PREPARATION' %}
-                                    <span class="badge bg-secondary">Preparacao</span>
+                                    <span class="badge bg-secondary">Preparação</span>
                                     {% elif item.status == 'READY' %}
                                     <span class="badge bg-info">Pronto</span>
                                     {% elif item.status == 'IN_PRODUCTION' %}
-                                    <span class="badge bg-primary">Em Producao</span>
+                                    <span class="badge bg-primary">Em Produção</span>
                                     {% elif item.status == 'COMPLETED' %}
                                     <span class="badge bg-success">Completo</span>
                                     {% elif item.status == 'CANCELLED' %}
@@ -315,7 +315,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                         </svg>
-                        Movimentacoes de Bins por Tipo
+                        Movimentações de Bins por Tipo
                     </h3>
                 </div>
                 {% if bin_movements_by_type %}
@@ -361,9 +361,9 @@
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange-2"></use>
                             </svg>
                         </div>
-                        <p class="empty-title">Nenhuma movimentacao encontrada</p>
+                        <p class="empty-title">Nenhuma movimentação encontrada</p>
                         <p class="empty-subtitle text-muted">
-                            Não há movimentacoes de bins no periodo selecionado.
+                            Não há movimentações de bins no periodo selecionado.
                         </p>
                     </div>
                 </div>
@@ -500,7 +500,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-export"></use>
                         </svg>
-                        Opcoes de Exportacao
+                        Opcoes de Exportação
                     </h3>
                 </div>
                 <div class="card-body">
@@ -510,9 +510,9 @@
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-download"></use>
                             </svg>
                         </div>
-                        <p class="empty-title">Exportacao em Desenvolvimento</p>
+                        <p class="empty-title">Exportação em Desenvolvimento</p>
                         <p class="empty-subtitle text-muted">
-                            Em breve voce podera exportar estes relatorios para PDF e Excel.
+                            Em breve voce podera exportar estes relatórios para PDF e Excel.
                         </p>
                         <div class="empty-action">
                             <button class="btn btn-secondary" disabled>
@@ -552,7 +552,7 @@
                         <ul>
                             {% if orders_by_status %}
                             <li>
-                                <strong>Producao Geral:</strong>
+                                <strong>Produção Geral:</strong>
                                 Total de {{ orders_by_status|length }} tipos de status de ordens registrados no periodo.
                             </li>
                             {% endif %}
@@ -564,8 +564,8 @@
                             {% endif %}
                             {% if bin_movements_by_type %}
                             <li>
-                                <strong>Movimentacoes:</strong>
-                                {{ bin_movements_by_type|length }} tipos de movimentacoes de bins registradas.
+                                <strong>Movimentações:</strong>
+                                {{ bin_movements_by_type|length }} tipos de movimentações de bins registradas.
                             </li>
                             {% endif %}
                             {% if top_materials_produced %}
@@ -575,34 +575,34 @@
                             </li>
                             {% endif %}
                             <li>
-                                <strong>Utilizacao de Bins:</strong>
+                                <strong>Utilização de Bins:</strong>
                                 {% if bin_utilization.total_bins > 0 %}
                                 {{ bin_utilization.loaded_bins }} bins carregados de {{ bin_utilization.total_bins }} totais
-                                ({% widthratio bin_utilization.loaded_bins bin_utilization.total_bins 100 %}% de ocupacao).
+                                ({% widthratio bin_utilization.loaded_bins bin_utilization.total_bins 100 %}% de ocupação).
                                 {% else %}
                                 Nenhum bin registrado no sistema.
                                 {% endif %}
                             </li>
                         </ul>
 
-                        <h4>Recomendacoes</h4>
+                        <h4>Recomendações</h4>
                         <ul>
                             {% if bin_utilization.loaded_bins > 0 and bin_utilization.total_bins > 0 %}
                                 {% widthratio bin_utilization.loaded_bins bin_utilization.total_bins 100 as loaded_pct %}
                                 {% if loaded_pct > 80 %}
                                 <li class="text-warning">
-                                    <strong>Atencao:</strong> A taxa de ocupacao de bins esta alta ({{ loaded_pct }}%).
+                                    <strong>Atencao:</strong> A taxa de ocupação de bins esta alta ({{ loaded_pct }}%).
                                     Considere adicionar mais bins ou otimizar a rotatividade.
                                 </li>
                                 {% elif loaded_pct < 30 %}
                                 <li class="text-info">
-                                    <strong>Oportunidade:</strong> A taxa de ocupacao de bins esta baixa ({{ loaded_pct }}%).
-                                    Ha capacidade disponivel para aumento de producao.
+                                    <strong>Oportunidade:</strong> A taxa de ocupação de bins esta baixa ({{ loaded_pct }}%).
+                                    Ha capacidade disponivel para aumento de produção.
                                 </li>
                                 {% endif %}
                             {% endif %}
                             <li>
-                                Monitore regularmente os relatorios para identificar tendencias e gargalos na producao.
+                                Monitore regularmente os relatórios para identificar tendencias e gargalos na produção.
                             </li>
                             <li>
                                 Utilize os filtros de data para comparar diferentes periodos e avaliar o desempenho.

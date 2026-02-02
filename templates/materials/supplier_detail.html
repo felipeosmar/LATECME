@@ -32,7 +32,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building"></use>
                     </svg>
-                    Informacoes do Fornecedor
+                    Informações do Fornecedor
                 </h3>
             </div>
             <div class="card-body">
@@ -40,7 +40,7 @@
                     <div class="col-md-6">
                         <div class="datagrid">
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Codigo</div>
+                                <div class="datagrid-title">Código</div>
                                 <div class="datagrid-content"><strong>{{ supplier.code }}</strong></div>
                             </div>
                             <div class="datagrid-item">
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="datagrid-item">
-                                <div class="datagrid-title">Endereco</div>
+                                <div class="datagrid-title">Endereço</div>
                                 <div class="datagrid-content">
                                     {% if supplier.address %}
                                     {{ supplier.address }}
@@ -104,7 +104,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-notes"></use>
                         </svg>
-                        Observacoes
+                        Observações
                     </h4>
                     <p class="mb-0">{{ supplier.notes|linebreaks }}</p>
                 </div>
@@ -129,13 +129,13 @@
                     <table class="table table-vcenter card-table table-hover">
                         <thead>
                             <tr>
-                                <th>Codigo</th>
+                                <th>Código</th>
                                 <th>Material</th>
                                 <th>Preco/kg</th>
                                 <th>Pedido Min.</th>
                                 <th>Prazo</th>
                                 <th>Status</th>
-                                <th>Acoes</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -218,7 +218,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-bolt"></use>
                     </svg>
-                    Acoes
+                    Ações
                 </h3>
             </div>
             <div class="card-body">

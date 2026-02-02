@@ -4,7 +4,7 @@
 {% block title %}{{ batch.batch_number }} - Batelada - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Producao</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Produção</a></li>
 <li class="breadcrumb-item"><a href="{% url 'production:batch_list' %}">Bateladas</a></li>
 <li class="breadcrumb-item active" aria-current="page">{{ batch.batch_number }}</li>
 {% endblock %}
@@ -25,7 +25,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
     </svg>
-    Iniciar Producao
+    Iniciar Produção
 </button>
 {% elif batch.status == 'IN_PRODUCTION' %}
 <button type="button" class="btn btn-success" @click="$dispatch('open-modal', {id: 'complete-batch'})">
@@ -49,7 +49,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-layers-intersect"></use>
                         </svg>
-                        Informacoes da Batelada
+                        Informações da Batelada
                     </h3>
                 </div>
                 <div class="card-body">
@@ -57,11 +57,11 @@
                         <div class="col-md-6">
                             <div class="datagrid">
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Numero</div>
+                                    <div class="datagrid-title">Número</div>
                                     <div class="datagrid-content"><strong>{{ batch.batch_number }}</strong></div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Ordem de Producao</div>
+                                    <div class="datagrid-title">Ordem de Produção</div>
                                     <div class="datagrid-content">
                                         <a href="{% url 'production:order_detail' batch.production_order.id %}">
                                             {{ batch.production_order.order_number }}
@@ -79,11 +79,11 @@
                                     <div class="datagrid-title">Status</div>
                                     <div class="datagrid-content">
                                         {% if batch.status == 'PREPARATION' %}
-                                        <span class="badge bg-info">Em Preparacao</span>
+                                        <span class="badge bg-info">Em Preparação</span>
                                         {% elif batch.status == 'READY' %}
                                         <span class="badge bg-primary">Pronta</span>
                                         {% elif batch.status == 'IN_PRODUCTION' %}
-                                        <span class="badge bg-yellow">Em Producao</span>
+                                        <span class="badge bg-yellow">Em Produção</span>
                                         {% elif batch.status == 'COMPLETED' %}
                                         <span class="badge bg-green">Concluida</span>
                                         {% elif batch.status == 'CANCELLED' %}
@@ -117,7 +117,7 @@
                                 {% endif %}
                                 {% if batch.production_start_date %}
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Producao iniciada</div>
+                                    <div class="datagrid-title">Produção iniciada</div>
                                     <div class="datagrid-content">{{ batch.production_start_date|date:"d/m/Y H:i" }}</div>
                                 </div>
                                 {% endif %}
@@ -133,7 +133,7 @@
 
                     {% if batch.notes %}
                     <div class="mt-4">
-                        <h4 class="mb-2">Observacoes</h4>
+                        <h4 class="mb-2">Observações</h4>
                         <p class="text-muted mb-0">{{ batch.notes }}</p>
                     </div>
                     {% endif %}
@@ -171,7 +171,7 @@
                         <div class="col-md-4">
                             <div class="card card-sm {% with variance=batch.quantity_variance %}{% if variance >= 0 %}bg-success-lt{% else %}bg-danger-lt{% endif %}{% endwith %}">
                                 <div class="card-body text-center">
-                                    <div class="text-muted mb-1">Variacao</div>
+                                    <div class="text-muted mb-1">Variação</div>
                                     {% with variance=batch.quantity_variance %}
                                     <div class="h2 mb-0">{% if variance >= 0 %}+{% endif %}{{ variance|floatformat:3 }} kg</div>
                                     {% endwith %}
@@ -326,7 +326,7 @@
             <!-- Quick Actions -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h3 class="card-title">Acoes Rapidas</h3>
+                    <h3 class="card-title">Ações Rapidas</h3>
                 </div>
                 <div class="card-body">
                     <div class="row g-2">
@@ -353,7 +353,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-player-play"></use>
                                 </svg>
-                                <span class="small">Iniciar Producao</span>
+                                <span class="small">Iniciar Produção</span>
                             </button>
                         </div>
                         {% elif batch.status == 'IN_PRODUCTION' %}
@@ -394,7 +394,7 @@
                 <div class="card-body">
                     <ul class="steps steps-vertical">
                         <li class="step-item {% if batch.status == 'PREPARATION' or batch.status == 'READY' or batch.status == 'IN_PRODUCTION' or batch.status == 'COMPLETED' %}active{% endif %}">
-                            <div class="h4 m-0">Em Preparacao</div>
+                            <div class="h4 m-0">Em Preparação</div>
                             <div class="text-muted">{{ batch.created_at|date:"d/m/Y H:i" }}</div>
                         </li>
                         <li class="step-item {% if batch.status == 'READY' or batch.status == 'IN_PRODUCTION' or batch.status == 'COMPLETED' %}active{% endif %}">
@@ -404,7 +404,7 @@
                             {% endif %}
                         </li>
                         <li class="step-item {% if batch.status == 'IN_PRODUCTION' or batch.status == 'COMPLETED' %}active{% endif %}">
-                            <div class="h4 m-0">Em Producao</div>
+                            <div class="h4 m-0">Em Produção</div>
                             {% if batch.production_start_date %}
                             <div class="text-muted">{{ batch.production_start_date|date:"d/m/Y H:i" }}</div>
                             {% endif %}
@@ -422,12 +422,12 @@
             <!-- Production Order Info -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Ordem de Producao</h3>
+                    <h3 class="card-title">Ordem de Produção</h3>
                 </div>
                 <div class="card-body">
                     <div class="datagrid">
                         <div class="datagrid-item">
-                            <div class="datagrid-title">Numero</div>
+                            <div class="datagrid-title">Número</div>
                             <div class="datagrid-content">
                                 <a href="{% url 'production:order_detail' batch.production_order.id %}">
                                     {{ batch.production_order.order_number }}
@@ -512,7 +512,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea class="form-control" rows="2" x-model="binFormData.notes"></textarea>
                         </div>
                     </div>
@@ -597,7 +597,7 @@ function batchDetailManager() {
                 id: 'mark-ready',
                 action: 'ready',
                 title: 'Marcar como Pronta?',
-                message: 'A batelada sera marcada como pronta para producao.',
+                message: 'A batelada sera marcada como pronta para produção.',
                 icon: 'check',
                 iconClass: 'text-success',
                 statusClass: 'bg-success',
@@ -607,8 +607,8 @@ function batchDetailManager() {
             {
                 id: 'start-production',
                 action: 'start',
-                title: 'Iniciar Producao?',
-                message: 'A producao sera iniciada.',
+                title: 'Iniciar Produção?',
+                message: 'A produção sera iniciada.',
                 icon: 'player-play',
                 iconClass: 'text-warning',
                 statusClass: 'bg-warning',
@@ -662,11 +662,11 @@ function batchDetailManager() {
                 if (data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Erro ao executar acao');
+                    alert(data.message || 'Erro ao executar ação');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Erro ao executar acao');
+                alert('Erro ao executar ação');
             } finally {
                 this.submitting = false;
                 this.activeModal = null;

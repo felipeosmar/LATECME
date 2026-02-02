@@ -1,22 +1,22 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Solicitacoes de Compra - LATECME{% endblock %}
+{% block title %}Solicitações de Compra - LATECME{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'purchasing:dashboard' %}">Compras</a></li>
-<li class="breadcrumb-item active" aria-current="page">Solicitacoes</li>
+<li class="breadcrumb-item active" aria-current="page">Solicitações</li>
 {% endblock %}
 
-{% block page_title %}Solicitacoes de Compra{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Requisicoes de Compra</div>{% endblock %}
+{% block page_title %}Solicitações de Compra{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Requisicoes de Compra</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-request'})" x-data>
     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
-    Nova Solicitacao
+    Nova Solicitação
 </button>
 {% endblock %}
 
@@ -152,7 +152,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
                 </svg>
-                Solicitacoes
+                Solicitações
                 <span class="badge bg-secondary ms-2">{{ requests.paginator.count }}</span>
             </h3>
         </div>
@@ -165,7 +165,7 @@
                         <th>Status</th>
                         <th>Prioridade</th>
                         <th>Solicitante</th>
-                        <th>Armazem</th>
+                        <th>Armazém</th>
                         <th>Data</th>
                         <th>Itens</th>
                         <th class="w-1"></th>
@@ -250,7 +250,7 @@
                 {% endif %}
                 {% if requests.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if priority_filter %}priority={{ priority_filter }}&{% endif %}page={{ requests.next_page_number }}">Proximo</a>
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if priority_filter %}priority={{ priority_filter }}&{% endif %}page={{ requests.next_page_number }}">Próximo</a>
                 </li>
                 {% endif %}
             </ul>
@@ -264,13 +264,13 @@
                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-text"></use>
                     </svg>
                 </div>
-                <p class="empty-title">Nenhuma solicitacao encontrada</p>
+                <p class="empty-title">Nenhuma solicitação encontrada</p>
                 <div class="empty-action">
                     <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-request'})">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
                         </svg>
-                        Nova Solicitacao
+                        Nova Solicitação
                     </button>
                 </div>
             </div>
@@ -288,14 +288,14 @@
         <div class="modal-dialog modal-lg" @click.outside="createModalOpen = false">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nova Solicitacao de Compra</h5>
+                    <h5 class="modal-title">Nova Solicitação de Compra</h5>
                     <button type="button" class="btn-close" @click="createModalOpen = false"></button>
                 </div>
                 <form @submit.prevent="submitCreate">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Armazem Destino</label>
+                                <label class="form-label required">Armazém Destino</label>
                                 <select class="form-select" x-model="formData.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for warehouse in warehouses %}
@@ -323,14 +323,14 @@
                             <textarea class="form-control" rows="3" x-model="formData.justification" placeholder="Justifique a necessidade da compra..."></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="2" x-model="formData.notes" placeholder="Observacoes adicionais..."></textarea>
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" rows="2" x-model="formData.notes" placeholder="Observações adicionais..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="createModalOpen = false">Cancelar</button>
                         <button type="submit" class="btn btn-primary" :disabled="submitting">
-                            <span x-show="!submitting">Criar Solicitacao</span>
+                            <span x-show="!submitting">Criar Solicitação</span>
                             <span x-show="submitting" x-cloak>
                                 <span class="spinner-border spinner-border-sm me-2"></span>
                                 Criando...
@@ -386,11 +386,11 @@ function requestManager() {
                         window.location.reload();
                     }
                 } else {
-                    alert(data.message || 'Erro ao criar solicitacao');
+                    alert(data.message || 'Erro ao criar solicitação');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Erro ao criar solicitacao');
+                alert('Erro ao criar solicitação');
             } finally {
                 this.submitting = false;
             }

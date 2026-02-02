@@ -1,15 +1,15 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Lista de Movimentacoes - LATECME{% endblock %}
+{% block title %}Lista de Movimentações - LATECME{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
-<li class="breadcrumb-item active" aria-current="page">Movimentacoes</li>
+<li class="breadcrumb-item active" aria-current="page">Movimentações</li>
 {% endblock %}
 
-{% block page_title %}Lista de Movimentacoes{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Historico de Movimentacoes de Estoque</div>{% endblock %}
+{% block page_title %}Lista de Movimentações{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Histórico de Movimentações de Estoque</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-success" x-data @click="$dispatch('open-modal', {id: 'movement-modal'})">
@@ -17,14 +17,14 @@
         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-plus"></use>
     </svg>
-    Nova Movimentacao
+    Nova Movimentação
 </button>
 <a href="{% url 'inventory:reports' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-info">
     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
     </svg>
-    Relatorio
+    Relatório
 </a>
 {% endblock %}
 
@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-2">
                 <select name="warehouse" class="form-select">
-                    <option value="">Todos os Armazens</option>
+                    <option value="">Todos os Armazéns</option>
                     {% for warehouse in warehouses %}
                     <option value="{{ warehouse.id }}" {% if selected_warehouse == warehouse.id|stringformat:"s" %}selected{% endif %}>{{ warehouse.code }} - {{ warehouse.name }}</option>
                     {% endfor %}
@@ -98,7 +98,7 @@
 <div class="card" id="movements-table">
     <div class="card-header">
         <h3 class="card-title">
-            Movimentacoes
+            Movimentações
             <span class="badge bg-secondary ms-2">{{ movements.paginator.count }} encontrada{{
                 movements.paginator.count|pluralize:"s" }}</span>
         </h3>
@@ -111,14 +111,14 @@
                     <th>Data/Hora</th>
                     <th>Tipo</th>
                     <th>Material</th>
-                    <th>Armazem</th>
+                    <th>Armazém</th>
                     <th>Quantidade</th>
                     <th>Motivo</th>
                     <th>Custo Unit.</th>
                     <th>Total</th>
                     <th>Usuario</th>
                     <th>Documento</th>
-                    <th class="text-center">Acoes</th>
+                    <th class="text-center">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -232,7 +232,7 @@
                         href="?{% if search %}search={{ search }}&{% endif %}{% if selected_movement_type %}movement_type={{ selected_movement_type }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ movements.next_page_number }}"
                         hx-get="?{% if search %}search={{ search }}&{% endif %}{% if selected_movement_type %}movement_type={{ selected_movement_type }}&{% endif %}{% if selected_warehouse %}warehouse={{ selected_warehouse }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ movements.next_page_number }}"
                         hx-target="#movements-table" hx-push-url="true">
-                        Proximo
+                        Próximo
                     </a>
                 </li>
                 {% endif %}
@@ -248,8 +248,8 @@
                     <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-arrows-exchange"></use>
                 </svg>
             </div>
-            <p class="empty-title">Nenhuma movimentacao encontrada</p>
-            <p class="empty-subtitle text-muted">Nao ha movimentacoes registradas com os filtros aplicados.</p>
+            <p class="empty-title">Nenhuma movimentação encontrada</p>
+            <p class="empty-subtitle text-muted">Nao ha movimentações registradas com os filtros aplicados.</p>
         </div>
     </div>
     {% endif %}
@@ -262,7 +262,7 @@
     <div class="modal-dialog modal-lg" @click.outside="open = false">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nova Movimentacao</h5>
+                <h5 class="modal-title">Nova Movimentação</h5>
                 <button type="button" class="btn-close" @click="open = false"></button>
             </div>
             <form hx-post="{% url 'inventory:create_movement' %}" hx-target="body" hx-swap="none"
@@ -280,9 +280,9 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Armazem</label>
+                            <label class="form-label required">Armazém</label>
                             <select name="warehouse_id" class="form-select" required>
-                                <option value="">Selecione um armazem...</option>
+                                <option value="">Selecione um armazém...</option>
                                 {% for warehouse in warehouses %}
                                 <option value="{{ warehouse.id }}">{{ warehouse.code }} - {{ warehouse.name }}</option>
                                 {% endfor %}
@@ -291,7 +291,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Tipo de Movimentacao</label>
+                            <label class="form-label required">Tipo de Movimentação</label>
                             <select name="movement_type" class="form-select" required x-model="movementType"
                                 @change="updateReasons()">
                                 <option value="">Selecione...</option>
@@ -323,7 +323,7 @@
                     </div>
                     <div class="row" x-show="movementType === 'TRANSFER'" x-cloak>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label required">Armazem Destino</label>
+                            <label class="form-label required">Armazém Destino</label>
                             <select name="destination_warehouse_id" class="form-select"
                                 :required="movementType === 'TRANSFER'">
                                 <option value="">Selecione o destino...</option>
@@ -340,12 +340,12 @@
                                 placeholder="NF, Pedido, etc.">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Numero do Lote</label>
+                            <label class="form-label">Número do Lote</label>
                             <input type="text" name="batch_number" class="form-control">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Observacoes</label>
+                        <label class="form-label">Observações</label>
                         <textarea name="notes" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
@@ -358,7 +358,7 @@
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-device-floppy"></use>
                             </svg>
-                            Salvar Movimentacao
+                            Salvar Movimentação
                         </span>
                         <span x-show="submitting" x-cloak>
                             <span class="spinner-border spinner-border-sm me-2"></span>
@@ -389,7 +389,7 @@
                     { value: 'OTHER', text: 'Outros' }
                 ],
                 'OUT': [
-                    { value: 'PRODUCTION', text: 'Producao' },
+                    { value: 'PRODUCTION', text: 'Produção' },
                     { value: 'SALE', text: 'Venda' },
                     { value: 'INTERNAL_USE', text: 'Uso Interno' },
                     { value: 'LOSS', text: 'Perda' },

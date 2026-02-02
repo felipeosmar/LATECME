@@ -1,15 +1,15 @@
 {% extends 'base/internal.html' %}
 {% load static %}
 
-{% block title %}Relatorios de Inventario - LATECME{% endblock %}
+{% block title %}Relatórios de Inventario - LATECME{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url 'inventory:dashboard' %}">Inventario</a></li>
-<li class="breadcrumb-item active" aria-current="page">Relatorios</li>
+<li class="breadcrumb-item active" aria-current="page">Relatórios</li>
 {% endblock %}
 
-{% block page_title %}Relatorios de Inventario{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Analise e Estatisticas de Movimentacoes</div>{% endblock %}
+{% block page_title %}Relatórios de Inventario{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Analise e Estatisticas de Movimentações</div>{% endblock %}
 
 {% block content_body %}
 <!-- Period Filter -->
@@ -41,7 +41,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-bar"></use>
                         </svg>
-                        Gerar Relatorio
+                        Gerar Relatório
                     </button>
                     <a href="{% url 'inventory:reports' %}" class="btn btn-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -70,7 +70,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="subheader">Movimentacoes</div>
+                        <div class="subheader">Movimentações</div>
                     </div>
                     <div class="h1 mb-3">{{ movements_by_type|length }}</div>
                     <a href="{% url 'inventory:movements_list' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="btn btn-link btn-sm p-0">
@@ -177,7 +177,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-pie"></use>
                         </svg>
-                        Movimentacoes por Tipo
+                        Movimentações por Tipo
                     </h3>
                 </div>
                 {% if movements_by_type %}
@@ -227,7 +227,7 @@
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chart-pie"></use>
                             </svg>
                         </div>
-                        <p class="empty-subtitle text-muted">Nenhuma movimentacao no periodo selecionado.</p>
+                        <p class="empty-subtitle text-muted">Nenhuma movimentação no periodo selecionado.</p>
                     </div>
                 </div>
                 {% endif %}
@@ -251,7 +251,7 @@
                         <thead>
                             <tr>
                                 <th>Material</th>
-                                <th class="text-center">Movimentacoes</th>
+                                <th class="text-center">Movimentações</th>
                                 <th class="text-center">Quantidade (kg)</th>
                             </tr>
                         </thead>
@@ -278,7 +278,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-eye"></use>
                         </svg>
-                        Ver Todas as Movimentacoes
+                        Ver Todas as Movimentações
                     </a>
                 </div>
                 {% else %}
@@ -306,7 +306,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                         </svg>
-                        Armazens Mais Ativos
+                        Armazéns Mais Ativos
                     </h3>
                 </div>
                 {% if top_warehouses %}
@@ -314,8 +314,8 @@
                     <table class="table table-vcenter card-table">
                         <thead>
                             <tr>
-                                <th>Armazem</th>
-                                <th class="text-center">Movimentacoes</th>
+                                <th>Armazém</th>
+                                <th class="text-center">Movimentações</th>
                                 <th class="text-center">Quantidade (kg)</th>
                             </tr>
                         </thead>
@@ -342,7 +342,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                         </svg>
-                        Ver Todos os Armazens
+                        Ver Todos os Armazéns
                     </a>
                 </div>
                 {% else %}
@@ -353,7 +353,7 @@
                                 <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-building-warehouse"></use>
                             </svg>
                         </div>
-                        <p class="empty-subtitle text-muted">Nenhum armazem teve movimentacoes no periodo.</p>
+                        <p class="empty-subtitle text-muted">Nenhum armazém teve movimentações no periodo.</p>
                     </div>
                 </div>
                 {% endif %}
@@ -368,7 +368,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-download"></use>
                         </svg>
-                        Exportar Relatorios
+                        Exportar Relatórios
                     </h3>
                 </div>
                 <div class="card-body">
@@ -380,9 +380,9 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-file-spreadsheet"></use>
                                     </svg>
-                                    <strong>Movimentacoes (CSV)</strong>
+                                    <strong>Movimentações (CSV)</strong>
                                 </div>
-                                <small class="text-muted">Exportar todas as movimentacoes do periodo em formato CSV</small>
+                                <small class="text-muted">Exportar todas as movimentações do periodo em formato CSV</small>
                             </div>
                             <span class="badge bg-secondary">{{ movements_by_type|length }} registros</span>
                         </a>
@@ -396,13 +396,13 @@
                                     </svg>
                                     <strong>Posicao de Estoque (PDF)</strong>
                                 </div>
-                                <small class="text-muted">Relatorio completo da posicao atual de estoque</small>
+                                <small class="text-muted">Relatório completo da posicao atual de estoque</small>
                             </div>
                             <span class="badge bg-secondary">Atual</span>
                         </a>
 
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                             x-data="{ showAlert() { alert('Funcionalidade de relatorio personalizado sera implementada em breve.'); } }"
+                             x-data="{ showAlert() { alert('Funcionalidade de relatório personalizado sera implementada em breve.'); } }"
                              @click="showAlert()"
                              style="cursor: pointer;">
                             <div>
@@ -410,9 +410,9 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon text-info me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-settings"></use>
                                     </svg>
-                                    <strong>Relatorio Personalizado</strong>
+                                    <strong>Relatório Personalizado</strong>
                                 </div>
-                                <small class="text-muted">Criar relatorio com filtros e campos personalizados</small>
+                                <small class="text-muted">Criar relatório com filtros e campos personalizados</small>
                             </div>
                             <span class="badge bg-secondary">Configuravel</span>
                         </div>
@@ -420,7 +420,7 @@
 
                     <hr class="my-3">
 
-                    <h4 class="mb-3">Acoes Rapidas</h4>
+                    <h4 class="mb-3">Ações Rapidas</h4>
                     <div class="btn-list" x-data="reportActions()">
                         <button type="button" class="btn btn-outline-primary" @click="printReport()">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -491,9 +491,9 @@
                                     </span>
                                 </div>
                                 <div class="col">
-                                    <div class="text-muted small text-uppercase">Total de Movimentacoes</div>
+                                    <div class="text-muted small text-uppercase">Total de Movimentações</div>
                                     <div class="fw-bold">
-                                        {% for item in movements_by_type %}{{ item.count }}{% if not forloop.last %} + {% endif %}{% empty %}0{% endfor %} operacoes
+                                        {% for item in movements_by_type %}{{ item.count }}{% if not forloop.last %} + {% endif %}{% empty %}0{% endfor %} operações
                                     </div>
                                 </div>
                             </div>
@@ -525,10 +525,10 @@
             <div class="alert alert-info">
                 <ul class="mb-0">
                     {% if top_materials %}
-                    <li>O material mais movimentado foi <strong>{{ top_materials.0.material__code }}</strong> com {{ top_materials.0.total_movements }} movimentacoes.</li>
+                    <li>O material mais movimentado foi <strong>{{ top_materials.0.material__code }}</strong> com {{ top_materials.0.total_movements }} movimentações.</li>
                     {% endif %}
                     {% if top_warehouses %}
-                    <li>O armazem mais ativo foi <strong>{{ top_warehouses.0.warehouse__code }}</strong> com {{ top_warehouses.0.total_movements }} movimentacoes.</li>
+                    <li>O armazém mais ativo foi <strong>{{ top_warehouses.0.warehouse__code }}</strong> com {{ top_warehouses.0.total_movements }} movimentações.</li>
                     {% endif %}
                     {% for item in movements_by_type %}
                         {% if item.movement_type == 'IN' %}
@@ -537,7 +537,7 @@
                         <li>Foram registradas <strong>{{ item.count }}</strong> saidas totalizando <strong>{{ item.total_quantity|floatformat:1 }} kg</strong>.</li>
                         {% endif %}
                     {% empty %}
-                    <li>Nenhuma movimentacao registrada no periodo selecionado.</li>
+                    <li>Nenhuma movimentação registrada no periodo selecionado.</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -555,7 +555,7 @@ function reportActions() {
             alert('Funcionalidade de envio por email sera implementada em breve.');
         },
         scheduleReport() {
-            alert('Funcionalidade de agendamento de relatorios sera implementada em breve.');
+            alert('Funcionalidade de agendamento de relatórios sera implementada em breve.');
         }
     }
 }

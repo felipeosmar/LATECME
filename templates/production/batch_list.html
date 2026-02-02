@@ -4,12 +4,12 @@
 {% block title %}Bateladas - LATECME{% endblock %}
 
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Producao</a></li>
+<li class="breadcrumb-item"><a href="{% url 'production:dashboard' %}">Produção</a></li>
 <li class="breadcrumb-item active" aria-current="page">Bateladas</li>
 {% endblock %}
 
 {% block page_title %}Lista de Bateladas{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Bateladas de Producao</div>{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Bateladas de Produção</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-primary" x-data @click="$dispatch('open-modal', {id: 'create-batch'})">
@@ -40,7 +40,7 @@
                                 </svg>
                             </span>
                             <input type="text" name="search" value="{{ search }}" class="form-control"
-                                placeholder="Buscar por numero...">
+                                placeholder="Buscar por número...">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -48,10 +48,10 @@
                         <select name="status" class="form-select">
                             <option value="">Todos os Status</option>
                             <option value="PREPARATION" {% if status_filter == 'PREPARATION' %}selected{% endif %}>Em
-                                Preparacao</option>
+                                Preparação</option>
                             <option value="READY" {% if status_filter == 'READY' %}selected{% endif %}>Pronta</option>
                             <option value="IN_PRODUCTION" {% if status_filter == 'IN_PRODUCTION' %}selected{% endif %}>Em
-                                Producao</option>
+                                Produção</option>
                             <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Concluida
                             </option>
                             <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelada
@@ -59,7 +59,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Ordem de Producao</label>
+                        <label class="form-label">Ordem de Produção</label>
                         <select name="order" class="form-select">
                             <option value="">Todas as Ordens</option>
                             {% for order in production_orders %}
@@ -110,8 +110,8 @@
                 <table class="table table-vcenter card-table table-hover">
                     <thead>
                         <tr>
-                            <th>Numero</th>
-                            <th>Ordem de Producao</th>
+                            <th>Número</th>
+                            <th>Ordem de Produção</th>
                             <th>Material</th>
                             <th>Status</th>
                             <th>Qtd. Alvo</th>
@@ -142,11 +142,11 @@
                             </td>
                             <td>
                                 {% if batch.status == 'PREPARATION' %}
-                                <span class="badge bg-info">Em Preparacao</span>
+                                <span class="badge bg-info">Em Preparação</span>
                                 {% elif batch.status == 'READY' %}
                                 <span class="badge bg-primary">Pronta</span>
                                 {% elif batch.status == 'IN_PRODUCTION' %}
-                                <span class="badge bg-yellow">Em Producao</span>
+                                <span class="badge bg-yellow">Em Produção</span>
                                 {% elif batch.status == 'COMPLETED' %}
                                 <span class="badge bg-green">Concluida</span>
                                 {% elif batch.status == 'CANCELLED' %}
@@ -200,7 +200,7 @@
                                     </button>
                                     {% elif batch.status == 'READY' %}
                                     <button type="button" class="btn btn-icon btn-ghost-warning"
-                                        title="Iniciar producao" @click="startProduction('{{ batch.id }}')">
+                                        title="Iniciar produção" @click="startProduction('{{ batch.id }}')">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                             stroke-linecap="round" stroke-linejoin="round">
@@ -265,7 +265,7 @@
                                 href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
                                 hx-get="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if order_filter %}order={{ order_filter }}&{% endif %}page={{ batches.next_page_number }}"
                                 hx-target="#batches-table" hx-push-url="true">
-                                Proximo
+                                Próximo
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -324,7 +324,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Ordem de Producao</label>
+                                <label class="form-label required">Ordem de Produção</label>
                                 <select class="form-select" x-model="formData.production_order" @change="updateMaterial"
                                     required>
                                     <option value="">Selecione...</option>
@@ -354,9 +354,9 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
+                            <label class="form-label">Observações</label>
                             <textarea class="form-control" rows="3" x-model="formData.notes"
-                                placeholder="Observacoes sobre a batelada..."></textarea>
+                                placeholder="Observações sobre a batelada..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -416,10 +416,10 @@
                         </svg>
                     </template>
                     <h3
-                        x-text="actionType === 'ready' ? 'Marcar como Pronta?' : actionType === 'start' ? 'Iniciar Producao?' : 'Concluir Batelada?'">
+                        x-text="actionType === 'ready' ? 'Marcar como Pronta?' : actionType === 'start' ? 'Iniciar Produção?' : 'Concluir Batelada?'">
                     </h3>
                     <div class="text-muted"
-                        x-text="actionType === 'ready' ? 'A batelada sera marcada como pronta para producao.' : actionType === 'start' ? 'A producao sera iniciada.' : 'A batelada sera marcada como concluida.'">
+                        x-text="actionType === 'ready' ? 'A batelada sera marcada como pronta para produção.' : actionType === 'start' ? 'A produção sera iniciada.' : 'A batelada sera marcada como concluida.'">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -523,11 +523,11 @@
                     if (data.success) {
                         window.location.reload();
                     } else {
-                        alert(data.message || 'Erro ao executar acao');
+                        alert(data.message || 'Erro ao executar ação');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Erro ao executar acao');
+                    alert('Erro ao executar ação');
                 } finally {
                     this.submitting = false;
                     this.confirmModalOpen = false;

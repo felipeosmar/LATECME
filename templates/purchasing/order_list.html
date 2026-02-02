@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block page_title %}Pedidos de Compra{% endblock %}
-{% block page_subtitle %}<div class="page-subtitle">Gestao de Pedidos a Fornecedores</div>{% endblock %}
+{% block page_subtitle %}<div class="page-subtitle">Gestão de Pedidos a Fornecedores</div>{% endblock %}
 
 {% block page_actions %}
 <button type="button" class="btn btn-primary" @click="$dispatch('open-modal', {id: 'create-order'})" x-data>
@@ -161,11 +161,11 @@
             <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
-                        <th>Numero</th>
+                        <th>Número</th>
                         <th>Status</th>
                         <th>Fornecedor</th>
-                        <th>Data Emissao</th>
-                        <th>Previsao Entrega</th>
+                        <th>Data Emissão</th>
+                        <th>Previsão Entrega</th>
                         <th>Total</th>
                         <th>Itens</th>
                         <th class="w-1"></th>
@@ -241,7 +241,7 @@
                 {% endif %}
                 {% if orders.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ orders.next_page_number }}">Proximo</a>
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ orders.next_page_number }}">Próximo</a>
                 </li>
                 {% endif %}
             </ul>
@@ -295,17 +295,17 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Previsao de Entrega</label>
+                                <label class="form-label">Previsão de Entrega</label>
                                 <input type="date" class="form-control" x-model="formData.expected_delivery_date">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Condicoes de Pagamento</label>
+                                <label class="form-label">Condições de Pagamento</label>
                                 <input type="text" class="form-control" x-model="formData.payment_terms" placeholder="Ex: 30/60/90 dias">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label required">Armazem Destino</label>
+                                <label class="form-label required">Armazém Destino</label>
                                 <select class="form-select" x-model="formData.warehouse" required>
                                     <option value="">Selecione...</option>
                                     {% for warehouse in warehouses %}
@@ -315,20 +315,20 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Endereco de Entrega</label>
-                            <textarea class="form-control" rows="2" x-model="formData.shipping_address" placeholder="Endereco completo..."></textarea>
+                            <label class="form-label">Endereço de Entrega</label>
+                            <textarea class="form-control" rows="2" x-model="formData.shipping_address" placeholder="Endereço completo..."></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observacoes</label>
-                            <textarea class="form-control" rows="2" x-model="formData.notes" placeholder="Observacoes adicionais..."></textarea>
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" rows="2" x-model="formData.notes" placeholder="Observações adicionais..."></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Solicitacao de Origem</label>
+                            <label class="form-label">Solicitação de Origem</label>
                             <select class="form-select" x-model="formData.purchase_request">
                                 <option value="">Nenhuma (pedido avulso)</option>
                                 <!-- Will be populated via API -->
                             </select>
-                            <small class="text-muted">Opcional: vincule a uma solicitacao aprovada</small>
+                            <small class="text-muted">Opcional: vincule a uma solicitação aprovada</small>
                         </div>
                     </div>
                     <div class="modal-footer">
