@@ -83,11 +83,59 @@
         }
       ],
       "status": "completed"
+    },
+    "3.3": {
+      "attempts": [
+        {
+          "session": 8,
+          "timestamp": "2026-01-29T12:50:10.300791",
+          "approach": "Implemented: Delete merged local auto-claude/* branches",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "4.1": {
+      "attempts": [
+        {
+          "session": 9,
+          "timestamp": "2026-01-29T12:52:01.035739",
+          "approach": "Implemented: Verify git status shows clean working tree",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "4.2": {
+      "attempts": [
+        {
+          "session": 10,
+          "timestamp": "2026-01-29T12:53:07.027046",
+          "approach": "Implemented: Verify git worktree list shows only main worktree",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
+    },
+    "4.3": {
+      "attempts": [
+        {
+          "session": 11,
+          "timestamp": "2026-01-29T12:54:20.334072",
+          "approach": "Implemented: Verify dev branch is synced with origin/dev",
+          "success": true,
+          "error": null
+        }
+      ],
+      "status": "completed"
     }
   },
   "stuck_subtasks": [],
   "metadata": {
     "created_at": "2026-01-29T12:34:00.168598",
-    "last_updated": "2026-01-29T12:47:43.918886"
+    "last_updated": "2026-01-29T12:54:20.334094"
   }
 }

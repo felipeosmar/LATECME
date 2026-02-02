@@ -7,7 +7,21 @@
     "apps/inventory/views/stock_views.py",
     "apps/inventory/views/warehouse_views.py",
     "apps/production/tests.py",
-    "apps/purchasing/tests.py"
+    "apps/purchasing/tests.py",
+    ".auto-claude-security.json",
+    ".auto-claude-status",
+    ".claude_settings.json",
+    ".gitignore",
+    "doc/index_verification_report.md",
+    "doc/query_performance_report.md",
+    "query_performance_results.txt",
+    "test_query_performance.py",
+    "test_query_performance.sh",
+    ".auto-claude/specs/014-add-database-indexes-for-frequently-filtered-field/implementation_plan.json",
+    "VERIFICATION_SUMMARY.md",
+    "doc/index_performance_verification_report.md",
+    "doc/index_verification.md",
+    "run_index_verification.sh"
   ],
-  "last_updated": "2026-01-28T18:16:26.709683"
+  "last_updated": "2026-01-29T14:50:34.815213"
 }

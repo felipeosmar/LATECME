@@ -349,14 +349,18 @@
     <div class="modal modal-blur fade" tabindex="-1"
          x-show="addItemModalOpen"
          x-cloak
-         @open-modal.window="if ($event.detail.id === 'add-item') addItemModalOpen = true"
-         @close-modal.window="addItemModalOpen = false"
-         @keydown.escape.window="addItemModalOpen = false">
-        <div class="modal-dialog modal-lg" @click.outside="addItemModalOpen = false">
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="add-item-modal-title"
+         @open-modal.window="if ($event.detail.id === 'add-item') { triggerElement = $event.target || document.activeElement; addItemModalOpen = true; $nextTick(() => $el.querySelector('select, input, button').focus()); }"
+         @close-modal.window="addItemModalOpen = false; if (triggerElement) triggerElement.focus();"
+         @keydown.escape.window="addItemModalOpen = false; if (triggerElement) triggerElement.focus();"
+         @keydown.tab.prevent="handleTabKey($event)">
+        <div class="modal-dialog modal-lg" @click.outside="addItemModalOpen = false; if (triggerElement) triggerElement.focus();">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Adicionar Item ao Pedido</h5>
-                    <button type="button" class="btn-close" @click="addItemModalOpen = false"></button>
+                    <h5 class="modal-title" id="add-item-modal-title">Adicionar Item ao Pedido</h5>
+                    <button type="button" class="btn-close" @click="addItemModalOpen = false; if (triggerElement) triggerElement.focus();" aria-label="Fechar"></button>
                 </div>
                 <form @submit.prevent="submitAddItem">
                     <div class="modal-body">
@@ -401,7 +405,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="addItemModalOpen = false">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" @click="addItemModalOpen = false; if (triggerElement) triggerElement.focus();">Cancelar</button>
                         <button type="submit" class="btn btn-primary" :disabled="submitting">
                             <span x-show="!submitting">Adicionar Item</span>
                             <span x-show="submitting" x-cloak>
@@ -425,12 +429,34 @@ function orderDetail() {
     return {
         addItemModalOpen: false,
         submitting: false,
+        triggerElement: null,
         itemData: {
             material: '',
             quantity: '',
             unit: '',
             unit_price: '',
             total: 0
+        },
+
+        handleTabKey(event) {
+            const modal = event.currentTarget;
+            const focusableElements = modal.querySelectorAll(
+                'select, input, textarea, button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    event.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    event.preventDefault();
+                }
+            }
         },
 
         loadMaterialInfo() {
