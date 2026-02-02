@@ -1,0 +1,668 @@
+{
+  "id": "roadmap-2026-01-29T19-30-00Z",
+  "project_name": "LATECME - Sistema de Controle de Manufatura",
+  "version": "1.0",
+  "vision": "A comprehensive inventory and production control system for additive manufacturing facilities working with metallic materials",
+  "target_audience": {
+    "primary": "Manufacturing operations staff at additive manufacturing facilities working with metallic powder materials (operators, inventory managers, quality inspectors)",
+    "secondary": [
+      "Production managers planning and monitoring manufacturing orders",
+      "Purchasing/procurement specialists managing supplier relationships",
+      "Quality assurance personnel tracking material certifications",
+      "Plant administrators configuring system and managing users"
+    ]
+  },
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Foundation & Quality",
+      "description": "Establish production-ready quality through testing, documentation, and core UX improvements for daily use",
+      "order": 1,
+      "status": "planned",
+      "features": [
+        "feature-1",
+        "feature-2",
+        "feature-3",
+        "feature-4",
+        "feature-5",
+        "feature-6"
+      ],
+      "milestones": [
+        {
+          "id": "milestone-1-1",
+          "title": "Test Coverage Baseline",
+          "description": "All core business logic (inventory, production, purchasing) has comprehensive test coverage",
+          "features": ["feature-1"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-1-2",
+          "title": "Mobile-Ready Interface",
+          "description": "System is usable on tablets and mobile devices in warehouse/production floor environments",
+          "features": ["feature-2", "feature-5"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-1-3",
+          "title": "Document Management Ready",
+          "description": "Users can upload and associate certificates and documents with materials and batches",
+          "features": ["feature-3"],
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Operational Excellence",
+      "description": "Enhance daily operations with proactive alerts, better reporting, and streamlined workflows",
+      "order": 2,
+      "status": "planned",
+      "features": [
+        "feature-7",
+        "feature-8",
+        "feature-9",
+        "feature-10",
+        "feature-11",
+        "feature-12"
+      ],
+      "milestones": [
+        {
+          "id": "milestone-2-1",
+          "title": "Proactive Inventory Management",
+          "description": "System automatically alerts users about low stock, expiring materials, and pending actions",
+          "features": ["feature-7", "feature-8"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-2-2",
+          "title": "Enhanced Dashboard & Analytics",
+          "description": "Comprehensive dashboards with KPIs and production reports for management visibility",
+          "features": ["feature-9", "feature-10"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-2-3",
+          "title": "Workflow Acceleration",
+          "description": "Bulk operations and keyboard shortcuts for power users to work faster",
+          "features": ["feature-11", "feature-12"],
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Integration & Expansion",
+      "description": "Extend the system with external integrations, API access, and advanced traceability features",
+      "order": 3,
+      "status": "planned",
+      "features": [
+        "feature-13",
+        "feature-14",
+        "feature-15",
+        "feature-16",
+        "feature-17"
+      ],
+      "milestones": [
+        {
+          "id": "milestone-3-1",
+          "title": "API Platform Ready",
+          "description": "Full REST API with documentation enables third-party integrations",
+          "features": ["feature-13", "feature-14"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-3-2",
+          "title": "Barcode Integration",
+          "description": "Mobile and hardware barcode scanners can be used for faster data entry",
+          "features": ["feature-15"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-3-3",
+          "title": "Complete Traceability",
+          "description": "Full batch genealogy and traceability reports for compliance audits",
+          "features": ["feature-16", "feature-17"],
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "Scale & Market Expansion",
+      "description": "Prepare for broader market adoption with internationalization and enterprise features",
+      "order": 4,
+      "status": "planned",
+      "features": [
+        "feature-18",
+        "feature-19",
+        "feature-20",
+        "feature-21"
+      ],
+      "milestones": [
+        {
+          "id": "milestone-4-1",
+          "title": "Internationalization Ready",
+          "description": "System supports multiple languages for international deployment",
+          "features": ["feature-18"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-4-2",
+          "title": "Enterprise Integration",
+          "description": "ERP integration framework enables connection to SAP, Oracle, and other enterprise systems",
+          "features": ["feature-19"],
+          "status": "planned"
+        },
+        {
+          "id": "milestone-4-3",
+          "title": "Advanced Analytics",
+          "description": "Predictive analytics and advanced composition analysis for process optimization",
+          "features": ["feature-20", "feature-21"],
+          "status": "planned"
+        }
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "feature-1",
+      "title": "Comprehensive Test Suite for Core Business Logic",
+      "description": "Expand automated test coverage to include all critical business logic in inventory management, production orders, purchasing workflows, and batch preparation. Include unit tests, integration tests, and API tests.",
+      "rationale": "With only 4 test files currently, the system lacks confidence for safe refactoring and deployment. Manufacturing systems require high reliability - errors in inventory or batch tracking can have costly consequences.",
+      "priority": "must",
+      "complexity": "high",
+      "impact": "high",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Test coverage reaches at least 70% for core apps (inventory, production, purchasing)",
+        "All critical business logic paths have corresponding tests",
+        "CI pipeline runs tests automatically on every PR",
+        "No regressions in existing functionality after test implementation"
+      ],
+      "user_stories": [
+        "As a developer, I want comprehensive tests so that I can refactor with confidence",
+        "As a plant administrator, I want a reliable system so that inventory data is always accurate"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-2",
+      "title": "Mobile-Responsive Interface",
+      "description": "Optimize the user interface for tablets and mobile devices, enabling use in warehouse and production floor environments. Focus on touch-friendly interactions, larger tap targets, and responsive layouts.",
+      "rationale": "Manufacturing staff need to use the system while moving through the facility - receiving shipments at the dock, checking inventory in the warehouse, and preparing batches on the production floor. Desktop-only interfaces create friction.",
+      "priority": "must",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All list views are usable on tablets (10-inch screens)",
+        "Forms can be completed on mobile devices without horizontal scrolling",
+        "Navigation works well with touch interactions",
+        "Critical workflows (receiving, stock movement, batch prep) work on mobile"
+      ],
+      "user_stories": [
+        "As a warehouse operator, I want to use the system on my tablet so that I can record stock movements at the bin location",
+        "As a production operator, I want to view batch details on a mobile device so that I don't need to return to a workstation"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-3",
+      "title": "Document & Certificate Upload System",
+      "description": "Enable users to upload and associate PDF certificates, test reports, and other documents with materials, batches, and supplier records. Include document versioning and expiration tracking.",
+      "rationale": "Material certificates, test reports, and compliance documents are essential for quality control and audits in additive manufacturing. Currently, there's no way to store these documents within the system, forcing users to maintain separate filing systems.",
+      "priority": "must",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Users can upload PDF, JPG, and PNG files to material records",
+        "Documents can be associated with specific batches",
+        "Supplier certificates can be stored with expiration dates",
+        "Documents are searchable and filterable by type and date",
+        "Document preview is available in-browser"
+      ],
+      "user_stories": [
+        "As a quality inspector, I want to upload material certificates so that they are easily accessible during audits",
+        "As a receiving clerk, I want to attach supplier test reports to incoming shipments so that quality can review them"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-4",
+      "title": "Skeleton Loading States for Data Tables",
+      "description": "Add skeleton loading states to all data tables to improve perceived performance and user experience during data loading. Replace blank spaces with animated placeholders.",
+      "rationale": "Users in busy manufacturing environments need immediate feedback that the system is working. Blank loading states can be mistaken for errors or system hangs.",
+      "priority": "should",
+      "complexity": "low",
+      "impact": "medium",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All list views show skeleton loading animation while data loads",
+        "Skeleton matches the expected layout of the loaded content",
+        "Loading state is visible for at least 200ms to prevent flash"
+      ],
+      "user_stories": [
+        "As a user, I want to see loading indicators so that I know the system is fetching data"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-5",
+      "title": "Keyboard Accessibility for Modal Dialogs",
+      "description": "Ensure all modal dialogs are fully keyboard accessible with proper focus management, escape to close, and tab trapping.",
+      "rationale": "Accessibility is important for users with disabilities and improves productivity for keyboard-oriented users. Modal dialogs are used extensively in the application.",
+      "priority": "should",
+      "complexity": "low",
+      "impact": "medium",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Focus is trapped within modal when open",
+        "Escape key closes modals",
+        "Focus returns to trigger element when modal closes",
+        "All interactive elements in modals are keyboard accessible"
+      ],
+      "user_stories": [
+        "As a keyboard user, I want to navigate modals without a mouse so that I can work efficiently"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-6",
+      "title": "ARIA Labels for Icon-Only Action Buttons",
+      "description": "Add proper ARIA labels to all icon-only buttons throughout the application to improve screen reader accessibility.",
+      "rationale": "Icon-only buttons are common in the action columns of tables but provide no context for screen reader users. This is a quick win for accessibility compliance.",
+      "priority": "should",
+      "complexity": "low",
+      "impact": "low",
+      "phase_id": "phase-1",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All icon-only buttons have aria-label attributes",
+        "Labels clearly describe the action (e.g., 'Edit material', 'Delete supplier')",
+        "Screen readers announce button purposes correctly"
+      ],
+      "user_stories": [
+        "As a screen reader user, I want button labels to be announced so that I know what each button does"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-7",
+      "title": "Low Stock Alerts & Notifications",
+      "description": "Implement a notification system that alerts users when inventory falls below configurable thresholds. Include dashboard alerts and optional email notifications.",
+      "rationale": "Preventing stockouts is critical for manufacturing continuity. Users currently must manually check inventory levels - proactive alerts reduce the risk of production delays.",
+      "priority": "must",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-2",
+      "dependencies": ["feature-8"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Users can set minimum stock thresholds per material",
+        "Dashboard shows alert badges for low-stock materials",
+        "Alert list view shows all materials below threshold",
+        "Optional email notifications when thresholds are breached",
+        "Alerts clear when stock is replenished"
+      ],
+      "user_stories": [
+        "As an inventory manager, I want to be alerted when materials are running low so that I can reorder before we run out",
+        "As a purchasing specialist, I want automatic notifications so that I can create purchase requests proactively"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-8",
+      "title": "Email Notification System",
+      "description": "Implement a configurable email notification system for key events: low stock alerts, purchase request approvals, order status changes, and expiring certifications.",
+      "rationale": "Users need to be notified of important events even when not actively using the system. Email notifications enable timely action on approvals and alerts.",
+      "priority": "should",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-2",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Users can configure notification preferences",
+        "Email templates are professional and branded",
+        "Notifications are sent for: low stock, pending approvals, status changes, expiring certs",
+        "Unsubscribe link is included in all emails",
+        "Email delivery is logged for troubleshooting"
+      ],
+      "user_stories": [
+        "As a buyer, I want email notifications for pending purchase requests so that I can approve them promptly",
+        "As a quality manager, I want alerts for expiring certificates so that I can request renewals"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-9",
+      "title": "Production Module Dashboard",
+      "description": "Create a comprehensive dashboard for the production module showing KPIs: active orders, batch status, material utilization, and production timeline.",
+      "rationale": "Production managers need a quick overview of manufacturing status. A dedicated dashboard reduces time spent digging through lists and improves decision-making.",
+      "priority": "should",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-2",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Dashboard shows production order status distribution",
+        "Active batches and their current status are visible",
+        "Material consumption and bin utilization are displayed",
+        "Recent activity timeline shows latest actions",
+        "Quick links to common production tasks"
+      ],
+      "user_stories": [
+        "As a production manager, I want a dashboard so that I can see production status at a glance",
+        "As a shift supervisor, I want to see active batches so that I can prioritize work"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-10",
+      "title": "Production Reports View",
+      "description": "Add a reports section to the production module with configurable reports: production output, material usage, batch history, and quality metrics.",
+      "rationale": "Reporting is minimal in the current system. Production managers need historical reports for planning, compliance, and continuous improvement.",
+      "priority": "should",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-2",
+      "dependencies": ["feature-9"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Users can generate reports for configurable date ranges",
+        "Reports include: production output, material consumption, batch history",
+        "Reports can be exported to PDF and CSV",
+        "Charts visualize trends over time",
+        "Reports respect user permissions"
+      ],
+      "user_stories": [
+        "As a production manager, I want monthly production reports so that I can track performance",
+        "As a quality manager, I want batch history reports for compliance audits"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-11",
+      "title": "Bulk Status Change for Production Orders",
+      "description": "Enable users to select multiple production orders and change their status in bulk, reducing repetitive clicks for common workflow transitions.",
+      "rationale": "Power users managing many orders waste time changing status one by one. Bulk operations significantly improve efficiency for high-volume operations.",
+      "priority": "should",
+      "complexity": "low",
+      "impact": "medium",
+      "phase_id": "phase-2",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Checkbox selection allows multi-select in order list",
+        "Bulk action dropdown appears when items are selected",
+        "Status change respects workflow rules (can't skip statuses)",
+        "Confirmation dialog shows count and target status",
+        "Activity log records bulk changes"
+      ],
+      "user_stories": [
+        "As a production coordinator, I want to mark multiple orders as complete at once so that I save time at end of shift"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-12",
+      "title": "Date Range Filter for List Views",
+      "description": "Add date range filtering capability to material lists, supplier lists, and transaction history to help users find records by date.",
+      "rationale": "Users frequently need to find records from specific time periods - for audits, reconciliation, or troubleshooting. Date filtering is a basic expectation.",
+      "priority": "should",
+      "complexity": "low",
+      "impact": "medium",
+      "phase_id": "phase-2",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Date range picker component is available on key list views",
+        "Users can filter by: today, this week, this month, custom range",
+        "Date filters can be combined with other filters",
+        "Filter state persists during session",
+        "Clear filter option resets to all dates"
+      ],
+      "user_stories": [
+        "As an auditor, I want to filter transactions by date range so that I can review specific periods",
+        "As a buyer, I want to see purchases from last month so that I can reconcile invoices"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-13",
+      "title": "REST API Documentation with OpenAPI/Swagger",
+      "description": "Generate and publish comprehensive API documentation using OpenAPI (Swagger) specification. Include authentication details, request/response examples, and error codes.",
+      "rationale": "API documentation is essential for integration with other systems and for third-party developers. Currently there's no visible API documentation.",
+      "priority": "should",
+      "complexity": "medium",
+      "impact": "medium",
+      "phase_id": "phase-3",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All API endpoints are documented in OpenAPI format",
+        "Swagger UI is accessible at /api/docs/",
+        "Authentication flow is documented",
+        "Request/response examples are provided",
+        "Error responses are documented"
+      ],
+      "user_stories": [
+        "As a developer, I want API documentation so that I can build integrations",
+        "As an admin, I want to understand available APIs so that I can evaluate integration options"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-14",
+      "title": "Webhook System for External Integrations",
+      "description": "Implement a webhook system that can notify external systems of key events: new orders, status changes, low stock alerts, and receiving completions.",
+      "rationale": "Webhooks enable push-based integration with other systems without polling. This is the foundation for connecting with external tools and automation.",
+      "priority": "could",
+      "complexity": "medium",
+      "impact": "medium",
+      "phase_id": "phase-3",
+      "dependencies": ["feature-13"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Admins can configure webhook endpoints",
+        "Events can be selected per webhook",
+        "Payloads include relevant entity data",
+        "Webhook delivery is retried on failure",
+        "Delivery logs show success/failure history"
+      ],
+      "user_stories": [
+        "As an admin, I want webhooks so that I can connect LATECME to our other business systems",
+        "As a developer, I want event notifications so that I can build automation workflows"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-15",
+      "title": "Barcode Scanning Integration",
+      "description": "Integrate with mobile device cameras and hardware barcode scanners for rapid data entry in receiving, stock movements, and batch preparation workflows.",
+      "rationale": "Manual data entry is slow and error-prone. Barcode scanning can dramatically speed up inventory operations and reduce mistakes, especially in high-volume environments.",
+      "priority": "should",
+      "complexity": "high",
+      "impact": "high",
+      "phase_id": "phase-3",
+      "dependencies": ["feature-2"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Mobile camera can scan barcodes on EPL labels",
+        "Hardware USB/Bluetooth scanners work with web interface",
+        "Scanning auto-populates material/bin/batch fields",
+        "Scan history is logged for troubleshooting",
+        "Works offline with sync when connection restored"
+      ],
+      "user_stories": [
+        "As a warehouse operator, I want to scan barcodes so that I can record stock movements quickly",
+        "As a receiving clerk, I want to scan incoming material labels so that I don't have to type codes manually"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-16",
+      "title": "Batch Genealogy & Traceability Reports",
+      "description": "Create comprehensive traceability reports showing the complete history of a batch: source materials, bins used, production order, and chemical composition at each stage.",
+      "rationale": "Full traceability from raw material to finished batch is critical for quality control, compliance, and recall management in additive manufacturing.",
+      "priority": "should",
+      "complexity": "medium",
+      "impact": "high",
+      "phase_id": "phase-3",
+      "dependencies": ["feature-3"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Batch detail view shows complete material genealogy",
+        "Source bins and their material origins are traced",
+        "Composition changes through mixing are documented",
+        "Traceability report can be exported as PDF",
+        "Forward traceability shows what batches used a material"
+      ],
+      "user_stories": [
+        "As a quality manager, I want to trace batch composition back to source materials for compliance audits",
+        "As a production engineer, I want to understand material lineage when investigating quality issues"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-17",
+      "title": "Chemical Composition Analytics",
+      "description": "Add analytics for chemical composition data: composition trends over time, variance analysis, and specification compliance checking.",
+      "rationale": "Chemical composition is a key differentiator of the system. Analytics on composition data would provide additional value for quality control and process optimization.",
+      "priority": "could",
+      "complexity": "medium",
+      "impact": "medium",
+      "phase_id": "phase-3",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Dashboard shows composition distribution across inventory",
+        "Alerts when composition approaches specification limits",
+        "Historical composition trends for materials",
+        "Comparison view for batches from same material",
+        "Export composition data for external analysis"
+      ],
+      "user_stories": [
+        "As a metallurgist, I want to analyze composition trends so that I can identify quality patterns",
+        "As a quality manager, I want composition alerts so that I catch out-of-spec materials early"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-18",
+      "title": "Multi-Language Support (i18n)",
+      "description": "Internationalize the application to support multiple languages, starting with English translation. Enable language switching and maintain Brazilian Portuguese as the default.",
+      "rationale": "The system is currently Portuguese-only, limiting market expansion. English support would open the system to international additive manufacturing facilities.",
+      "priority": "could",
+      "complexity": "high",
+      "impact": "medium",
+      "phase_id": "phase-4",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All UI strings are externalized for translation",
+        "English translation is complete and accurate",
+        "Users can switch language in settings",
+        "Date and number formats adapt to locale",
+        "New translations can be added without code changes"
+      ],
+      "user_stories": [
+        "As an international user, I want to use the system in English so that I can understand all features",
+        "As a multinational company, I want language options for our facilities in different countries"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-19",
+      "title": "ERP Integration Framework",
+      "description": "Create an integration framework with adapters for common ERP systems (SAP, Oracle, Microsoft Dynamics) to synchronize inventory, orders, and supplier data.",
+      "rationale": "Large manufacturing facilities typically have ERP systems. Integration reduces double data entry and enables LATECME to serve as a specialized module within existing infrastructure.",
+      "priority": "could",
+      "complexity": "high",
+      "impact": "medium",
+      "phase_id": "phase-4",
+      "dependencies": ["feature-13", "feature-14"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "Integration framework supports bidirectional sync",
+        "At least one ERP adapter is implemented (e.g., SAP)",
+        "Conflict resolution strategy handles concurrent updates",
+        "Sync logs enable troubleshooting",
+        "Integration can be enabled/disabled per module"
+      ],
+      "user_stories": [
+        "As an IT manager, I want ERP integration so that I don't have to maintain duplicate data",
+        "As a finance user, I want purchase orders to sync to our ERP for accounting"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-20",
+      "title": "Demand Forecasting Dashboard",
+      "description": "Implement basic demand forecasting based on historical consumption patterns to help with inventory planning and purchasing decisions.",
+      "rationale": "Predictive inventory management would be a significant competitive advantage, helping facilities optimize stock levels and reduce both stockouts and excess inventory.",
+      "priority": "could",
+      "complexity": "high",
+      "impact": "medium",
+      "phase_id": "phase-4",
+      "dependencies": ["feature-9", "feature-10"],
+      "status": "idea",
+      "acceptance_criteria": [
+        "System analyzes historical consumption patterns",
+        "Forecast shows expected usage for next 30/60/90 days",
+        "Reorder recommendations based on lead times",
+        "Accuracy metrics show forecast performance",
+        "Manual overrides for known future changes"
+      ],
+      "user_stories": [
+        "As an inventory planner, I want consumption forecasts so that I can plan purchases proactively",
+        "As a purchasing manager, I want reorder recommendations so that I optimize inventory investment"
+      ],
+      "competitor_insight_ids": []
+    },
+    {
+      "id": "feature-21",
+      "title": "Advanced Audit Logging",
+      "description": "Implement comprehensive audit logging for all data changes with user attribution, timestamps, old/new values, and compliance reporting capabilities.",
+      "rationale": "Manufacturing compliance often requires detailed audit trails. Current logging may not capture all the detail needed for regulatory audits.",
+      "priority": "could",
+      "complexity": "medium",
+      "impact": "medium",
+      "phase_id": "phase-4",
+      "dependencies": [],
+      "status": "idea",
+      "acceptance_criteria": [
+        "All create/update/delete operations are logged",
+        "Logs include user, timestamp, and old/new values",
+        "Audit logs are tamper-evident",
+        "Compliance reports can be generated for date ranges",
+        "Logs can be filtered by user, entity type, and action"
+      ],
+      "user_stories": [
+        "As a compliance officer, I want detailed audit trails for regulatory reviews",
+        "As an admin, I want to see who changed what and when for troubleshooting"
+      ],
+      "competitor_insight_ids": []
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-01-29T19:30:00Z",
+    "updated_at": "2026-01-29T19:30:00Z",
+    "generated_by": "roadmap_features agent",
+    "prioritization_framework": "MoSCoW",
+    "competitor_analysis_used": false
+  }
+}

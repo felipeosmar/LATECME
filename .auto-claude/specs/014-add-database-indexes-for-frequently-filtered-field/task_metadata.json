@@ -5,5 +5,6 @@
   "rationale": "List views filter by status (DRAFT, IN_PROGRESS, COMPLETED), movement_type (IN, OUT, TRANSFER), and date ranges. As data grows, these queries will become slower without proper indexes. PostgreSQL's query planner needs hints for optimal paths.",
   "category": "performance",
   "performanceCategory": "database",
-  "impact": "medium"
+  "impact": "medium",
+  "archivedAt": "2026-01-29T18:36:29.261Z"
 }

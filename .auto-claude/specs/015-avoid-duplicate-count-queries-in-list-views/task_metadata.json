@@ -5,5 +5,6 @@
   "rationale": "Each duplicate COUNT query adds 50-100ms on large tables. This pattern appears in at least 5 list views. The fix is simple: use paginator.count instead of calling queryset.count() separately.",
   "category": "performance",
   "performanceCategory": "database",
-  "impact": "medium"
+  "impact": "medium",
+  "archivedAt": "2026-01-29T18:36:28.466Z"
 }

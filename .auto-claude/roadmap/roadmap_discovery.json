@@ -1,0 +1,131 @@
+{
+  "project_name": "LATECME - Sistema de Controle de Manufatura",
+  "project_type": "web-app",
+  "tech_stack": {
+    "primary_language": "Python",
+    "frameworks": ["Django 5.2", "Django REST Framework (implied)", "Gunicorn"],
+    "key_dependencies": [
+      "PostgreSQL (psycopg2-binary)",
+      "Redis (django-redis)",
+      "Pillow (image processing)",
+      "Docker/Docker Compose",
+      "Nginx"
+    ]
+  },
+  "target_audience": {
+    "primary_persona": "Manufacturing operations staff at additive manufacturing facilities working with metallic powder materials (operators, inventory managers, quality inspectors)",
+    "secondary_personas": [
+      "Production managers planning and monitoring manufacturing orders",
+      "Purchasing/procurement specialists managing supplier relationships",
+      "Quality assurance personnel tracking material certifications",
+      "Plant administrators configuring system and managing users"
+    ],
+    "pain_points": [
+      "Difficulty tracking metallic powder inventory across multiple warehouses and bins",
+      "Manual or paper-based material traceability lacking audit trails",
+      "No clear visibility into material composition and certifications",
+      "Complex batch tracking for additive manufacturing processes",
+      "Inefficient purchase request and approval workflows",
+      "Lack of barcode/label generation for physical material tracking"
+    ],
+    "goals": [
+      "Complete traceability of metallic materials from receipt to production",
+      "Real-time inventory visibility with low-stock alerts",
+      "Streamlined purchasing workflow with approval controls",
+      "Quality control through certificate and batch tracking",
+      "Reduce manual data entry through barcode scanning",
+      "Compliance with manufacturing industry standards"
+    ],
+    "usage_context": "Daily use in manufacturing facility environments - warehouse floors for receiving and stock movements, production areas for batch preparation and material collection, offices for planning, purchasing, and reporting"
+  },
+  "product_vision": {
+    "one_liner": "A comprehensive inventory and production control system for additive manufacturing facilities working with metallic materials",
+    "problem_statement": "Additive manufacturing facilities using metallic powders (Aluminum, Titanium, Stainless Steel, Inconel, Cobalt-Chrome) need precise traceability, inventory control, and batch management to ensure quality, compliance, and operational efficiency - traditional inventory systems don't address the specific needs of powder metallurgy workflows",
+    "value_proposition": "Purpose-built for metallic additive manufacturing with specialized features like chemical composition tracking, powder bin management, batch preparation workflows, supplier certification tracking, and EPL barcode label generation - all integrated in a single system rather than cobbled-together general-purpose tools",
+    "success_metrics": [
+      "Reduction in material waste through better inventory visibility",
+      "100% traceability from raw material receipt to finished batch",
+      "Faster receiving and inspection workflows",
+      "Reduced stockouts through proactive low-stock alerts",
+      "Elimination of manual paper-based tracking",
+      "Audit-ready certification and batch documentation"
+    ]
+  },
+  "current_state": {
+    "maturity": "mvp",
+    "existing_features": [
+      "Material catalog with chemical composition tracking (elements and percentages)",
+      "Multi-warehouse inventory management with location codes",
+      "Stock movements (IN, OUT, TRANSFER, ADJUSTMENT, RETURN, LOSS)",
+      "Stock reservations with expiration dates",
+      "Inventory counting/physical inventory audits",
+      "Supplier management with pricing, lead times, and availability",
+      "Production order management with status workflow",
+      "Bin (container) management for powder storage",
+      "Batch preparation - collecting material from multiple bins",
+      "Purchase request workflow with approval process",
+      "Purchase order creation and tracking",
+      "Receiving and inspection workflow",
+      "EPL label template system for thermal printers",
+      "Network printer configuration and print job tracking",
+      "Custom user model with role-based access (Operator, Admin, Buyer)",
+      "Database indexes for query optimization",
+      "Redis caching for dashboard statistics"
+    ],
+    "known_gaps": [
+      "Limited automated testing (only 4 test files found)",
+      "No API documentation visible",
+      "Dashboard/reporting features appear minimal",
+      "No mobile-optimized interface evident",
+      "No document/certificate file upload system visible",
+      "No email notifications or alerts system",
+      "No integration with external ERP/accounting systems",
+      "No multi-language support (currently Portuguese only)"
+    ],
+    "technical_debt": [
+      "Test coverage needs significant expansion",
+      "MyPy type checking configured but in lenient mode",
+      "Some migration files may need cleanup after rapid development"
+    ]
+  },
+  "competitive_context": {
+    "alternatives": [
+      "SAP Material Management",
+      "Oracle Inventory Management",
+      "Microsoft Dynamics 365 Supply Chain",
+      "Fishbowl Inventory",
+      "Cin7",
+      "Custom spreadsheet-based tracking"
+    ],
+    "differentiators": [
+      "Purpose-built for additive manufacturing with metallic powders",
+      "Chemical composition tracking at element level",
+      "Bin/container management specific to powder handling",
+      "Batch preparation workflow for AM production",
+      "Integrated EPL label printing for thermal printers",
+      "Brazilian market focus (CNPJ, Portuguese language)"
+    ],
+    "market_position": "Niche specialized solution for the additive manufacturing industry in Brazil, filling a gap between expensive enterprise ERP systems and inadequate general-purpose inventory tools",
+    "competitor_pain_points": [],
+    "competitor_analysis_available": false
+  },
+  "constraints": {
+    "technical": [
+      "Django monolithic architecture (not microservices)",
+      "Requires PostgreSQL database",
+      "Redis required for caching features",
+      "Network thermal printers required for label functionality",
+      "Docker deployment model"
+    ],
+    "resources": [
+      "Single developer project (based on git history)",
+      "Active development with auto-claude automation assistance"
+    ],
+    "dependencies": [
+      "Network connectivity for label printers",
+      "PostgreSQL 13+ database server",
+      "Redis server for caching"
+    ]
+  },
+  "created_at": "2026-01-29T19:00:00Z"
+}

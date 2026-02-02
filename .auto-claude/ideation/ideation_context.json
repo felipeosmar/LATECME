@@ -3,20 +3,36 @@
   "tech_stack": [],
   "target_audience": null,
   "planned_features": [
-    "Add autofocus and enhanced form field interactions",
-    "Add ARIA labels to icon-only action buttons",
+    "Split large inventory views.py into domain-specific modules",
+    "Split large purchasing views.py into domain-specific modules",
+    "Git Cleanup and Merge to Dev",
+    "Add Python linting and code quality configuration",
+    "Add Supplier Search API Endpoint",
     "Add skeleton loading states for data tables",
-    "Add Date Range Filter to Material and Supplier Lists",
-    "Add Production Module Dashboard",
-    "Add Reports View to Production Module",
-    "Add search input debouncing with visual feedback",
-    "Enhance keyboard accessibility for modal dialogs",
     "Add Bulk Status Change for Production Orders",
-    "Add Supplier Search API Endpoint"
+    "Add Date Range Filter to Material and Supplier Lists",
+    "Quick Spec: Create Codebase Memories",
+    "Add search input debouncing with visual feedback",
+    "Add Redis Caching for Dashboard Statistics",
+    "Remove Unused Static File Plugins to Reduce Deployment Size",
+    "Add ARIA labels to icon-only action buttons",
+    "Avoid Duplicate .count() Queries in List Views",
+    "Enhance keyboard accessibility for modal dialogs",
+    "Add Production Module Dashboard",
+    "Extract duplicated list view pagination/filtering into reusable mixin or utility",
+    "Add tests for production and purchasing apps",
+    "Add autofocus and enhanced form field interactions",
+    "Add Database Indexes for Frequently Filtered Fields",
+    "Fix N+1 Query in Material Search API",
+    "Add Reports View to Production Module"
   ],
   "graph_hints": {},
   "config": {
     "enabled_types": [
+      "code_improvements",
+      "ui_ux_improvements",
+      "security_hardening",
+      "documentation_gaps",
       "performance_optimizations",
       "code_quality"
     ],
@@ -24,5 +40,5 @@
     "include_kanban_context": true,
     "max_ideas_per_type": 5
   },
-  "created_at": "2026-01-27T10:36:07.933888"
+  "created_at": "2026-01-29T15:38:35.491108"
 }

@@ -1,0 +1,125 @@
+{
+  "documentation_gaps": [
+    {
+      "id": "doc-001",
+      "type": "documentation_gaps",
+      "title": "Add API Documentation for Internal REST Endpoints",
+      "description": "The project has multiple internal API endpoints across modules (materials, purchasing, production) but they lack comprehensive documentation. Key endpoints like `material_search_api`, `api_approved_requests`, `api_order_items` only have brief one-line docstrings without parameter descriptions, response formats, error codes, or usage examples.",
+      "rationale": "Internal API documentation is critical for frontend developers and any future integrations. Currently, developers must read source code to understand how to call these APIs, what parameters they accept, and what responses to expect. This slows down development and increases risk of misuse.",
+      "category": "api_docs",
+      "targetAudience": "developers",
+      "affectedAreas": [
+        "apps/materials/views.py (material_search_api)",
+        "apps/purchasing/views/api.py (api_approved_requests, api_order_items)",
+        "apps/inventory/views.py (API endpoints)",
+        "apps/labels/views.py (label printing APIs)"
+      ],
+      "currentDocumentation": "Only brief one-line docstrings like 'API para busca de materiais (AJAX)' without parameter or response documentation",
+      "proposedContent": "Create an API.md file documenting all internal endpoints with: HTTP method, URL pattern, required permissions, query parameters, request body format, response JSON schema, error codes, and curl examples. Also enhance inline docstrings with Args, Returns, Raises sections.",
+      "priority": "high",
+      "estimatedEffort": "medium"
+    },
+    {
+      "id": "doc-002",
+      "type": "documentation_gaps",
+      "title": "Add Getting Started Guide for New Developers",
+      "description": "The README.md provides basic feature overview and environment variables, but lacks a complete getting started guide covering Docker setup, database initialization, running migrations, creating initial users, and verifying the development environment. The CONTRIBUTING.md assumes Poetry but actual requirements.txt suggests different setup.",
+      "rationale": "New team members or contributors need clear, step-by-step instructions to get the project running locally. Without this, onboarding takes significantly longer and creates frustration. The Docker services (django, postgres, redis, nginx) are defined but not documented.",
+      "category": "readme",
+      "targetAudience": "contributors",
+      "affectedAreas": [
+        "README.md",
+        "docker-compose.yml",
+        "docker-compose-dev.yml",
+        "Dockerfile",
+        ".env.production.example"
+      ],
+      "currentDocumentation": "README has environment variables section but no step-by-step setup instructions. CONTRIBUTING.md mentions Poetry but requirements.txt exists.",
+      "proposedContent": "Add comprehensive 'Getting Started' section to README covering: 1) Prerequisites (Docker, Python 3.12), 2) Clone and setup steps, 3) Docker vs local development options, 4) Database initialization and migrations, 5) Creating superuser, 6) Accessing the application, 7) Running tests, 8) Common troubleshooting tips.",
+      "priority": "high",
+      "estimatedEffort": "medium"
+    },
+    {
+      "id": "doc-003",
+      "type": "documentation_gaps",
+      "title": "Document Production Module Business Logic and Workflows",
+      "description": "The production module (ProductionOrder, Batch, Bin, BinHistory, BatchItem) has complex business logic with state machines, material traceability, and inter-model relationships. While models have brief docstrings, there's no documentation explaining the workflow: how production orders progress through states, how batches collect material from bins, and how traceability is maintained.",
+      "rationale": "Production is a core domain with complex workflows. Methods like `start()`, `complete()`, `add_bin_material()`, `mark_ready()` implement critical business logic that affects inventory and production tracking. Without documentation, developers may misuse these methods or create bugs.",
+      "category": "architecture",
+      "targetAudience": "developers",
+      "affectedAreas": [
+        "apps/production/models.py",
+        "apps/production/views.py",
+        "apps/production/forms.py"
+      ],
+      "currentDocumentation": "Brief model-level docstrings like 'Ordens de Produção', 'Batelada - coleção de material de múltiplos contentores para produção'. Methods have minimal docstrings.",
+      "proposedContent": "Create apps/production/README.md with: 1) Module overview and purpose, 2) Entity relationship diagram (reference existing Excalidraw), 3) Production Order lifecycle with state diagram, 4) Batch preparation workflow, 5) Bin material flow (load/unload/transfer), 6) Traceability chain explanation, 7) Code examples for common operations.",
+      "priority": "medium",
+      "estimatedEffort": "medium"
+    },
+    {
+      "id": "doc-004",
+      "type": "documentation_gaps",
+      "title": "Add Inline Documentation for Core Base Models",
+      "description": "The apps/core/models.py defines BaseModel and Sequence which are inherited by all domain models. The Sequence.get_next() method has good docstring but BaseModel lacks documentation explaining the audit trail fields (created_by, updated_by), soft delete pattern (is_active), and UUID primary keys. These patterns affect how all models should be used.",
+      "rationale": "Understanding the base model conventions is essential for any developer adding new features or models. The soft delete pattern (is_active=True) requires understanding that queries should filter by is_active, and the audit fields need proper user assignment. Without documentation, developers may create inconsistent implementations.",
+      "category": "inline_comments",
+      "targetAudience": "developers",
+      "affectedAreas": [
+        "apps/core/models.py",
+        "All models inheriting from BaseModel"
+      ],
+      "currentDocumentation": "Only class-level docstrings: 'Modelo base com UUID e campos de auditoria', 'Sequências para geração atômica de IDs'",
+      "proposedContent": "Enhance BaseModel docstring with: 1) Purpose and usage pattern, 2) UUID primary key implications, 3) Soft delete convention (always filter is_active=True), 4) Audit field requirements (set created_by/updated_by in views), 5) Example of proper model creation in views. Add similar documentation for TimeStampedModel.",
+      "priority": "medium",
+      "estimatedEffort": "low"
+    },
+    {
+      "id": "doc-005",
+      "type": "documentation_gaps",
+      "title": "Create Architecture Overview Documentation",
+      "description": "The project has Excalidraw diagrams in /diagrams/ (overview.excalidraw, inventory-models.excalidraw, etc.) but these are not referenced anywhere in the documentation and require the Excalidraw app to view. There's no high-level architecture document explaining the module structure, data flow between apps, and system components.",
+      "rationale": "Architecture documentation helps new developers understand how the system fits together before diving into code. The existing diagrams represent valuable work but are inaccessible without proper documentation. Understanding module dependencies (materials -> inventory -> production -> purchasing) is crucial for safe modifications.",
+      "category": "architecture",
+      "targetAudience": "developers",
+      "affectedAreas": [
+        "diagrams/overview.excalidraw",
+        "diagrams/inventory-models.excalidraw",
+        "diagrams/materials-models.excalidraw",
+        "diagrams/accounts-models.excalidraw",
+        "diagrams/core-models.excalidraw"
+      ],
+      "currentDocumentation": "Excalidraw files exist but are not documented or exported to accessible formats. No ARCHITECTURE.md or similar document exists.",
+      "proposedContent": "Create ARCHITECTURE.md with: 1) System overview and purpose (manufacturing control for additive manufacturing), 2) Module dependency diagram (export from Excalidraw or recreate in Mermaid), 3) Brief description of each app's responsibility, 4) Data flow for key operations (receiving inventory, production workflow), 5) Technology stack (Django 5.x, PostgreSQL, Redis), 6) Links to detailed diagrams. Export key Excalidraw diagrams to PNG for inclusion.",
+      "priority": "medium",
+      "estimatedEffort": "medium"
+    }
+  ],
+  "metadata": {
+    "filesAnalyzed": 64,
+    "documentedFunctions": 510,
+    "undocumentedFunctions": 265,
+    "estimatedDocstringCoverage": "~66%",
+    "existingDocumentation": [
+      "README.md - Basic overview and environment config",
+      "CONTRIBUTING.md - Comprehensive code quality guidelines",
+      "apps/labels/README.md - Complete module documentation",
+      "apps/purchasing/views/README.md - Brief views structure note"
+    ],
+    "missingDocumentation": [
+      "Getting started / installation guide",
+      "API endpoint documentation",
+      "Architecture overview",
+      "Module-level READMEs for production, inventory, materials",
+      "Workflow documentation for business processes"
+    ],
+    "diagramsAvailable": [
+      "overview.excalidraw",
+      "inventory-models.excalidraw",
+      "materials-models.excalidraw",
+      "accounts-models.excalidraw",
+      "core-models.excalidraw"
+    ],
+    "generatedAt": "2026-01-29T15:45:00Z"
+  }
+}

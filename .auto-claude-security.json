@@ -184,6 +184,7 @@
     "uvicorn"
   ],
   "script_commands": [
+    "./check_cache_status.sh",
     "./entrypoint.prod.sh",
     "./entrypoint.sh",
     "./fix_split_lines.sh",
@@ -263,10 +264,11 @@
       "entrypoint.sh",
       "test_query_performance.sh",
       "entrypoint.prod.sh",
-      "fix_templates.sh"
+      "fix_templates.sh",
+      "check_cache_status.sh"
     ]
   },
-  "project_dir": "/home/felipe/work/LATECME/.auto-claude/worktrees/tasks/022-verifique-todas-as-pendencias-de-git-existentes-ap",
-  "created_at": "2026-01-29T12:38:00.611355",
-  "project_hash": "63c5ae49967c3a0b7228852328c97f7a"
+  "project_dir": "/home/felipe/work/LATECME",
+  "created_at": "2026-01-29T15:38:54.160588",
+  "project_hash": "3b698f1278a7525126a1c9790c0d3681"
 }

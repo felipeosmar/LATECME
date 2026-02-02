@@ -5,5 +5,6 @@
   "rationale": "Redis is already configured in docker-compose but not utilized in Django. Dashboard statistics rarely change and are perfect candidates for caching. Multiple users viewing dashboards amplify the database load unnecessarily.",
   "category": "performance",
   "performanceCategory": "caching",
-  "impact": "high"
+  "impact": "high",
+  "archivedAt": "2026-01-29T18:36:27.213Z"
 }
