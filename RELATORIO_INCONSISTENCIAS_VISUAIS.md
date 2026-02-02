@@ -330,18 +330,18 @@ Padronizar estrutura de modal:
 ## Plano de Ação Priorizado
 
 ### Alta Prioridade (Impacto Visual Imediato)
-1. ✅ Corrigir acentuação em todos os templates
-2. ✅ Padronizar estrutura de filtros
-3. ✅ Padronizar paginação
+1. ✅ Corrigir acentuação em todos os templates (44+ arquivos)
+2. ✅ Padronizar estrutura de filtros (card-filters com header)
+3. ✅ Padronizar paginação (ícones SVG + números)
 
 ### Média Prioridade (Consistência)
-4. ⏳ Padronizar botões de ação em tabelas
+4. ✅ Padronizar botões de ação em tabelas (btn-ghost-*)
 5. ⏳ Adicionar cards de estatísticas onde faltam
-6. ⏳ Criar componente de empty state reutilizável
+6. ✅ Criar componente de empty state reutilizável
 
 ### Baixa Prioridade (Refinamento)
 7. ⏳ Padronizar estrutura de modais
-8. ⏳ Adicionar CSS custom para badges de status
+8. ✅ Adicionar CSS custom para badges de status
 9. ⏳ Revisar labels de formulários
 
 ---
