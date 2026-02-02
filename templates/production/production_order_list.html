@@ -580,11 +580,6 @@
                             <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-flag-check"></use>
                         </svg>
                     </template>
-<<<<<<< HEAD
-                    <h3 x-text="confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?'"></h3>
-                    <div class="text-muted"
-                        x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'">
-=======
                     <h3 x-text="isBulkOperation ? (confirmAction === 'start' ? 'Iniciar Producao em Lote?' : 'Marcar como Concluidas?') : (confirmAction === 'start' ? 'Iniciar Producao?' : 'Marcar como Concluida?')"></h3>
                     <div class="text-muted">
                         <template x-if="isBulkOperation">
@@ -593,7 +588,6 @@
                         <template x-if="!isBulkOperation">
                             <span x-text="confirmAction === 'start' ? 'A ordem sera marcada como em andamento.' : 'A ordem sera marcada como concluida.'"></span>
                         </template>
->>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -627,39 +621,6 @@
 
 {% block extra_js %}
 <script>
-<<<<<<< HEAD
-    function orderManager() {
-        return {
-            createModalOpen: false,
-            confirmModalOpen: false,
-            confirmAction: '',
-            selectedOrderId: null,
-            submitting: false,
-            formData: {
-                material: '',
-                planned_quantity: '',
-                planned_start_date: '',
-                planned_end_date: '',
-                responsible: '',
-                status: 'PLANNED',
-                notes: ''
-            },
-
-            startOrder(orderId) {
-                this.selectedOrderId = orderId;
-                this.confirmAction = 'start';
-                this.confirmModalOpen = true;
-            },
-
-            completeOrder(orderId) {
-                this.selectedOrderId = orderId;
-                this.confirmAction = 'complete';
-                this.confirmModalOpen = true;
-            },
-
-            async executeAction() {
-                if (!this.selectedOrderId) return;
-=======
 function orderManager() {
     return {
         createModalOpen: false,
@@ -748,7 +709,6 @@ function orderManager() {
 
             // Handle single order operations
             if (!this.selectedOrderId) return;
->>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
 
                 this.submitting = true;
                 const baseUrl = this.confirmAction === 'start'
@@ -765,10 +725,6 @@ function orderManager() {
                         }
                     });
 
-<<<<<<< HEAD
-                    const data = await response.json();
-                    if (data.success) {
-=======
                 const data = await response.json();
                 if (data.success) {
                     window.location.reload();
@@ -855,57 +811,19 @@ function orderManager() {
                     if (data.data && data.data.id) {
                         window.location.href = '{% url "production:order_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
                     } else {
->>>>>>> 1dc4d9c0fa33a126346b34bb4c100b9362961f74
                         window.location.reload();
-                    } else {
-                        alert(data.message || 'Erro ao executar acao');
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Erro ao executar acao');
-                } finally {
-                    this.submitting = false;
-                    this.confirmModalOpen = false;
+                } else {
+                    alert(data.message || 'Erro ao criar ordem');
                 }
-            },
-
-            async submitOrder() {
-                this.submitting = true;
-
-                const formData = new FormData();
-                Object.keys(this.formData).forEach(key => {
-                    if (this.formData[key]) {
-                        formData.append(key, this.formData[key]);
-                    }
-                });
-
-                try {
-                    const response = await fetch('{% url "production:order_create" %}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: formData
-                    });
-
-                    const data = await response.json();
-                    if (data.success) {
-                        if (data.data && data.data.id) {
-                            window.location.href = '{% url "production:order_detail" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', data.data.id);
-                        } else {
-                            window.location.reload();
-                        }
-                    } else {
-                        alert(data.message || 'Erro ao criar ordem');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Erro ao criar ordem');
-                } finally {
-                    this.submitting = false;
-                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erro ao criar ordem');
+            } finally {
+                this.submitting = false;
             }
         }
     }
+}
 </script>
 {% endblock %}
