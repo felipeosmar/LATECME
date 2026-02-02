@@ -1,0 +1,126 @@
+{
+  "security_hardening": [
+    {
+      "id": "sec-001",
+      "type": "security_hardening",
+      "title": "Remove Committed .env File and Production Secrets from Version Control",
+      "description": "The .env file is currently tracked in git, exposing development credentials (PGADMIN_DEFAULT_PASSWORD=felipe@123, database credentials). Additionally, .env.production contains real production secrets including database password (2RTz*2t8X*n!), superuser password (20031565@Felipe), and Django SECRET_KEY that could be accidentally committed or exposed through file access.",
+      "rationale": "Credentials committed to version control represent a critical security vulnerability. Anyone with repository access (current or historical) can access these secrets. Git history preserves these credentials even after removal, making this a persistent security risk that could lead to complete system compromise.",
+      "category": "secrets_management",
+      "severity": "critical",
+      "affectedFiles": [".env", ".env.production", ".gitignore"],
+      "vulnerability": "CWE-798: Use of Hard-coded Credentials, CWE-540: Inclusion of Sensitive Information in Source Code",
+      "currentRisk": "Repository access grants full database and admin access. Historical git data contains all past credentials.",
+      "remediation": "1) Remove .env from git tracking: `git rm --cached .env` 2) Ensure .env.production is never committed (verify .gitignore) 3) Rotate ALL exposed credentials immediately (database password, superuser password, Django SECRET_KEY) 4) Consider git-filter-branch or BFG Repo-Cleaner to remove credentials from git history 5) Use environment variables injected at runtime or a secrets manager for production",
+      "references": [
+        "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/01-Information_Gathering/05-Review_Webserver_Metafiles_for_Information_Leakage",
+        "https://cwe.mitre.org/data/definitions/798.html"
+      ],
+      "compliance": ["SOC2", "PCI-DSS", "GDPR"]
+    },
+    {
+      "id": "sec-002",
+      "type": "security_hardening",
+      "title": "Fix Wildcard ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS in Production",
+      "description": "The .env.production file sets DJANGO_ALLOWED_HOSTS=* and CSRF_TRUSTED_ORIGINS=*, which effectively disables Django's host header validation and CSRF protection. This allows host header injection attacks and cross-site request forgery attacks.",
+      "rationale": "Host header validation prevents cache poisoning and password reset poisoning attacks. CSRF protection prevents attackers from tricking authenticated users into performing unintended actions. Setting these to wildcards completely bypasses these critical security controls.",
+      "category": "configuration",
+      "severity": "critical",
+      "affectedFiles": [".env.production", ".env.production.example", "config/settings.py"],
+      "vulnerability": "CWE-352: Cross-Site Request Forgery (CSRF), CWE-644: Improper Neutralization of HTTP Headers for Scripting Syntax",
+      "currentRisk": "Attackers can perform CSRF attacks against any authenticated user. Host header injection enables cache poisoning and password reset poisoning.",
+      "remediation": "1) Update DJANGO_ALLOWED_HOSTS to list only legitimate domain names (e.g., 'your-domain.com,www.your-domain.com') 2) Update CSRF_TRUSTED_ORIGINS to list only the specific origins with protocol (e.g., 'https://your-domain.com') 3) Add validation in settings.py to prevent wildcard values 4) Update .env.production.example with proper examples instead of placeholders",
+      "references": [
+        "https://docs.djangoproject.com/en/5.2/ref/settings/#allowed-hosts",
+        "https://docs.djangoproject.com/en/5.2/ref/settings/#csrf-trusted-origins",
+        "https://owasp.org/www-community/attacks/csrf"
+      ],
+      "compliance": ["OWASP Top 10 A05", "SOC2"]
+    },
+    {
+      "id": "sec-003",
+      "type": "security_hardening",
+      "title": "Prevent Exception Detail Leakage in API Error Responses",
+      "description": "Multiple views across the application (inventory, purchasing, production, labels modules) return raw exception messages to clients via `str(e)` in JSON error responses. This pattern appears in 40+ locations across views.py files, potentially exposing internal system details, file paths, database structure, and stack traces.",
+      "rationale": "Detailed error messages can reveal sensitive information about the application's internal workings, helping attackers identify vulnerabilities and craft more targeted attacks. This violates the principle of failing securely and can expose database schema, file paths, and third-party service details.",
+      "category": "configuration",
+      "severity": "high",
+      "affectedFiles": [
+        "apps/labels/views.py",
+        "apps/purchasing/views/purchase_requests.py",
+        "apps/purchasing/views/purchase_orders.py",
+        "apps/purchasing/views/receiving.py",
+        "apps/inventory/views.py",
+        "apps/inventory/views/count_views.py",
+        "apps/inventory/views/movement_views.py",
+        "apps/inventory/views/warehouse_views.py",
+        "apps/inventory/views/reservation_views.py",
+        "apps/production/views.py"
+      ],
+      "vulnerability": "CWE-209: Generation of Error Message Containing Sensitive Information",
+      "currentRisk": "Attackers can probe the application to extract internal details about database structure, file paths, and system configuration through error messages.",
+      "remediation": "1) Create a centralized exception handler utility that logs full exception details server-side but returns generic user-facing messages 2) Replace all `str(e)` in error responses with generic messages like 'An error occurred. Please try again.' 3) Use Django's logging framework to capture detailed error info for debugging 4) Consider implementing a unique error ID system to correlate user-reported errors with server logs",
+      "references": [
+        "https://owasp.org/www-community/Improper_Error_Handling",
+        "https://cwe.mitre.org/data/definitions/209.html"
+      ],
+      "compliance": ["OWASP Top 10 A09", "SOC2"]
+    },
+    {
+      "id": "sec-004",
+      "type": "security_hardening",
+      "title": "Add Application-Level Rate Limiting and Brute Force Protection",
+      "description": "While nginx provides basic rate limiting (10r/s general, 5r/m login), there is no application-level rate limiting or account lockout mechanism. The login view has no protection against credential stuffing or brute force attacks beyond the nginx limit, which can be bypassed through distributed attacks or by targeting the Django application directly.",
+      "rationale": "Defense in depth requires rate limiting at multiple layers. Account lockout policies help prevent brute force attacks. Without application-level controls, attackers can bypass nginx rate limiting in certain scenarios (internal network, load balancer bypass) or use distributed attacks.",
+      "category": "authentication",
+      "severity": "high",
+      "affectedFiles": [
+        "apps/accounts/views.py",
+        "config/settings.py",
+        "requirements.txt"
+      ],
+      "vulnerability": "CWE-307: Improper Restriction of Excessive Authentication Attempts",
+      "currentRisk": "Brute force and credential stuffing attacks against user accounts. No account lockout after failed attempts.",
+      "remediation": "1) Install django-axes or django-defender for login attempt tracking and account lockout 2) Configure lockout after 5 failed attempts with progressive delay 3) Add CAPTCHA or similar challenge after 3 failed attempts 4) Implement IP-based and account-based rate limiting 5) Log failed authentication attempts for security monitoring 6) Consider adding 2FA/MFA support for sensitive accounts",
+      "references": [
+        "https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks",
+        "https://django-axes.readthedocs.io/",
+        "https://cwe.mitre.org/data/definitions/307.html"
+      ],
+      "compliance": ["OWASP Top 10 A07", "SOC2", "PCI-DSS"]
+    },
+    {
+      "id": "sec-005",
+      "type": "security_hardening",
+      "title": "Configure Secure Session Management Settings",
+      "description": "Session configuration is minimal - only SESSION_COOKIE_SECURE is set (and only when DEBUG=False). Missing configurations include: session timeout/expiration, session rotation on login, session cookie httponly flag explicit setting, and Redis authentication for session storage.",
+      "rationale": "Proper session management is critical for maintaining user authentication security. Without session timeouts, abandoned sessions remain valid indefinitely. Without proper cookie flags, sessions may be vulnerable to theft. Redis without authentication means any network access grants session access.",
+      "category": "authentication",
+      "severity": "medium",
+      "affectedFiles": [
+        "config/settings.py",
+        "docker-compose.yml"
+      ],
+      "vulnerability": "CWE-613: Insufficient Session Expiration, CWE-384: Session Fixation",
+      "currentRisk": "Sessions may persist indefinitely, increasing window for session hijacking. Redis session store has no authentication.",
+      "remediation": "1) Add SESSION_COOKIE_AGE = 86400 (24 hours) or appropriate timeout 2) Add SESSION_EXPIRE_AT_BROWSER_CLOSE = True for sensitive applications 3) Ensure SESSION_COOKIE_HTTPONLY = True (default but explicit is better) 4) Add SESSION_COOKIE_SAMESITE = 'Lax' or 'Strict' 5) Configure Redis with password authentication: `redis-server --requirepass <password>` and update CACHES config 6) Consider SESSION_SAVE_EVERY_REQUEST = True to extend session on activity 7) Implement session rotation on privilege level changes",
+      "references": [
+        "https://docs.djangoproject.com/en/5.2/topics/http/sessions/",
+        "https://owasp.org/www-community/attacks/Session_fixation",
+        "https://cwe.mitre.org/data/definitions/613.html"
+      ],
+      "compliance": ["OWASP Top 10 A07", "SOC2"]
+    }
+  ],
+  "metadata": {
+    "dependenciesScanned": 9,
+    "knownVulnerabilities": 0,
+    "filesAnalyzed": 45,
+    "criticalIssues": 2,
+    "highIssues": 2,
+    "mediumIssues": 1,
+    "lowIssues": 0,
+    "generatedAt": "2026-01-29T15:45:00Z",
+    "analysisNotes": "Analysis focused on configuration security, secrets management, and authentication. No SQL injection or XSS vulnerabilities found as Django ORM and template escaping are properly used. CSRF protection middleware is enabled. Dependencies appear up-to-date with Django 5.2.4."
+  }
+}

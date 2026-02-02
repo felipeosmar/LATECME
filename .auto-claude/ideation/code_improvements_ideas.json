@@ -3,116 +3,129 @@
     {
       "id": "ci-001",
       "type": "code_improvements",
-      "title": "Add Production Module Dashboard",
-      "description": "Create a dashboard view for the Production module with statistics about production orders, batches, bins, and recent activity - similar to the existing inventory and purchasing dashboards.",
-      "rationale": "The code reveals this opportunity because: 1) Dashboard pattern already exists in inventory/views.py dashboard() and purchasing/views.py dashboard(), 2) Production module has all the necessary models (ProductionOrder, Batch, Bin) with status fields and timestamps, 3) Statistics queries using Count, Sum, and aggregations are well-established patterns in the codebase, 4) Template structure exists (templates/dashboard/index.html, templates/inventory/dashboard.html) that can be followed.",
-      "builds_upon": ["Inventory Dashboard (apps/inventory/views.py)", "Purchasing Dashboard (apps/purchasing/views.py)", "Materials Dashboard (apps/materials/views.py)"],
-      "estimated_effort": "medium",
+      "title": "Add @cache_page to Purchasing and Inventory Dashboards",
+      "description": "Apply the @cache_page(300) decorator to the purchasing dashboard and inventory dashboard views, which currently execute expensive aggregation queries without any caching.",
+      "rationale": "The @cache_page(300) pattern is already established in apps/materials/views.py (dashboard_materials) and apps/production/views.py (production_order_list). Purchasing and inventory dashboards perform similar expensive Count() and Sum() aggregations but lack this optimization. The pattern is proven and requires only adding the decorator.",
+      "builds_upon": [
+        "Materials dashboard caching (apps/materials/views.py:281)",
+        "Production order list caching (apps/production/views.py:25)"
+      ],
+      "estimated_effort": "trivial",
       "affected_files": [
-        "apps/production/views.py",
-        "apps/production/urls.py",
-        "templates/production/dashboard.html"
+        "apps/purchasing/views/dashboard.py",
+        "apps/inventory/views/stock_views.py"
       ],
       "existing_patterns": [
-        "Dashboard view with stats dict (inventory/views.py:dashboard)",
-        "Status-based counts using Count() aggregation",
-        "Recent items queries with select_related",
-        "Base internal template extension"
+        "@cache_page(300) decorator pattern",
+        "from django.views.decorators.cache import cache_page"
       ],
-      "implementation_approach": "1. Create dashboard() view in apps/production/views.py following the exact pattern from inventory/views.py:dashboard() - stats dict with order counts by status, batch counts by status, total bins, recent movements. 2. Add URL route in apps/production/urls.py. 3. Create templates/production/dashboard.html extending base/internal.html with stat cards and recent activity tables following templates/inventory/dashboard.html structure.",
+      "implementation_approach": "Import cache_page from django.views.decorators.cache at the top of each file, then add @cache_page(300) decorator above @login_required on the dashboard() functions. The 300 seconds (5 minutes) cache time matches the existing pattern in materials and production modules.",
       "status": "draft",
-      "created_at": "2026-01-27T10:30:42.678049"
+      "created_at": "2026-01-29T15:45:00.000000"
     },
     {
       "id": "ci-002",
       "type": "code_improvements",
-      "title": "Add Supplier Search API Endpoint",
-      "description": "Create an AJAX search API endpoint for suppliers, allowing typeahead/autocomplete functionality when selecting suppliers in forms - similar to the existing material_search_api.",
-      "rationale": "The code reveals this opportunity because: 1) material_search_api() exists in materials/views.py and returns JSON for autocomplete, 2) Supplier model is fully defined with searchable fields (name, code, cnpj), 3) api_materials_with_stock() and api_warehouses() show the API endpoint pattern is well-established, 4) Several forms require supplier selection (purchase requests, purchase orders) that would benefit from search.",
-      "builds_upon": ["Material Search API (apps/materials/views.py:material_search_api)", "API patterns in inventory/views.py"],
+      "title": "Add CSV Export Endpoint for Stock List",
+      "description": "Add a CSV export endpoint for the stock_list view that allows users to download the current filtered stock data as a CSV file, using the same filter parameters (search, warehouse, material_type, stock_status) already implemented in the view.",
+      "rationale": "The stock_list view already has comprehensive filtering logic and returns structured data with material code, name, warehouse, quantities, etc. Django provides built-in CSV response capabilities. Reports views already aggregate similar data. This extends the existing list view pattern to include export capability.",
+      "builds_upon": [
+        "Stock list view with filters (apps/inventory/views/stock_views.py:58-116)",
+        "MaterialStock model with structured data",
+        "Django's HttpResponse with CSV content type"
+      ],
+      "estimated_effort": "small",
+      "affected_files": [
+        "apps/inventory/views/stock_views.py",
+        "apps/inventory/urls.py"
+      ],
+      "existing_patterns": [
+        "List view filtering pattern with Q objects",
+        "Query parameter handling (search, warehouse_id, etc.)",
+        "Django CSV export pattern using csv.writer"
+      ],
+      "implementation_approach": "Create a new stock_export_csv() view that reuses the same queryset and filter logic from stock_list(). Use Django's HttpResponse with content_type='text/csv' and Content-Disposition header. Write rows using csv.writer with columns: Material Code, Material Name, Warehouse, Current Qty, Reserved Qty, Available Qty, Min Stock, Max Stock, Last Movement. Add URL pattern for 'stock/export/csv/'.",
+      "status": "draft",
+      "created_at": "2026-01-29T15:45:00.000000"
+    },
+    {
+      "id": "ci-003",
+      "type": "code_improvements",
+      "title": "Add MaterialCategory Search API Endpoint",
+      "description": "Add a JSON API endpoint for searching MaterialCategory records, similar to the existing material_search_api endpoint, to enable dynamic category selection in forms with typeahead/autocomplete functionality.",
+      "rationale": "The material_search_api pattern is established in apps/materials/views.py:321-347 and returns JSON with id, code, name fields. MaterialCategory model exists with name and description fields but has no search API. Forms currently use static Select widgets for categories. This enables consistent dynamic search across all entity types.",
+      "builds_upon": [
+        "Material search API (apps/materials/views.py:321-347)",
+        "MaterialCategory model (apps/materials/models.py:230-250)",
+        "JsonResponse pattern for API endpoints"
+      ],
       "estimated_effort": "trivial",
       "affected_files": [
         "apps/materials/views.py",
         "apps/materials/urls.py"
       ],
       "existing_patterns": [
-        "material_search_api() with Q filter on multiple fields",
-        "JsonResponse returning list of dicts",
-        "Minimum query length check (len(query) < 2)",
+        "@login_required decorator on API views",
+        "JsonResponse({'results': list}) return format",
+        "Q object search on multiple fields",
         "[:10] result limiting"
       ],
-      "implementation_approach": "1. Copy material_search_api() function in materials/views.py, rename to supplier_search_api(). 2. Modify query to filter Supplier model on Q(name__icontains=query) | Q(code__icontains=query) | Q(cnpj__icontains=query). 3. Return id, code, name, contact_email fields in results. 4. Add URL path in materials/urls.py: path('api/suppliers/search/', views.supplier_search_api, name='supplier_search_api').",
+      "implementation_approach": "Add category_search_api() view following material_search_api pattern: require min 2 char query, filter MaterialCategory.objects.filter(Q(name__icontains=query) | Q(description__icontains=query), is_active=True)[:10], return JsonResponse with id, name, color, description. Add URL path('api/categories/', views.category_search_api, name='category_search_api').",
       "status": "draft",
-      "created_at": "2026-01-27T10:30:42.678049"
-    },
-    {
-      "id": "ci-003",
-      "type": "code_improvements",
-      "title": "Add Reports View to Production Module",
-      "description": "Create a reports view for the Production module showing production order statistics, batch throughput, bin utilization, and material consumption over configurable time periods - following the existing inventory reports pattern.",
-      "rationale": "The code reveals this opportunity because: 1) Reports view pattern exists in inventory/views.py reports() with date range filtering, 2) Production models have all necessary data fields (status, dates, quantities) for meaningful reports, 3) Aggregation queries using Sum, Count, values() are well-established, 4) templates/inventory/reports.html provides the template structure to follow.",
-      "builds_upon": ["Inventory Reports (apps/inventory/views.py:reports)", "Dashboard statistics patterns"],
-      "estimated_effort": "medium",
-      "affected_files": [
-        "apps/production/views.py",
-        "apps/production/urls.py",
-        "templates/production/reports.html"
-      ],
-      "existing_patterns": [
-        "Date range filtering with date_from/date_to GET params",
-        "Default to last 30 days if no date specified",
-        "Aggregation with values().annotate(count=Count(), total=Sum())",
-        "Top N queries with order_by('-field')[:10]"
-      ],
-      "implementation_approach": "1. Create reports() view in apps/production/views.py following inventory/views.py:reports() - accept date_from/date_to params, default to 30 days. 2. Query ProductionOrder for orders_by_status, completed orders count, avg completion time. 3. Query Batch for batches by status, total quantity produced. 4. Query BinHistory for material flow statistics. 5. Add URL and create template extending base/internal.html with charts/tables.",
-      "status": "draft",
-      "created_at": "2026-01-27T10:30:42.678049"
+      "created_at": "2026-01-29T15:45:00.000000"
     },
     {
       "id": "ci-004",
       "type": "code_improvements",
-      "title": "Add Date Range Filter to Material and Supplier Lists",
-      "description": "Add date range filtering (date_from, date_to) to material_list and supplier_list views, allowing users to filter by creation date - extending the existing date filter pattern from inventory movements.",
-      "rationale": "The code reveals this opportunity because: 1) Date range filter pattern exists in inventory/views.py movements_list() and production/views.py bin_list(), 2) Material and Supplier models have created_at field from BaseModel, 3) The filter UI pattern is established in the codebase, 4) material_list and supplier_list already have search and type filters, just missing date range.",
-      "builds_upon": ["Date filter in inventory movements_list", "Date filter in production bin_list"],
+      "title": "Add Batch Cancel Operation for Production Orders",
+      "description": "Add a bulk cancel endpoint for production orders that follows the existing batch operation pattern (production_order_batch_start, production_order_batch_complete), allowing users to cancel multiple DRAFT or PLANNED orders at once.",
+      "rationale": "The production module already has batch start (line 174-246) and batch complete (line 251-323) operations with the same structure: JSON body parsing, order_ids list, atomic transaction, success/error counting. The ProductionOrder model has CANCELLED status and could support batch cancellation. This completes the batch operations set.",
+      "builds_upon": [
+        "Batch start operation (apps/production/views.py:174-246)",
+        "Batch complete operation (apps/production/views.py:251-323)",
+        "ProductionOrder.STATUS_CHOICES includes CANCELLED",
+        "Atomic transaction pattern for batch operations"
+      ],
       "estimated_effort": "small",
       "affected_files": [
-        "apps/materials/views.py",
-        "templates/materials/material_list.html",
-        "templates/materials/supplier_list.html"
+        "apps/production/views.py",
+        "apps/production/urls.py",
+        "apps/production/models.py"
       ],
       "existing_patterns": [
-        "date_from = request.GET.get('date_from', '')",
-        "datetime.strptime(date_from, '%Y-%m-%d').date() with try/except",
-        "queryset.filter(created_at__date__gte=date_from)",
-        "Passing date_from/date_to to template context"
+        "@login_required @require_http_methods(['POST']) decorator stack",
+        "JSON body parsing with fallback to POST data",
+        "transaction.atomic() for batch processing",
+        "JsonResponse with success, message, count, errors fields"
       ],
-      "implementation_approach": "1. In materials/views.py material_list(), add date_from/date_to GET params following movements_list pattern. 2. Add filter: if date_from: materials = materials.filter(created_at__date__gte=date_from). 3. Same for date_to with __lte. 4. Add to context dict. 5. Update template to include date input fields in filter form. 6. Repeat for supplier_list().",
+      "implementation_approach": "Add cancel() method to ProductionOrder model that validates status in ['DRAFT', 'PLANNED'] and sets status='CANCELLED'. Create production_order_batch_cancel() view by copying production_order_batch_start and replacing start() with cancel(). Add URL path('orders/batch/cancel/', views.production_order_batch_cancel, name='order_batch_cancel').",
       "status": "draft",
-      "created_at": "2026-01-27T10:30:42.678049"
+      "created_at": "2026-01-29T15:45:00.000000"
     },
     {
       "id": "ci-005",
       "type": "code_improvements",
-      "title": "Add Bulk Status Change for Production Orders",
-      "description": "Add bulk operations capability to change status of multiple production orders at once (start multiple, complete multiple) - extending the existing bulk operations pattern from bin batch printing.",
-      "rationale": "The code reveals this opportunity because: 1) Bulk operations pattern exists in production/views.py bin_batch_create() and bin_batch_print() with transaction.atomic(), 2) ProductionOrder has start() and complete() methods that can be called in a loop, 3) AJAX endpoint pattern with JsonResponse for bulk ops is established, 4) The list view already shows multiple orders that could be selected.",
-      "builds_upon": ["Bulk Bin Operations (apps/production/views.py:bin_batch_create, bin_batch_print)", "Production Order status methods"],
-      "estimated_effort": "medium",
+      "title": "Add Bin History CSV Export",
+      "description": "Add a CSV export endpoint for the bin_history view that exports the complete movement history of a specific bin, using the same date range and type filters already implemented in the view.",
+      "rationale": "The bin_history view (apps/production/views.py:531-574) already implements date_from, date_to, and type_filter parameters with pagination. BinHistory model contains structured data (movement_type, material, quantity, supplier_batch, certificate, performed_by, created_at). CSV export follows the same pattern proposed for stock_list export.",
+      "builds_upon": [
+        "Bin history view with filters (apps/production/views.py:531-574)",
+        "BinHistory model structure",
+        "Stock list CSV export pattern (ci-002)"
+      ],
+      "estimated_effort": "small",
       "affected_files": [
         "apps/production/views.py",
-        "apps/production/urls.py",
-        "templates/production/production_order_list.html"
+        "apps/production/urls.py"
       ],
       "existing_patterns": [
-        "bin_batch_print with json.loads(request.body) for IDs list",
-        "transaction.atomic() for bulk operations",
-        "Result tracking dict with success count and errors list",
-        "Checkbox selection in list template for bulk ops"
+        "History view filtering by type and date range",
+        "QuerySet with select_related for related data",
+        "Django CSV export pattern"
       ],
-      "implementation_approach": "1. Create production_order_bulk_start(request) in views.py accepting order_ids JSON array. 2. Use transaction.atomic() to iterate orders, call order.start(request.user), track success/errors. 3. Return JsonResponse with counts. 4. Create production_order_bulk_complete() similarly. 5. Add URL paths. 6. Update production_order_list.html to add checkbox selection column and bulk action buttons following bin_list.html pattern.",
+      "implementation_approach": "Create bin_history_export(request, bin_id) view that applies same filters as bin_history(), then writes CSV with columns: Date, Type, Material, Quantity, Qty Before, Qty After, Supplier Batch, Certificate, Performed By, Notes. Use HttpResponse with text/csv content type and Content-Disposition: attachment with bin code in filename. Add URL path('bins/<uuid:bin_id>/history/export/', views.bin_history_export, name='bin_history_export').",
       "status": "draft",
-      "created_at": "2026-01-27T10:30:42.678049"
+      "created_at": "2026-01-29T15:45:00.000000"
     }
   ]
 }

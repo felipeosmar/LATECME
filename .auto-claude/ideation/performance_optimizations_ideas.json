@@ -3,110 +3,116 @@
     {
       "id": "perf-001",
       "type": "performance_optimizations",
-      "title": "Fix N+1 Query in Material Search API",
-      "description": "The `material_search_api()` endpoint iterates through materials and calls `material.get_best_price()` for each one, triggering a separate database query per material. This creates an N+1 query pattern where 10 search results generate 11 queries (1 main + 10 per-material).",
-      "rationale": "This API endpoint is called on every keystroke for material autocomplete searches. With typical usage patterns of 2-3 searches per form interaction, this could generate 30+ database queries per user action. The fix is straightforward with `Prefetch` and annotation.",
+      "title": "Use Database Aggregation for Model Total Value Properties",
+      "description": "The `total_value` and `total_received` properties in PurchaseRequest, PurchaseOrder, and Receiving models iterate over related items using Python loops (`sum(item.total_price for item in self.items.all())`), causing an N+1 query problem when displaying lists of these objects.",
+      "rationale": "Each time a list view displays 20 orders, it executes 20+ additional database queries just to calculate totals. Moving this calculation to database-level aggregation with `annotate()` would reduce these to a single query, significantly improving page load times for the purchasing module.",
       "category": "database",
       "impact": "high",
       "affectedAreas": [
-        "apps/materials/views.py (material_search_api function)",
-        "apps/materials/models.py (get_best_price method)"
+        "apps/purchasing/models.py",
+        "apps/purchasing/views/purchase_orders.py",
+        "apps/purchasing/views/purchase_requests.py",
+        "apps/inventory/models.py"
       ],
-      "currentMetric": "N+1 queries: 11 queries for 10 results, ~100ms response time under load",
-      "expectedImprovement": "Single query with annotation, reduce to 1 query, ~10ms response time",
-      "implementation": "1. Use Django's annotate() with Min() to get best price in the main query\n2. Replace: `materials = Material.objects.filter(...)` with `materials = Material.objects.filter(...).annotate(best_price=Min('materialsupplier__price_per_kg', filter=Q(materialsupplier__supplier__is_active=True)))`\n3. Access `material.best_price` instead of calling `material.get_best_price()`",
-      "tradeoffs": "Slight increase in main query complexity, but net reduction in total query time",
+      "currentMetric": "N+1 queries: ~20+ extra queries per list page load for order/request totals",
+      "expectedImprovement": "Reduce to 1 query with annotate(), ~80% faster list rendering for purchasing views",
+      "implementation": "1. Add annotated queryset in views with Sum() aggregation\n2. Replace property access in templates with annotated values\n3. Keep model properties for single-object access with prefetch\n4. Example: `orders.annotate(total_value=Sum(F('items__quantity') * F('items__unit_price')))`",
+      "tradeoffs": "Need to ensure annotated querysets are used consistently in views and templates",
       "estimatedEffort": "small"
     },
     {
       "id": "perf-002",
       "type": "performance_optimizations",
-      "title": "Add Redis Caching for Dashboard Statistics",
-      "description": "Dashboard views (materials/dashboard, inventory/dashboard, production stats) compute aggregate statistics on every page load using COUNT, SUM, and other aggregations. These queries run on potentially large tables without any caching.",
-      "rationale": "Redis is already configured in docker-compose but not utilized in Django. Dashboard statistics rarely change and are perfect candidates for caching. Multiple users viewing dashboards amplify the database load unnecessarily.",
-      "category": "caching",
-      "impact": "high",
+      "title": "Consolidate Stats Queries Using Conditional Aggregation",
+      "description": "Multiple views like `production_order_list`, `inventory_count_list`, and `order_list` execute 3-4 separate `.count()` queries for statistics (e.g., `filter(status='IN_PROGRESS').count()`, `filter(status='COMPLETED').count()`) that could be consolidated into a single query using conditional Count.",
+      "rationale": "Each separate `.count()` call is a full database round-trip. In `production_order_list`, there are 3 count queries just for stats. Using conditional aggregation with `Count('id', filter=Q(...))` would reduce 3-4 queries to 1, improving dashboard and list view performance.",
+      "category": "database",
+      "impact": "medium",
       "affectedAreas": [
-        "apps/materials/views.py (dashboard_materials function)",
-        "apps/inventory/views.py (dashboard function)",
-        "apps/production/views.py (production_order_list stats)",
-        "config/settings.py (CACHES configuration)"
+        "apps/production/views.py",
+        "apps/inventory/views.py",
+        "apps/purchasing/views/purchase_orders.py"
       ],
-      "currentMetric": "6-8 aggregate queries per dashboard load, ~200-400ms per request",
-      "expectedImprovement": "0 queries for cached requests, ~5ms cache lookup, 95%+ cache hit rate",
-      "implementation": "1. Add Django cache configuration for Redis in settings.py\n2. Import cache: `from django.core.cache import cache`\n3. Wrap stats computation: `stats = cache.get('dashboard_stats') or compute_and_cache()`\n4. Set 60-second TTL for stats\n5. Invalidate cache on relevant model signals (post_save, post_delete)",
-      "tradeoffs": "Stats may be up to 60 seconds stale; requires cache invalidation strategy",
-      "estimatedEffort": "medium"
+      "currentMetric": "3-4 separate database queries per page for stats in list views",
+      "expectedImprovement": "Reduce to 1 aggregated query per view, ~60% faster stats calculation",
+      "implementation": "1. Replace separate count() calls with single aggregate query\n2. Example:\n   stats = ProductionOrder.objects.aggregate(\n       in_progress=Count('id', filter=Q(status='IN_PROGRESS')),\n       completed=Count('id', filter=Q(status='COMPLETED')),\n       total=Count('id')\n   )\n3. Apply to inventory_count_list, order_list, and other views with similar patterns",
+      "tradeoffs": "Slightly more complex query syntax, but standard Django ORM pattern",
+      "estimatedEffort": "small"
     },
     {
       "id": "perf-003",
       "type": "performance_optimizations",
-      "title": "Remove Unused Static File Plugins to Reduce Deployment Size",
-      "description": "The staticfiles/plugins directory contains ~50MB of unused JavaScript libraries (DataTables extensions, CKEditor, Flot charts, etc.) that were likely part of an admin template. The actual application only uses Tabler, HTMX, and Alpine.js which are in static/vendor/.",
-      "rationale": "Large static file directories slow down `collectstatic`, increase deployment image size, and waste storage. The unused plugins also pose security risks if they contain outdated vulnerable code. The base template confirms only Tabler/HTMX/Alpine are loaded.",
-      "category": "bundle_size",
+      "title": "Use bulk_create for Batch Bin and Inventory Count Item Creation",
+      "description": "The `bin_batch_create` view creates bins one at a time in a loop, and `inventory_count_start` creates inventory count items individually. Both could use Django's `bulk_create()` to reduce database round-trips significantly.",
+      "rationale": "When creating 50-100 bins in a batch operation, the current implementation executes 50-100 INSERT queries plus sequence number generation. Using `bulk_create()` would execute a single INSERT statement with all rows, reducing creation time from several seconds to milliseconds for large batches.",
+      "category": "database",
       "impact": "medium",
       "affectedAreas": [
-        "staticfiles/plugins/ (entire directory)",
-        "staticfiles/js/*.demo.min.js (demo files)",
-        "staticfiles/crossbrowserjs/ (IE compatibility)"
+        "apps/production/views.py (bin_batch_create)",
+        "apps/inventory/views.py (inventory_count_start)"
       ],
-      "currentMetric": "~50MB of static files, ~30 unused JavaScript plugins",
-      "expectedImprovement": "~45MB reduction, faster deployments, smaller Docker images",
-      "implementation": "1. Audit staticfiles/ vs static/ to confirm which are used\n2. Create backup of staticfiles/plugins/\n3. Remove unused plugins: DataTables, CKEditor, Flot, Morris charts, etc.\n4. Remove legacy IE compatibility files (html5shiv, respond.js, excanvas)\n5. Remove *.demo.min.js files\n6. Run collectstatic to verify no missing assets",
-      "tradeoffs": "Need to verify no templates reference these files before removal",
-      "estimatedEffort": "small"
+      "currentMetric": "100 INSERT queries for creating 100 bins, ~2-3 seconds for batch creation",
+      "expectedImprovement": "1-2 INSERT queries total, ~95% faster batch creation operations",
+      "implementation": "1. Pre-generate sequence numbers for bins using Sequence.get_batch() or similar\n2. Build list of Bin/InventoryCountItem objects\n3. Use bulk_create() with batch_size parameter\n4. Example:\n   bins_to_create = [Bin(warehouse=warehouse, code=codes[i], ...) for i in range(quantity)]\n   Bin.objects.bulk_create(bins_to_create, batch_size=100)",
+      "tradeoffs": "Pre-signals and save() hooks won't fire with bulk_create; need to handle sequence generation separately",
+      "estimatedEffort": "medium"
     },
     {
       "id": "perf-004",
       "type": "performance_optimizations",
-      "title": "Add Database Indexes for Frequently Filtered Fields",
-      "description": "Several Django models filter on fields that lack explicit database indexes. Fields like `status`, `movement_type`, `is_active`, and date fields are used in WHERE clauses and ordering but rely on implicit indexing or full table scans.",
-      "rationale": "List views filter by status (DRAFT, IN_PROGRESS, COMPLETED), movement_type (IN, OUT, TRANSFER), and date ranges. As data grows, these queries will become slower without proper indexes. PostgreSQL's query planner needs hints for optimal paths.",
-      "category": "database",
+      "title": "Add Pagination Limits for Dropdown/Select API Endpoints",
+      "description": "API endpoints like `api_materials_with_stock`, `api_warehouses`, and dropdown data loaded in views fetch ALL active records without limits. As the database grows, these queries will become increasingly slow and send large payloads to the client.",
+      "rationale": "A dropdown showing all 500+ materials loads unnecessary data. Most users use search/filter instead of scrolling through hundreds of options. Adding server-side pagination or search-based loading would reduce initial payload size and database load for frequently accessed endpoints.",
+      "category": "network",
       "impact": "medium",
       "affectedAreas": [
-        "apps/production/models.py (ProductionOrder.status, Batch.status)",
-        "apps/inventory/models.py (StockMovement.movement_type, InventoryCount.status)",
-        "apps/materials/models.py (Material.material_type)"
+        "apps/inventory/views.py (api_materials_with_stock, api_warehouses)",
+        "apps/materials/views.py (material_search_api)",
+        "All views that load materials/suppliers/warehouses for dropdowns"
       ],
-      "currentMetric": "Sequential scans on status/type filters with large datasets",
-      "expectedImprovement": "Index-only scans, 10-100x faster filtering on 10k+ records",
-      "implementation": "1. Add db_index=True to frequently filtered fields:\n   - ProductionOrder.status\n   - Batch.status\n   - StockMovement.movement_type\n   - StockMovement.created_at\n   - InventoryCount.status\n2. Create migration with `python manage.py makemigrations`\n3. Apply migration with `python manage.py migrate`\n4. Consider composite indexes for common filter combinations",
-      "tradeoffs": "Indexes add write overhead and storage; only add for truly hot paths",
-      "estimatedEffort": "small"
+      "currentMetric": "Returns all records (potentially 100s-1000s) per request",
+      "expectedImprovement": "Limit initial load to 50-100 items, reduce payload by 80%+ for large datasets",
+      "implementation": "1. Add default limit parameter (e.g., limit=50) to API endpoints\n2. Implement search-as-you-type with server-side filtering\n3. Use HTMX or JavaScript for on-demand loading\n4. Example: materials = Material.objects.filter(is_active=True)[:50]\n5. Add pagination parameters: ?search=AL&limit=50&offset=0",
+      "tradeoffs": "Requires frontend changes to support incremental loading; search functionality becomes essential for large datasets",
+      "estimatedEffort": "medium"
     },
     {
       "id": "perf-005",
       "type": "performance_optimizations",
-      "title": "Avoid Duplicate .count() Queries in List Views",
-      "description": "List views like `material_list()`, `supplier_list()`, and `stock_list()` call `.count()` on filtered querysets and also pass the same queryset to Paginator. Django's Paginator internally calls `.count()` again, resulting in duplicate COUNT queries.",
-      "rationale": "Each duplicate COUNT query adds 50-100ms on large tables. This pattern appears in at least 5 list views. The fix is simple: use paginator.count instead of calling queryset.count() separately.",
-      "category": "database",
+      "title": "Move Variance Calculation from Python to Database in Inventory Count Detail",
+      "description": "In `inventory_count_detail`, the view iterates through all inventory count items in Python to calculate variance statistics (`items_with_variance`, `total_variance`), performing calculations that could be done more efficiently at the database level.",
+      "rationale": "For large inventory counts with hundreds of items, iterating through all items in Python is inefficient. Using Django's aggregate() and annotate() would calculate these statistics in a single database query, reducing memory usage and CPU time on the application server.",
+      "category": "runtime",
       "impact": "medium",
       "affectedAreas": [
-        "apps/materials/views.py (material_list, supplier_list)",
-        "apps/inventory/views.py (stock_list, movements_list, warehouse_list)",
-        "apps/production/views.py (production_order_list, bin_list, batch_list)"
+        "apps/inventory/views.py (inventory_count_detail)",
+        "templates/inventory/inventory_count_detail.html"
       ],
-      "currentMetric": "2 COUNT queries per list page load instead of 1",
-      "expectedImprovement": "50% reduction in COUNT queries, ~50ms saved per page load",
-      "implementation": "1. Remove standalone `.count()` calls like `'total_materials': materials.count()`\n2. Use paginator properties instead:\n   ```python\n   paginator = Paginator(materials, 20)\n   page_obj = paginator.get_page(page_number)\n   # Instead of materials.count(), use:\n   context['total_materials'] = paginator.count\n   ```\n3. Apply pattern across all list views",
-      "tradeoffs": "None - purely beneficial change with no downsides",
-      "estimatedEffort": "trivial"
+      "currentMetric": "Python loop iterates through all items; O(n) complexity with database round-trip overhead",
+      "expectedImprovement": "Single aggregate query calculates all stats; ~70% faster for counts with 100+ items",
+      "implementation": "1. Replace Python loop with aggregate query:\n   stats = items.aggregate(\n       items_with_variance=Count('id', filter=~Q(counted_quantity=F('system_quantity')) & Q(counted_quantity__isnull=False)),\n       total_variance=Sum(Abs(F('counted_quantity') - F('system_quantity')), filter=Q(counted_quantity__isnull=False))\n   )\n2. Remove the for-loop variance calculation\n3. Use annotate() for individual item variance display if needed",
+      "tradeoffs": "Requires Django's Abs function or a Case/When expression for absolute value calculation",
+      "estimatedEffort": "small"
     }
   ],
   "metadata": {
     "totalFilesAnalyzed": 25,
-    "pythonDependencies": 8,
-    "modelsAnalyzed": 18,
-    "viewsAnalyzed": 45,
-    "potentialQueryReduction": "40-60% fewer database queries",
-    "estimatedLoadTimeImprovement": "200-400ms on dashboard pages",
-    "staticFileSavings": "~45MB",
-    "generatedAt": "2026-01-27T10:36:00Z",
-    "framework": "Django 5.2.4",
-    "database": "PostgreSQL",
-    "cacheBackend": "Redis (available but unused)"
+    "primaryTechStack": [
+      "Django 5.2.4",
+      "PostgreSQL",
+      "Redis (caching)",
+      "Django-Redis"
+    ],
+    "databaseIndexes": "Good coverage on status and is_active fields",
+    "cachingStatus": "Redis configured but not widely used in views",
+    "potentialImprovements": "Database aggregation, bulk operations, query consolidation, API pagination",
+    "existingOptimizations": [
+      "select_related() used in most views",
+      "prefetch_related() used for many-to-many relationships",
+      "Database indexes on frequently filtered fields",
+      "Connection pooling configured (CONN_MAX_AGE=300)",
+      "Some views have @cache_page decorator"
+    ],
+    "generatedAt": "2026-01-29T15:45:00Z"
   }
 }

@@ -3,105 +3,70 @@
     {
       "id": "cq-001",
       "type": "code_quality",
-      "title": "Split large inventory views.py into domain-specific modules",
-      "description": "The file apps/inventory/views.py has grown to 1251 lines and handles multiple unrelated concerns: stock management, movements, warehouses, reservations, and inventory counts. This violates single responsibility and makes the code hard to navigate, test, and maintain.",
-      "rationale": "Very large files increase cognitive load, make code reviews harder, and often lead to merge conflicts. The inventory app handles 5 distinct domains (stocks, movements, warehouses, reservations, counts) that each deserve their own view module. Smaller, focused modules are easier to test, maintain, and reason about.",
-      "category": "large_files",
-      "severity": "major",
+      "title": "Extract duplicated batch operation views into reusable utility",
+      "description": "The functions `production_order_batch_start` and `production_order_batch_complete` in apps/production/views.py are nearly identical (~75 lines each). They share the same JSON parsing logic, validation, atomic transaction pattern, error handling, and response formatting. Only the action method (start vs complete) and response messages differ.",
+      "rationale": "This duplication violates the DRY principle and increases maintenance burden. Any bug fix or enhancement needs to be applied twice. A generic batch operation utility would reduce code by ~60 lines and make it easier to add new batch operations in the future.",
+      "category": "duplication",
+      "severity": "minor",
       "affectedFiles": [
-        "apps/inventory/views.py"
+        "apps/production/views.py"
       ],
-      "currentState": "Single 1251-line file containing 30+ view functions handling stocks, movements, warehouses, reservations, and inventory counts",
-      "proposedChange": "Split into domain-specific view modules:\n- apps/inventory/views/__init__.py (re-exports)\n- apps/inventory/views/dashboard.py (dashboard view)\n- apps/inventory/views/stocks.py (stock_list, stock_detail)\n- apps/inventory/views/movements.py (movements_list, create_movement)\n- apps/inventory/views/warehouses.py (warehouse_list, warehouse_detail, warehouse_create, warehouse_update)\n- apps/inventory/views/reservations.py (reservations_list, reservation_create, etc.)\n- apps/inventory/views/counts.py (inventory_count_list, inventory_count_create, etc.)",
-      "codeExample": "# Current structure:\n# apps/inventory/views.py (1251 lines, all domains mixed)\n\n# Proposed structure:\n# apps/inventory/views/__init__.py\nfrom .dashboard import dashboard\nfrom .stocks import stock_list, stock_detail\nfrom .movements import movements_list, create_movement\nfrom .warehouses import warehouse_list, warehouse_detail, warehouse_create, warehouse_update\nfrom .reservations import reservations_list, reservation_create\nfrom .counts import inventory_count_list, inventory_count_create",
-      "bestPractice": "Single Responsibility Principle - each module should have one reason to change. Django best practice is to organize views by domain/resource when they grow beyond ~300 lines.",
+      "currentState": "Two near-identical functions (production_order_batch_start and production_order_batch_complete) with 75+ lines each, differing only in the action method called and success/failure messages.",
+      "proposedChange": "Create a generic `batch_operation_handler` utility function that accepts: the model class, the action method name, success/failure message templates, and the request. Both batch start and batch complete views would become thin wrappers calling this utility.",
+      "codeExample": "# Current (duplicated in both functions):\ntry:\n    import json\n    data = json.loads(request.body)\n    order_ids = data.get('order_ids', [])\nexcept json.JSONDecodeError:\n    order_ids = request.POST.getlist('order_ids[]')\n# ... 60+ more lines of identical logic\n\n# Proposed:\ndef batch_operation_handler(request, model_class, action_name, messages):\n    \"\"\"Generic batch operation handler for model actions.\"\"\"\n    # Unified logic here\n    pass\n\n@login_required\n@require_http_methods([\"POST\"])\ndef production_order_batch_start(request):\n    return batch_operation_handler(\n        request, ProductionOrder, 'start',\n        {'success': 'iniciada(s)', 'error': 'iniciar'}\n    )",
+      "bestPractice": "DRY (Don't Repeat Yourself) - extract common logic into reusable utilities",
       "metrics": {
-        "lineCount": 1251,
+        "lineCount": null,
         "complexity": null,
-        "duplicateLines": null,
+        "duplicateLines": 150,
         "testCoverage": null
       },
-      "estimatedEffort": "medium",
+      "estimatedEffort": "small",
       "breakingChange": false,
-      "prerequisites": [
-        "Ensure test coverage for inventory views before refactoring",
-        "Update URL imports after splitting"
-      ]
+      "prerequisites": null
     },
     {
       "id": "cq-002",
       "type": "code_quality",
-      "title": "Add tests for production and purchasing apps",
-      "description": "The production (869 lines in views.py) and purchasing (1084 lines in views.py) apps have no test files, while other apps like inventory, materials, and accounts have comprehensive test coverage. This leaves critical business logic untested.",
-      "rationale": "Production orders and purchasing workflows are core business functionality that should have thorough test coverage. Without tests, refactoring becomes risky, bugs may go undetected, and there's no documentation of expected behavior. The existing test patterns in apps/inventory/tests.py and apps/materials/tests.py can serve as templates.",
-      "category": "testing",
-      "severity": "major",
-      "affectedFiles": [
-        "apps/production/views.py",
-        "apps/production/models.py",
-        "apps/purchasing/views.py",
-        "apps/purchasing/models.py"
-      ],
-      "currentState": "No test files exist in apps/production/ or apps/purchasing/ directories. These apps contain:\n- Production: ProductionOrder, Bin, BinHistory, Batch, BatchItem models with 869 lines of view logic\n- Purchasing: PurchaseRequest, PurchaseOrder, Receiving models with 1084 lines of view logic",
-      "proposedChange": "Create comprehensive test files:\n- apps/production/tests.py (model tests for ProductionOrder, Bin, Batch)\n- apps/production/test_views.py (view tests for CRUD operations, status transitions)\n- apps/purchasing/tests.py (model tests for PurchaseRequest, PurchaseOrder, Receiving)\n- apps/purchasing/test_views.py (view tests for request/order workflow)",
-      "codeExample": "# apps/production/tests.py (following existing patterns from apps/inventory/tests.py)\nfrom django.test import TestCase\nfrom django.urls import reverse\nfrom apps.production.models import ProductionOrder, Batch\nfrom apps.materials.models import Material\nfrom apps.accounts.models import CustomUser\n\nclass ProductionOrderModelTests(TestCase):\n    def setUp(self):\n        self.user = CustomUser.objects.create_user(...)\n        self.material = Material.objects.create(...)\n    \n    def test_order_number_auto_generated(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100\n        )\n        self.assertTrue(order.order_number.startswith('OP'))\n    \n    def test_completion_percentage(self):\n        order = ProductionOrder.objects.create(\n            material=self.material,\n            planned_quantity=100,\n            produced_quantity=50\n        )\n        self.assertEqual(order.completion_percentage, 50)",
-      "bestPractice": "All business-critical functionality should have unit tests. Django's TestCase class provides database transactions that are rolled back after each test.",
-      "metrics": {
-        "lineCount": null,
-        "complexity": null,
-        "duplicateLines": null,
-        "testCoverage": 0
-      },
-      "estimatedEffort": "large",
-      "breakingChange": false,
-      "prerequisites": []
-    },
-    {
-      "id": "cq-003",
-      "type": "code_quality",
-      "title": "Extract duplicated list view pagination/filtering into reusable mixin or utility",
-      "description": "The codebase contains 14+ list views that all follow the same pattern: get filters from request.GET, apply filters to queryset, paginate results, and render template. This pattern is duplicated across inventory, purchasing, production, materials, and labels apps.",
-      "rationale": "Code duplication leads to inconsistencies when fixes are applied unevenly and increases maintenance burden. A reusable mixin or utility function would ensure consistent behavior, reduce boilerplate, and make adding new list views faster and less error-prone.",
-      "category": "duplication",
+      "title": "Extract modal components from large template files",
+      "description": "The template file templates/production/bin_list.html has 1110 lines, with approximately 400+ lines dedicated to modal dialogs (Create Bin Modal, Load Bin Modal, Empty Bin Modal, Batch Create Modal, Batch Print Modal). Similar patterns exist in other large templates like production_order_list.html (910 lines) and reservations_list.html (726 lines).",
+      "rationale": "Large template files are difficult to navigate, maintain, and test. The modal components are self-contained and could be reused across different views. Extracting them would improve template organization and enable better reuse of UI patterns.",
+      "category": "large_files",
       "severity": "minor",
       "affectedFiles": [
-        "apps/inventory/views.py",
-        "apps/purchasing/views.py",
-        "apps/production/views.py",
-        "apps/materials/views.py",
-        "apps/labels/views.py"
+        "templates/production/bin_list.html",
+        "templates/production/production_order_list.html",
+        "templates/inventory/reservations_list.html"
       ],
-      "currentState": "Each list view manually implements:\n1. Extract search/filter params from request.GET\n2. Build queryset with select_related/prefetch_related\n3. Apply search filter with Q objects\n4. Apply additional filters\n5. Create Paginator with hardcoded page size (20-50)\n6. Get paginated page\n7. Build context dict\n8. Render template\n\nThis pattern appears in: stock_list, movements_list, warehouse_list, reservations_list, inventory_count_list, request_list, order_list, receiving_list, production_order_list, bin_list, batch_list, material_list, supplier_list, template_list, printer_list, print_job_list",
-      "proposedChange": "Create a reusable ListView mixin in apps/core/views.py:\n1. BaseListView class that handles pagination, search, and common filter patterns\n2. FilterMixin for declaring filterable fields\n3. SearchMixin for Q-object based search\n\nAlternatively, use Django's built-in class-based ListView with custom mixins for the filtering logic.",
-      "codeExample": "# apps/core/mixins.py\nfrom django.core.paginator import Paginator\nfrom django.db.models import Q\n\nclass FilterableListMixin:\n    \"\"\"Mixin for list views with common filtering/pagination patterns\"\"\"\n    paginate_by = 20\n    search_fields = []  # Override in subclass\n    filter_fields = []  # Override in subclass\n    \n    def get_search_query(self, request):\n        return request.GET.get('search', '')\n    \n    def apply_search(self, queryset, search):\n        if search and self.search_fields:\n            q_objects = Q()\n            for field in self.search_fields:\n                q_objects |= Q(**{f'{field}__icontains': search})\n            return queryset.filter(q_objects)\n        return queryset\n    \n    def apply_filters(self, queryset, request):\n        for field in self.filter_fields:\n            value = request.GET.get(field)\n            if value:\n                queryset = queryset.filter(**{field: value})\n        return queryset\n    \n    def paginate(self, queryset, request):\n        paginator = Paginator(queryset, self.paginate_by)\n        page = request.GET.get('page')\n        return paginator.get_page(page)\n\n# Usage in apps/inventory/views.py\nclass StockListView(FilterableListMixin):\n    search_fields = ['material__code', 'material__name', 'warehouse__code']\n    filter_fields = ['warehouse_id', 'material__material_type']",
-      "bestPractice": "DRY (Don't Repeat Yourself) - extract common patterns into reusable components. Django class-based views and mixins are designed for exactly this use case.",
+      "currentState": "Multiple templates over 700+ lines with inline modal definitions that repeat similar patterns (form structure, button layout, loading states). The project already has a templates/components/ directory with reusable components like _modal.html, _pagination.html, _form_field.html.",
+      "proposedChange": "Extract modal templates into reusable components: templates/production/modals/_bin_create.html, _bin_load.html, _bin_empty.html, _batch_create.html, _batch_print.html. Use Django's {% include %} tag with context variables for customization.",
+      "codeExample": "<!-- Current: 400+ lines of inline modals in bin_list.html -->\n<div class=\"modal modal-blur\" :class=\"{ 'show': createModalOpen }\">\n    <!-- 80+ lines of modal content -->\n</div>\n\n<!-- Proposed: -->\n{% include 'production/modals/_bin_create.html' with warehouses=warehouses %}\n{% include 'production/modals/_bin_load.html' with materials=materials %}\n{% include 'production/modals/_batch_print.html' with templates=templates printers=printers %}",
+      "bestPractice": "Component-based architecture - break large files into smaller, reusable pieces",
       "metrics": {
-        "lineCount": null,
+        "lineCount": 1110,
         "complexity": null,
-        "duplicateLines": 280,
+        "duplicateLines": null,
         "testCoverage": null
       },
       "estimatedEffort": "medium",
       "breakingChange": false,
-      "prerequisites": [
-        "Good test coverage on existing list views before refactoring"
-      ]
+      "prerequisites": ["Review existing templates/components/ directory for patterns to follow"]
     },
     {
-      "id": "cq-004",
+      "id": "cq-003",
       "type": "code_quality",
-      "title": "Add Python linting and code quality configuration",
-      "description": "The project has no linting configuration files (flake8, pylint, mypy). Without automated code quality checks, inconsistent coding styles, unused imports, and type errors can accumulate over time.",
-      "rationale": "Linting tools catch common bugs, enforce consistent code style, and improve code readability. They are especially valuable in team environments and CI/CD pipelines. The project already uses pyproject.toml which can host most linting configuration.",
+      "title": "Add pre-commit hooks for automated code quality checks",
+      "description": "The project has excellent linting configuration in pyproject.toml (ruff, mypy, bandit) but lacks pre-commit hooks to automatically run these checks before commits. This means developers must manually run linting, which often gets skipped.",
+      "rationale": "Pre-commit hooks provide automated enforcement of code quality standards, catching issues before they enter the codebase. Without them, code style and quality can drift over time as developers forget to run manual checks.",
       "category": "linting",
       "severity": "minor",
       "affectedFiles": [
         "pyproject.toml"
       ],
-      "currentState": "No linting tools configured. pyproject.toml only has basic project metadata and dependencies. No .flake8, .pylintrc, setup.cfg, or mypy.ini files exist.",
-      "proposedChange": "Add linting configuration to pyproject.toml and set up pre-commit hooks:\n1. Add ruff (modern, fast Python linter) configuration to pyproject.toml\n2. Configure basic rules: unused imports, line length, import sorting\n3. Add Django-specific rules\n4. Optionally add mypy for gradual type checking\n5. Set up pre-commit hooks for automatic linting",
-      "codeExample": "# Add to pyproject.toml\n[tool.ruff]\nline-length = 120\ntarget-version = \"py310\"\n\n[tool.ruff.lint]\nselect = [\n    \"E\",  # pycodestyle errors\n    \"W\",  # pycodestyle warnings\n    \"F\",  # pyflakes\n    \"I\",  # isort\n    \"B\",  # flake8-bugbear\n    \"C4\", # flake8-comprehensions\n    \"DJ\", # flake8-django\n]\nignore = [\n    \"E501\",  # line too long (handled by formatter)\n]\n\n[tool.ruff.lint.isort]\nknown-first-party = [\"apps\", \"config\"]\n\n[tool.mypy]\npython_version = \"3.10\"\nplugins = [\"mypy_django_plugin.main\"]\nignore_missing_imports = true\nstrict_optional = true\n\n# requirements-dev.txt addition\nruff>=0.1.0\nmypy>=1.0.0\ndjango-stubs>=4.0.0\npre-commit>=3.0.0",
-      "bestPractice": "Every Python project should have automated code quality checks. Ruff is the modern choice - it's faster than flake8/isort/black combined and supports Django-specific rules.",
+      "currentState": "Ruff, mypy, and bandit are configured in pyproject.toml but there's no .pre-commit-config.yaml file. Code quality checks must be run manually.",
+      "proposedChange": "Add a .pre-commit-config.yaml file that runs ruff (linting + formatting), mypy (type checking), and bandit (security) automatically on staged files before each commit.",
+      "codeExample": "# .pre-commit-config.yaml\nrepos:\n  - repo: https://github.com/astral-sh/ruff-pre-commit\n    rev: v0.8.0\n    hooks:\n      - id: ruff\n        args: [--fix]\n      - id: ruff-format\n  \n  - repo: https://github.com/pre-commit/mirrors-mypy\n    rev: v1.13.0\n    hooks:\n      - id: mypy\n        additional_dependencies: [django-stubs]\n  \n  - repo: https://github.com/PyCQA/bandit\n    rev: 1.8.0\n    hooks:\n      - id: bandit\n        args: [-c, pyproject.toml]",
+      "bestPractice": "Shift-left quality - catch issues as early as possible in the development cycle",
       "metrics": {
         "lineCount": null,
         "complexity": null,
@@ -110,47 +75,68 @@
       },
       "estimatedEffort": "small",
       "breakingChange": false,
-      "prerequisites": []
+      "prerequisites": ["Ensure all existing code passes ruff checks first to avoid blocking commits"]
+    },
+    {
+      "id": "cq-004",
+      "type": "code_quality",
+      "title": "Move inline json imports to module level",
+      "description": "Multiple view files import the `json` module inside function bodies rather than at the top of the file. This pattern appears in apps/production/views.py (lines 177, 254, 890), apps/inventory/views.py (lines 816, 1090, 1162), and apps/inventory/views/reservation_views.py (lines 89, 161).",
+      "rationale": "Importing modules inside functions is unconventional Python style and slightly less efficient (though negligible). More importantly, it obscures dependencies and makes it harder to see what a module depends on at a glance. PEP 8 recommends imports at the top of files.",
+      "category": "code_smells",
+      "severity": "suggestion",
+      "affectedFiles": [
+        "apps/production/views.py",
+        "apps/inventory/views.py",
+        "apps/inventory/views/reservation_views.py",
+        "apps/inventory/views/count_views.py"
+      ],
+      "currentState": "The `import json` statement appears inside function bodies in 7+ locations across view files, typically at the start of AJAX handler functions.",
+      "proposedChange": "Move all `import json` statements to the top of each file with other imports. The json module is part of Python's standard library and has minimal import overhead.",
+      "codeExample": "# Current (inside function):\ndef production_order_batch_start(request):\n    try:\n        import json  # <-- imported inside function\n        data = json.loads(request.body)\n\n# Proposed (at module level):\nimport json  # <-- at top of file with other imports\nfrom django.http import JsonResponse\n...\n\ndef production_order_batch_start(request):\n    try:\n        data = json.loads(request.body)",
+      "bestPractice": "PEP 8 - Imports should usually be on separate lines at the top of the file",
+      "metrics": {
+        "lineCount": null,
+        "complexity": null,
+        "duplicateLines": null,
+        "testCoverage": null
+      },
+      "estimatedEffort": "small",
+      "breakingChange": false,
+      "prerequisites": null
     },
     {
       "id": "cq-005",
       "type": "code_quality",
-      "title": "Split large purchasing views.py into domain-specific modules",
-      "description": "The file apps/purchasing/views.py has grown to 1084 lines and handles three distinct domains: Purchase Requests (solicitations), Purchase Orders, and Receiving. Each domain has its own set of CRUD operations, status transitions, and business logic.",
-      "rationale": "Like the inventory views, this file has grown too large to maintain effectively. The purchasing workflow has clear domain boundaries that map well to separate modules. This split would also make it easier to add the planned 'Supplier Search API Endpoint' feature without further bloating the file.",
+      "title": "Split production models.py into domain-specific model files",
+      "description": "The file apps/production/models.py contains 747 lines with 5 distinct model classes: ProductionOrder, Bin, BinHistory, Batch, and BatchItem. While these models are related, they represent distinct domain concepts with their own responsibilities and methods.",
+      "rationale": "Large model files become difficult to navigate and maintain. Splitting into separate files improves code organization, makes it easier to find and modify specific models, and reduces merge conflicts when multiple developers work on different models.",
       "category": "large_files",
-      "severity": "major",
+      "severity": "minor",
       "affectedFiles": [
-        "apps/purchasing/views.py"
+        "apps/production/models.py"
       ],
-      "currentState": "Single 1084-line file containing:\n- Purchase Request views (lines ~60-400): request_list, request_detail, request_create, request_update, request_submit, request_approve, request_reject\n- Purchase Order views (lines ~400-700): order_list, order_detail, order_create, order_items, order_send, order_confirm\n- Receiving views (lines ~700-1084): receiving_list, receiving_detail, receiving_create, receiving_inspect, receiving_complete",
-      "proposedChange": "Split into domain-specific view modules:\n- apps/purchasing/views/__init__.py (re-exports for backward compatibility)\n- apps/purchasing/views/dashboard.py (dashboard view)\n- apps/purchasing/views/requests.py (PurchaseRequest CRUD and workflow)\n- apps/purchasing/views/orders.py (PurchaseOrder CRUD and workflow)\n- apps/purchasing/views/receiving.py (Receiving CRUD and workflow)",
-      "codeExample": "# apps/purchasing/views/__init__.py\nfrom .dashboard import dashboard\nfrom .requests import (\n    request_list, request_detail, request_create, \n    request_update, request_submit, request_approve, request_reject\n)\nfrom .orders import (\n    order_list, order_detail, order_create,\n    order_items, order_send, order_confirm\n)\nfrom .receiving import (\n    receiving_list, receiving_detail, receiving_create,\n    receiving_inspect, receiving_complete\n)\n\n# This maintains backward compatibility with existing URL imports\n__all__ = [\n    'dashboard', 'request_list', 'request_detail', ...\n]",
-      "bestPractice": "Single Responsibility Principle - each module should focus on one domain/resource. Django's URL dispatcher makes it easy to reorganize views while maintaining the same URL patterns.",
+      "currentState": "Single 747-line file containing 5 model classes: ProductionOrder (~100 lines), Bin (~220 lines), BinHistory (~100 lines), Batch (~210 lines), BatchItem (~60 lines)",
+      "proposedChange": "Split into separate model files: apps/production/models/production_order.py, apps/production/models/bin.py (containing Bin and BinHistory), apps/production/models/batch.py (containing Batch and BatchItem). Create apps/production/models/__init__.py to re-export all models for backwards compatibility.",
+      "codeExample": "# apps/production/models/__init__.py\nfrom .production_order import ProductionOrder\nfrom .bin import Bin, BinHistory\nfrom .batch import Batch, BatchItem\n\n__all__ = ['ProductionOrder', 'Bin', 'BinHistory', 'Batch', 'BatchItem']\n\n# apps/production/models/bin.py\nfrom django.db import models\nfrom apps.core.models import BaseModel\n\nclass Bin(BaseModel):\n    # ... Bin model definition\n\nclass BinHistory(BaseModel):\n    # ... BinHistory model definition",
+      "bestPractice": "Single Responsibility Principle - each file should have one clear purpose",
       "metrics": {
-        "lineCount": 1084,
+        "lineCount": 747,
         "complexity": null,
         "duplicateLines": null,
         "testCoverage": null
       },
       "estimatedEffort": "medium",
       "breakingChange": false,
-      "prerequisites": [
-        "Add tests for purchasing views before refactoring (see cq-002)",
-        "Update URL imports after splitting"
-      ]
+      "prerequisites": ["Ensure all imports of production models are updated to use the new structure"]
     }
   ],
   "metadata": {
-    "filesAnalyzed": 45,
-    "largeFilesFound": 3,
-    "duplicateBlocksFound": 14,
-    "lintingConfigured": false,
+    "filesAnalyzed": 92,
+    "largeFilesFound": 12,
+    "duplicateBlocksFound": 3,
+    "lintingConfigured": true,
     "testsPresent": true,
-    "testCoverageGaps": [
-      "apps/production/",
-      "apps/purchasing/"
-    ],
-    "generatedAt": "2026-01-27T10:36:30Z"
+    "generatedAt": "2026-01-29T15:45:00Z"
   }
 }

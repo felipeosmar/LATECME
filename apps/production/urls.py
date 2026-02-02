@@ -37,4 +37,7 @@ urlpatterns = [
 
     # API
     path('api/bins/by-material/<uuid:material_id>/', views.api_bins_by_material, name='api_bins_by_material'),
+
+    # Relatórios
+    path('reports/', views.reports, name='reports'),
 ]
