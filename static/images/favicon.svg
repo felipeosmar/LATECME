@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>LATECME</title>
+    <rect x="6" y="6" width="20" height="20" rx="2"
+          fill="#206bc4" stroke="#fff" stroke-width="2"/>
+    <path d="M 12 14 L 12 18 M 16 12 L 16 18 M 20 10 L 20 18"
+          stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+</svg>

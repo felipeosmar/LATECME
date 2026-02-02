@@ -67,11 +67,6 @@
     transition: all 0.2s ease-in-out;
 }
 
-/* Alpine.js cloak - hide until Alpine loads */
-[x-cloak] {
-    display: none !important;
-}
-
 /* Alpine.js + Bootstrap/Tabler Modal Integration
    Bootstrap modals have display:none by default. Alpine's x-show only removes
    inline display:none when true, it doesn't set display:block. We use x-bind:class

@@ -4,11 +4,49 @@
  */
 
 // =============================================================================
+// Dependency Checker
+// =============================================================================
+
+/**
+ * Check if critical JavaScript libraries are loaded
+ * Reports missing dependencies to user
+ */
+function checkDependencies() {
+    const missing = [];
+
+    if (typeof htmx === 'undefined') {
+        missing.push('HTMX');
+    }
+    if (typeof Alpine === 'undefined') {
+        missing.push('Alpine.js');
+    }
+
+    if (missing.length > 0) {
+        console.error('Missing dependencies:', missing.join(', '));
+        // Create a visible banner
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#d63939;color:white;padding:12px;text-align:center;z-index:9999;font-family:system-ui;';
+        banner.innerHTML = `⚠️ Erro ao carregar recursos: ${missing.join(', ')}. <a href="#" onclick="location.reload()" style="color:white;text-decoration:underline;font-weight:bold;">Clique aqui para recarregar</a>`;
+        document.body.prepend(banner);
+    }
+}
+
+// Run dependency check after DOM loads
+document.addEventListener('DOMContentLoaded', checkDependencies);
+
+// =============================================================================
 // HTMX Configuration
 // =============================================================================
 
 // Configure HTMX to include CSRF token in all requests
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if HTMX is available
+    if (typeof htmx === 'undefined') {
+        console.error('HTMX not loaded! Dynamic features will not work.');
+        // Note: checkDependencies() will show user-visible banner
+        return;
+    }
+
     // Get CSRF token from cookie
     function getCookie(name) {
         let cookieValue = null;
@@ -27,9 +65,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const csrftoken = getCookie('csrftoken');
 
+    // Warn if CSRF token is missing on page load
+    if (!csrftoken) {
+        console.warn('CSRF token not found in cookies. POST/PUT/DELETE requests will fail.');
+    }
+
     // Add CSRF token to all HTMX requests
     document.body.addEventListener('htmx:configRequest', function(event) {
-        event.detail.headers['X-CSRFToken'] = csrftoken;
+        // Only set header if token exists
+        if (csrftoken) {
+            event.detail.headers['X-CSRFToken'] = csrftoken;
+        } else {
+            // For non-safe methods, show user feedback
+            const method = event.detail.verb.toUpperCase();
+            if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+                console.error(`Cannot perform ${method} request: CSRF token missing`);
+                // Show toast notification if Alpine is available
+                if (window.Alpine && Alpine.store('toasts')) {
+                    Alpine.store('toasts').error('Sessão expirada. Por favor, recarregue a página.');
+                }
+            }
+        }
     });
 
     // Handle HTMX errors
@@ -66,8 +122,23 @@ document.addEventListener('DOMContentLoaded', function() {
 // Alpine.js Global Data and Utilities
 // =============================================================================
 
+// Flag to prevent duplicate initialization
+let alpineStoresInitialized = false;
+
 // Register Alpine.js global stores when Alpine is ready
-document.addEventListener('alpine:init', () => {
+// Use both alpine:init and a fallback check
+function initAlpineStores() {
+    // Check if Alpine is available
+    if (typeof Alpine === 'undefined' || typeof Alpine.store === 'undefined') {
+        console.warn('Alpine.js not available, skipping stores initialization');
+        return;
+    }
+
+    // Prevent duplicate initialization
+    if (alpineStoresInitialized) {
+        return;
+    }
+    alpineStoresInitialized = true;
     // Toast notification store
     Alpine.store('toasts', {
         items: [],
@@ -176,7 +247,32 @@ document.addEventListener('alpine:init', () => {
             this.open = false;
         }
     }));
+}
+
+// Primary initialization: Use alpine:init event (fires before Alpine starts)
+document.addEventListener('alpine:init', function() {
+    console.log('Alpine.js initializing, registering stores...');
+    initAlpineStores();
 });
+
+// Fallback 1: If Alpine loads before our script
+if (typeof Alpine !== 'undefined') {
+    console.log('Alpine.js already loaded, initializing stores immediately');
+    initAlpineStores();
+}
+
+// Fallback 2: Poll for Alpine availability (max 5 seconds)
+let alpineCheckAttempts = 0;
+const alpineCheckInterval = setInterval(function() {
+    alpineCheckAttempts++;
+    if (typeof Alpine !== 'undefined' && typeof Alpine.store !== 'undefined') {
+        initAlpineStores();
+        clearInterval(alpineCheckInterval);
+    } else if (alpineCheckAttempts >= 50) {  // 50 * 100ms = 5 seconds
+        console.error('Alpine.js failed to load after 5 seconds');
+        clearInterval(alpineCheckInterval);
+    }
+}, 100);
 
 // =============================================================================
 // Utility Functions
@@ -223,20 +319,25 @@ function debounce(func, wait) {
 // =============================================================================
 
 // Custom HTMX extension for handling Django messages
-htmx.defineExtension('django-messages', {
-    onEvent: function(name, evt) {
-        if (name === 'htmx:afterSwap') {
-            // Look for messages in the response
-            const messagesContainer = evt.detail.elt.querySelector('[data-messages]');
-            if (messagesContainer && window.Alpine) {
-                const messages = JSON.parse(messagesContainer.dataset.messages || '[]');
-                messages.forEach(msg => {
-                    Alpine.store('toasts').add(msg.message, msg.tags);
-                });
+// Wait for HTMX to be available before defining extension
+if (typeof htmx !== 'undefined') {
+    htmx.defineExtension('django-messages', {
+        onEvent: function(name, evt) {
+            if (name === 'htmx:afterSwap') {
+                // Look for messages in the response
+                const messagesContainer = evt.detail.elt.querySelector('[data-messages]');
+                if (messagesContainer && window.Alpine) {
+                    const messages = JSON.parse(messagesContainer.dataset.messages || '[]');
+                    messages.forEach(msg => {
+                        Alpine.store('toasts').add(msg.message, msg.tags);
+                    });
+                }
             }
         }
-    }
-});
+    });
+} else {
+    console.warn('HTMX not available, skipping django-messages extension');
+}
 
 // =============================================================================
 // Icon Helper
