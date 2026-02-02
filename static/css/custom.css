@@ -139,6 +139,143 @@
     }
 }
 
+/* =====================================================
+   STATUS BADGES - Padronização de cores por status
+   ===================================================== */
+
+/* Status genéricos */
+.badge-status-draft,
+.badge-status-rascunho {
+    background-color: var(--tblr-secondary) !important;
+    color: #fff !important;
+}
+
+.badge-status-pending,
+.badge-status-pendente,
+.badge-status-aguardando {
+    background-color: var(--tblr-yellow) !important;
+    color: #000 !important;
+}
+
+.badge-status-active,
+.badge-status-ativo,
+.badge-status-em-andamento {
+    background-color: var(--tblr-cyan) !important;
+    color: #fff !important;
+}
+
+.badge-status-completed,
+.badge-status-concluido,
+.badge-status-finalizado {
+    background-color: var(--tblr-green) !important;
+    color: #fff !important;
+}
+
+.badge-status-cancelled,
+.badge-status-cancelado {
+    background-color: var(--tblr-dark) !important;
+    color: #fff !important;
+}
+
+/* Estoque */
+.badge-status-normal {
+    background-color: var(--tblr-green) !important;
+    color: #fff !important;
+}
+
+.badge-status-low,
+.badge-status-baixo {
+    background-color: var(--tblr-warning) !important;
+    color: #000 !important;
+}
+
+.badge-status-out,
+.badge-status-zerado {
+    background-color: var(--tblr-danger) !important;
+    color: #fff !important;
+}
+
+/* Pedidos de compra */
+.badge-status-sent,
+.badge-status-enviado {
+    background-color: var(--tblr-yellow) !important;
+    color: #000 !important;
+}
+
+.badge-status-confirmed,
+.badge-status-confirmado {
+    background-color: var(--tblr-cyan) !important;
+    color: #fff !important;
+}
+
+.badge-status-partial,
+.badge-status-parcial {
+    background-color: var(--tblr-orange) !important;
+    color: #fff !important;
+}
+
+.badge-status-received,
+.badge-status-recebido {
+    background-color: var(--tblr-green) !important;
+    color: #fff !important;
+}
+
+/* =====================================================
+   CARD IMPROVEMENTS
+   ===================================================== */
+
+/* Card de filtros com background sutil */
+.card-filters {
+    background: rgba(var(--tblr-primary-rgb), 0.02);
+}
+
+.card-filters .card-header {
+    background: rgba(var(--tblr-primary-rgb), 0.05);
+    border-bottom: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
+}
+
+/* Transição suave para cards de estatísticas */
+.card-sm {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   TABLE IMPROVEMENTS
+   ===================================================== */
+
+/* Espaçamento consistente para botões de ação em tabela */
+.table .btn-list {
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+}
+
+/* Transição suave para hover em linhas */
+.table-hover tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* =====================================================
+   UTILITIES
+   ===================================================== */
+
+/* Truncate text com ellipsis */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Flex gap utilities */
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+
 /* Print styles */
 @media print {
     .no-print,

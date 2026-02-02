@@ -233,12 +233,31 @@
             <ul class="pagination m-0 ms-auto">
                 {% if receivings.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.previous_page_number }}">Anterior</a>
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.previous_page_number }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-left"></use>
+                        </svg>
+                    </a>
                 </li>
                 {% endif %}
+
+                {% for num in receivings.paginator.page_range %}
+                {% if receivings.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > receivings.number|add:'-3' and num < receivings.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
                 {% if receivings.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.next_page_number }}">Próximo</a>
+                    <a class="page-link" href="?{% if search %}search={{ search }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}{% if supplier_filter %}supplier={{ supplier_filter }}&{% endif %}page={{ receivings.next_page_number }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-chevron-right"></use>
+                        </svg>
+                    </a>
                 </li>
                 {% endif %}
             </ul>

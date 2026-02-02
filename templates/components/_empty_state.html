@@ -1,0 +1,46 @@
+{% comment %}
+Empty State Component
+Usage:
+    {% include 'components/_empty_state.html' with icon='packages' title='Nenhum item' %}
+
+Optional parameters:
+    - icon: Tabler icon name (default: 'mood-empty')
+    - title: Main message (required)
+    - subtitle: Secondary message (optional)
+    - action_url: URL for action button (optional)
+    - action_text: Text for action button (optional)
+    - action_icon: Icon for action button (default: 'plus')
+    - action_click: Alpine.js @click handler instead of URL (optional)
+{% endcomment %}
+{% load static %}
+
+<div class="empty">
+    <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ icon|default:'mood-empty' }}"></use>
+        </svg>
+    </div>
+    <p class="empty-title">{{ title }}</p>
+    {% if subtitle %}
+    <p class="empty-subtitle text-muted">{{ subtitle }}</p>
+    {% endif %}
+    {% if action_url or action_click %}
+    <div class="empty-action">
+        {% if action_url %}
+        <a href="{{ action_url }}" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ action_icon|default:'plus' }}"></use>
+            </svg>
+            {{ action_text }}
+        </a>
+        {% elif action_click %}
+        <button type="button" class="btn btn-primary" @click="{{ action_click }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <use href="{% static 'icons/tabler-sprite.svg' %}#tabler-{{ action_icon|default:'plus' }}"></use>
+            </svg>
+            {{ action_text }}
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
